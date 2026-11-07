@@ -144,8 +144,8 @@ body {
 .github-readme-body table {
   border-spacing: 0;
   border-collapse: collapse;
-  display: block;
-  width: max-content;
+  display: table;
+  width: 100%;
   max-width: 100%;
   overflow: auto;
   margin-top: 0;
@@ -153,18 +153,24 @@ body {
 }
 
 .github-readme-body tr {
-  background-color: #0d1117;
+  background-color: #161b22;
   border-top: 1px solid #30363d;
 }
 
 .github-readme-body tr:nth-child(2n) {
-  background-color: #161b22;
+  background-color: #131820;
 }
 
 .github-readme-body th,
 .github-readme-body td {
-  padding: 6px 13px;
+  padding: 14px 16px;
   border: 1px solid #30363d;
+  vertical-align: top;
+}
+
+.github-readme-body td h3:first-child,
+.github-readme-body td h4:first-child {
+  margin-top: 0;
 }
 
 .github-readme-body th {

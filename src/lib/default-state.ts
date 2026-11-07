@@ -127,7 +127,7 @@ export function createDefaultBlocks(
     showStreak: true,
     showTrophies: true,
     showActivityGraph: true,
-    hideBorder: false,
+    hideBorder: true,
     layout: 'side-by-side',
     statsIncludeAllCommits: true,
   };
@@ -178,6 +178,7 @@ export function createInitialCanvasState(): CanvasState {
       accentColor: 'cyan',
       cardTheme: 'catppuccin_mocha',
       badgeStyle: 'for-the-badge',
+      layoutTemplate: 'bento',
     },
     status: 'idle',
   };

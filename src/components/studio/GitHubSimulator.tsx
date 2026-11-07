@@ -40,9 +40,10 @@ const githubSanitizeSchema = {
     h4: ['align'],
     h5: ['align'],
     h6: ['align'],
-    table: ['align', 'width'],
-    th: ['align', 'width'],
-    td: ['align', 'width'],
+    table: ['align', 'width', 'cellPadding', 'cellSpacing'],
+    tr: ['align', 'valign'],
+    th: ['align', 'width', 'valign', 'colSpan', 'colspan', 'rowSpan', 'rowspan'],
+    td: ['align', 'width', 'valign', 'colSpan', 'colspan', 'rowSpan', 'rowspan'],
   },
   tagNames: [
     ...(defaultSchema.tagNames || []),

@@ -39,6 +39,7 @@ export default function GitCanvasPage() {
     accentColor: 'cyan',
     cardTheme: 'catppuccin_mocha',
     badgeStyle: 'for-the-badge',
+    layoutTemplate: 'bento',
   });
 
   const [isLoading, setIsLoading] = useState(false);
@@ -134,10 +135,10 @@ export default function GitCanvasPage() {
     }
   }, [authStatus, session, loadUserData, profile]);
 
-  // Generate markdown from blocks
+  // Generate markdown from blocks & selected layout template
   const generatedMarkdown = useMemo(() => {
-    return generateMarkdown(blocks, profile, archetype);
-  }, [blocks, profile, archetype]);
+    return generateMarkdown(blocks, profile, archetype, theme.layoutTemplate || 'bento');
+  }, [blocks, profile, archetype, theme.layoutTemplate]);
 
   // AI Bio Regeneration
   const handleRegenerateAiBio = async (tone: BioTone) => {

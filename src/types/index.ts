@@ -160,10 +160,13 @@ export interface ReadmeBlockConfig {
   settings: any;
 }
 
+export type LayoutTemplateId = 'bento' | 'terminal' | 'editorial' | 'classic';
+
 export interface ThemeConfig {
   accentColor: string; // e.g. emerald, cyan, violet, rose, sunset
   cardTheme: string;   // e.g. catppuccin_mocha, tokyonight, nord, dracula, radical
   badgeStyle: BadgeStyle;
+  layoutTemplate?: LayoutTemplateId;
 }
 
 export interface CanvasState {
