@@ -1,3 +1,125 @@
+export type StatGrade = 'S' | 'A' | 'B' | 'C' | 'D';
+
+export type StatItemType =
+  | 'profile'
+  | 'pinned'
+  | 'languages'
+  | 'commits'
+  | 'prs'
+  | 'issues'
+  | 'stars'
+  | 'repos'
+  | 'polyglot'
+  | 'overall'
+  | 'streak'
+  | 'longest-streak'
+  | 'active-days'
+  | 'contributions';
+
+export interface ProfileItemData {
+  item: 'profile';
+  username: string;
+  name: string | null;
+  avatarUrl: string;
+  avatarBase64?: string;
+  bio: string | null;
+  company: string | null;
+  location: string | null;
+  email: string | null;
+  blog: string | null;
+  twitterUsername: string | null;
+  followers: number;
+  following: number;
+  createdAt: string;
+  htmlUrl: string;
+}
+
+export interface PinnedProjectItem {
+  name: string;
+  description: string | null;
+  url: string;
+  homepageUrl: string | null;
+  stars: number;
+  forks: number;
+  language: string | null;
+  languageColor: string;
+}
+
+export interface PinnedProjectsItemData {
+  item: 'pinned';
+  username: string;
+  projects: PinnedProjectItem[];
+}
+
+export interface LanguageEntry {
+  name: string;
+  bytes: number;
+  percentage: number;
+  color: string;
+}
+
+export interface LanguagesItemData {
+  item: 'languages';
+  username: string;
+  languages: LanguageEntry[];
+  totalBytes: number;
+  totalLanguagesCount: number;
+}
+
+export interface GradedMetricItemData {
+  item: 'commits' | 'prs' | 'issues' | 'stars' | 'repos' | 'polyglot';
+  username: string;
+  label: string;
+  value: number;
+  grade: StatGrade;
+}
+
+export interface OverallItemData {
+  item: 'overall';
+  username: string;
+  label: 'overall';
+  grade: StatGrade;
+  score: number;
+  breakdown: {
+    commits: StatGrade;
+    prs: StatGrade;
+    issues: StatGrade;
+    stars: StatGrade;
+    repos: StatGrade;
+    polyglot: StatGrade;
+  };
+}
+
+export interface StreakMetricItemData {
+  item: 'streak' | 'longest-streak' | 'active-days';
+  username: string;
+  label: string;
+  value: number;
+  unit: string;
+  formatted: string;
+  startDate?: string | null;
+  endDate?: string | null;
+  isActiveToday?: boolean;
+}
+
+export interface ContributionDayItem {
+  date: string;
+  contributionCount: number;
+  weekday: number;
+}
+
+export interface ContributionsItemData {
+  item: 'contributions';
+  username: string;
+  label: 'contributions last year';
+  totalCommits: number;
+  rightLabel: string;
+  weeks: {
+    contributionDays: ContributionDayItem[];
+  }[];
+}
+
+// Legacy compatibility exports for any existing consumers
 export interface UserOverviewStats {
   username: string;
   name: string | null;
@@ -35,7 +157,7 @@ export interface UserStreakStats {
   };
   totalActiveDays: number;
   totalContributionsPastYear: number;
-  completionRate: number; // Percentage of days with >= 1 contribution in past 365 days
+  completionRate: number;
   todayContributions: number;
 }
 
@@ -45,24 +167,12 @@ export interface UserCommitStats {
   restrictedCommits: number;
   averageCommitsPerWeek: number;
   mostActiveDayOfWeek: string;
-  weeklyBreakdown: {
-    day: string;
-    count: number;
-  }[];
-  monthlyBreakdown: {
-    month: string;
-    year: number;
-    count: number;
-  }[];
+  weeklyBreakdown: { day: string; count: number }[];
+  monthlyBreakdown: { month: string; year: number; count: number }[];
 }
 
 export interface UserLanguageStats {
-  languages: {
-    name: string;
-    bytes: number;
-    percentage: number;
-    color: string;
-  }[];
+  languages: LanguageEntry[];
   totalBytes: number;
   topLanguage: string | null;
   primaryLanguageRepoCounts: Record<string, number>;
@@ -82,7 +192,7 @@ export interface UserActivityStats {
 
 export interface DeveloperRank {
   grade: 'S+' | 'S' | 'A+' | 'A' | 'B+' | 'B' | 'C';
-  score: number; // 0 - 100
+  score: number;
   title: string;
   description: string;
 }

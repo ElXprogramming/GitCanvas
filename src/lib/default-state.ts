@@ -121,7 +121,7 @@ export function createDefaultBlocks(
 
   // GitHub Stats settings
   const githubStatsSettings: GitHubStatsSettings = {
-    cardTheme: 'catppuccin_mocha',
+    cardTheme: 'default',
     cardProvider: 'standalone',
     showOverallStats: true,
     showTopLangs: true,

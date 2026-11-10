@@ -44,6 +44,7 @@ const githubSanitizeSchema = {
     tr: ['align', 'valign'],
     th: ['align', 'width', 'valign', 'colSpan', 'colspan', 'rowSpan', 'rowspan'],
     td: ['align', 'width', 'valign', 'colSpan', 'colspan', 'rowSpan', 'rowspan'],
+    br: ['clear'],
   },
   tagNames: [
     ...(defaultSchema.tagNames || []),

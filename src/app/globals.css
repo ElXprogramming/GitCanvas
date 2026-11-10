@@ -183,5 +183,16 @@ body {
   box-sizing: content-box;
   display: inline-block;
   vertical-align: middle;
-  margin: 2px;
+  margin: 3px;
 }
+
+.github-readme-body img[align="left"] {
+  float: left;
+  margin-right: 16px;
+}
+
+.github-readme-body br[clear="both"] {
+  clear: both;
+  display: block;
+}
+

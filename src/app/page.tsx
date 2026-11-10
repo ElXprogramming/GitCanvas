@@ -37,9 +37,8 @@ export default function GitCanvasPage() {
 
   const [theme, setTheme] = useState<ThemeConfig>({
     accentColor: 'cyan',
-    cardTheme: 'catppuccin_mocha',
+    cardTheme: 'default',
     badgeStyle: 'for-the-badge',
-    layoutTemplate: 'bento',
   });
 
   const [isLoading, setIsLoading] = useState(false);
@@ -135,10 +134,10 @@ export default function GitCanvasPage() {
     }
   }, [authStatus, session, loadUserData, profile]);
 
-  // Generate markdown from blocks & selected layout template
+  // Generate markdown from blocks & selected theme
   const generatedMarkdown = useMemo(() => {
-    return generateMarkdown(blocks, profile, archetype, theme.layoutTemplate || 'bento');
-  }, [blocks, profile, archetype, theme.layoutTemplate]);
+    return generateMarkdown(blocks, profile, archetype, theme.cardTheme || 'default');
+  }, [blocks, profile, archetype, theme.cardTheme]);
 
   // AI Bio Regeneration
   const handleRegenerateAiBio = async (tone: BioTone) => {
