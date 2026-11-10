@@ -286,18 +286,19 @@ test('onepiece_gatling theme renders floating flapping straw hat in background w
   // 1. Standalone overall box in onepiece_gatling theme
   const overallSvg = designOverallBox(overallData, 'onepiece_gatling');
   assert.ok(overallSvg.includes('class="card-floating-hat"'), 'Overall box should render floating straw hat');
-  assert.ok(overallSvg.includes('class="wind-hat-ambient"'), 'Floating hat should have ambient wind float animation');
+  assert.ok(overallSvg.includes('class="wind-hat-roam-overall"'), 'Floating hat should roam all over the box space');
   assert.ok(overallSvg.includes('class="hat-f0"'), 'Floating hat should include flapping frame 0');
   assert.ok(overallSvg.includes('class="hat-f1"'), 'Floating hat should include flapping frame 1');
   assert.ok(overallSvg.includes('class="hat-f2"'), 'Floating hat should include flapping frame 2');
   assert.ok(overallSvg.includes('class="hat-f3"'), 'Floating hat should include flapping frame 3');
-  assert.ok(overallSvg.includes('@keyframes windFloatAmbient'), 'CSS should include windFloatAmbient animation');
+  assert.ok(overallSvg.includes('@keyframes windRoamOverall'), 'CSS should include windRoamOverall animation');
   assert.ok(overallSvg.includes('@keyframes hatFlap0'), 'CSS should include hat flap keyframes');
   assert.ok(overallSvg.includes('class="ov-mascot"'), 'Overall box should also retain Luffy Gatling mascot');
 
   // 2. Standalone profile card in onepiece_gatling theme
   const profileSvg = designProfileCard(profile, 'onepiece_gatling');
   assert.ok(profileSvg.includes('class="card-floating-hat"'), 'Profile card should render floating straw hat');
+  assert.ok(profileSvg.includes('wind-hat-roam-profile'), 'Profile card floating hat should roam across the space');
   assert.ok(profileSvg.includes('class="p-mascot"'), 'Profile card should render Luffy Gatling mascot');
 
   // 3. Full master canvas in onepiece_gatling theme
@@ -378,8 +379,12 @@ test('onepiece_gatling theme renders floating flapping straw hat in background w
   });
 
   assert.ok(canvasSvg.includes('class="canvas-floating-hats"'), 'Canvas should render master floating straw hats');
-  assert.ok(canvasSvg.includes('class="wind-hat-drift"'), 'Canvas should have drifting floating hat');
+  assert.ok(canvasSvg.includes('class="wind-hat-roam-canvas-1"'), 'Canvas should have primary roaming floating hat');
+  assert.ok(canvasSvg.includes('class="wind-hat-roam-canvas-2"'), 'Canvas should have mid-lower roaming floating hat');
+  assert.ok(canvasSvg.includes('class="wind-hat-roam-canvas-3"'), 'Canvas should have diagonal roaming floating hat');
   assert.ok(canvasSvg.includes('class="wind-gust"'), 'Canvas should render wind gust trails');
-  assert.ok(canvasSvg.includes('@keyframes windDriftAcross'), 'Canvas CSS should include windDriftAcross');
+  assert.ok(canvasSvg.includes('@keyframes windRoamCanvas1'), 'Canvas CSS should include windRoamCanvas1');
+  assert.ok(canvasSvg.includes('@keyframes windRoamCanvas2'), 'Canvas CSS should include windRoamCanvas2');
+  assert.ok(canvasSvg.includes('@keyframes windRoamCanvas3'), 'Canvas CSS should include windRoamCanvas3');
   assert.ok(canvasSvg.includes('@keyframes windGustSweep'), 'Canvas CSS should include windGustSweep');
 });

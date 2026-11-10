@@ -135,6 +135,61 @@ export function getMascotAnimationStyles(
       .hat-f1 { animation: hatFlap1 0.52s steps(1) infinite; }
       .hat-f2 { animation: hatFlap2 0.52s steps(1) infinite; }
       .hat-f3 { animation: hatFlap3 0.52s steps(1) infinite; }
+      @keyframes windRoamCanvas1 {
+        0%   { transform: translate(50px, 50px) rotate(-8deg); }
+        18%  { transform: translate(380px, 160px) rotate(14deg); }
+        35%  { transform: translate(730px, 80px) rotate(-12deg); }
+        52%  { transform: translate(540px, 380px) rotate(16deg); }
+        70%  { transform: translate(160px, 320px) rotate(-15deg); }
+        86%  { transform: translate(420px, 180px) rotate(8deg); }
+        100% { transform: translate(50px, 50px) rotate(-8deg); }
+      }
+      @keyframes windRoamCanvas2 {
+        0%   { transform: translate(700px, 480px) rotate(10deg); }
+        20%  { transform: translate(360px, 620px) rotate(-12deg); }
+        40%  { transform: translate(80px, 500px) rotate(14deg); }
+        60%  { transform: translate(280px, 720px) rotate(-10deg); }
+        80%  { transform: translate(660px, 660px) rotate(12deg); }
+        100% { transform: translate(700px, 480px) rotate(10deg); }
+      }
+      @keyframes windRoamCanvas3 {
+        0%   { transform: translate(120px, 720px) rotate(-16deg); }
+        22%  { transform: translate(460px, 440px) rotate(18deg); }
+        45%  { transform: translate(740px, 240px) rotate(-14deg); }
+        68%  { transform: translate(340px, 80px) rotate(12deg); }
+        85%  { transform: translate(60px, 340px) rotate(-10deg); }
+        100% { transform: translate(120px, 720px) rotate(-16deg); }
+      }
+      @keyframes windRoamOverall {
+        0%   { transform: translate(14px, 16px) rotate(-6deg); }
+        22%  { transform: translate(95px, 68px) rotate(12deg); }
+        45%  { transform: translate(192px, 18px) rotate(-8deg); }
+        68%  { transform: translate(135px, 42px) rotate(10deg); }
+        84%  { transform: translate(45px, 66px) rotate(-12deg); }
+        100% { transform: translate(14px, 16px) rotate(-6deg); }
+      }
+      @keyframes windRoamProfile800 {
+        0%   { transform: translate(105px, 14px) rotate(-6deg); }
+        25%  { transform: translate(340px, 65px) rotate(14deg); }
+        50%  { transform: translate(690px, 16px) rotate(-10deg); }
+        75%  { transform: translate(490px, 62px) rotate(12deg); }
+        100% { transform: translate(105px, 14px) rotate(-6deg); }
+      }
+      @keyframes windRoamProfile420 {
+        0%   { transform: translate(105px, 14px) rotate(-6deg); }
+        25%  { transform: translate(200px, 65px) rotate(14deg); }
+        50%  { transform: translate(315px, 16px) rotate(-10deg); }
+        75%  { transform: translate(220px, 62px) rotate(12deg); }
+        100% { transform: translate(105px, 14px) rotate(-6deg); }
+      }
+      @keyframes windRoamContrib {
+        0%   { transform: translate(35px, 18px) rotate(-8deg); }
+        20%  { transform: translate(240px, 115px) rotate(14deg); }
+        40%  { transform: translate(480px, 22px) rotate(-10deg); }
+        60%  { transform: translate(710px, 110px) rotate(12deg); }
+        80%  { transform: translate(360px, 125px) rotate(-14deg); }
+        100% { transform: translate(35px, 18px) rotate(-8deg); }
+      }
       @keyframes windFloatAmbient {
         0% { transform: translate(0px, 0px) rotate(-5deg); }
         25% { transform: translate(14px, -7px) rotate(5deg); }
@@ -153,6 +208,13 @@ export function getMascotAnimationStyles(
         50% { opacity: 0.35; }
         100% { opacity: 0.12; stroke-dashoffset: -40; }
       }
+      .wind-hat-roam-canvas-1 { animation: windRoamCanvas1 22s ease-in-out infinite; transform-origin: 24px 13px; }
+      .wind-hat-roam-canvas-2 { animation: windRoamCanvas2 26s ease-in-out infinite; transform-origin: 20px 11px; }
+      .wind-hat-roam-canvas-3 { animation: windRoamCanvas3 30s ease-in-out infinite; transform-origin: 16px 8px; }
+      .wind-hat-roam-overall { animation: windRoamOverall 13s ease-in-out infinite; transform-origin: 18px 10px; }
+      .wind-hat-roam-profile-800 { animation: windRoamProfile800 16s ease-in-out infinite; transform-origin: 20px 11px; }
+      .wind-hat-roam-profile-420 { animation: windRoamProfile420 14s ease-in-out infinite; transform-origin: 20px 11px; }
+      .wind-hat-roam-contrib { animation: windRoamContrib 18s ease-in-out infinite; transform-origin: 22px 12px; }
       .wind-hat-ambient { animation: windFloatAmbient 5.5s ease-in-out infinite; transform-origin: 21px 12px; }
       .wind-hat-drift { animation: windDriftAcross 7.5s ease-in-out infinite; transform-origin: 26px 14px; }
       .wind-gust { animation: windGustSweep 4s linear infinite; }`
@@ -162,7 +224,11 @@ export function getMascotAnimationStyles(
       @media (prefers-reduced-motion: reduce) {
         .gatling-f0, .hat-f0 { opacity: 1 !important; animation: none !important; }
         .gatling-f1, .gatling-f2, .gatling-f3, .hat-f1, .hat-f2, .hat-f3 { opacity: 0 !important; animation: none !important; }
-        .wind-hat-ambient, .wind-hat-drift, .wind-gust { animation: none !important; }
+        .wind-hat-roam-canvas-1, .wind-hat-roam-canvas-2, .wind-hat-roam-canvas-3,
+        .wind-hat-roam-overall, .wind-hat-roam-profile-800, .wind-hat-roam-profile-420,
+        .wind-hat-roam-contrib, .wind-hat-ambient, .wind-hat-drift, .wind-gust {
+          animation: none !important;
+        }
       }`;
 }
 
@@ -229,52 +295,66 @@ export function renderFloatingBackgroundHats(
   };
 
   if (isMasterCanvas) {
-    // Canvas-wide floating wind hats at different depths
-    const hat1W = 52;
-    const hat1H = 28;
-    const hat1X = Math.max(120, width - 240);
-    const hat1Y = 32;
+    // Canvas-wide floating wind hats roaming all over the canvas space at different depths
+    const hat1W = 48;
+    const hat1H = 26;
+    const hat1Y_mid = Math.floor(height * 0.42);
+    const hat1Y_low = Math.floor(height * 0.34);
+    const hat1Y_ret = Math.floor(height * 0.20);
 
-    const hat2W = 38;
-    const hat2H = 21;
-    const hat2X = 54;
-    const hat2Y = Math.min(height - 140, Math.max(380, Math.floor(height * 0.45)));
+    const hat2W = 40;
+    const hat2H = 22;
+    const hat2Y_0 = Math.floor(height * 0.52);
+    const hat2Y_1 = Math.floor(height * 0.70);
+    const hat2Y_2 = Math.floor(height * 0.56);
+    const hat2Y_3 = Math.floor(height * 0.86);
+    const hat2Y_4 = Math.floor(height * 0.76);
 
-    const windTrail1 = `<path d="M ${hat1X - 45} ${hat1Y + 18} Q ${hat1X + 25} ${hat1Y + 8} ${hat1X + 90} ${hat1Y + 22}" stroke="rgba(253, 224, 71, 0.22)" stroke-width="1.6" stroke-linecap="round" fill="none" stroke-dasharray="10 8" class="wind-gust" />`;
-    const windTrail2 = `<path d="M ${hat2X - 35} ${hat2Y + 14} Q ${hat2X + 20} ${hat2Y + 6} ${hat2X + 75} ${hat2Y + 18}" stroke="rgba(245, 158, 11, 0.18)" stroke-width="1.4" stroke-linecap="round" fill="none" stroke-dasharray="8 6" class="wind-gust" />`;
+    const hat3W = 34;
+    const hat3H = 19;
+    const hat3Y_0 = Math.floor(height * 0.80);
+    const hat3Y_1 = Math.floor(height * 0.48);
+    const hat3Y_2 = Math.floor(height * 0.26);
+    const hat3Y_3 = 80;
+    const hat3Y_4 = Math.floor(height * 0.38);
 
-    return `\n  <!-- Master Profile Canvas Floating Straw Hats (Flapping in Wind) -->\n  <g class="canvas-floating-hats" role="img" aria-label="Floating Straw Hats">\n    ${windTrail1}\n    <g transform="translate(${hat1X}, ${hat1Y})">\n      <g class="wind-hat-drift" opacity="0.92">\n        <animateTransform attributeName="transform" type="translate" values="0,0; 35,-12; 70,5; 35,10; 0,0" dur="7.5s" repeatCount="indefinite" />\n        <animateTransform attributeName="transform" type="rotate" values="-6 ${hat1W / 2} ${hat1H / 2}; 8 ${hat1W / 2} ${hat1H / 2}; -4 ${hat1W / 2} ${hat1H / 2}; 6 ${hat1W / 2} ${hat1H / 2}; -6 ${hat1W / 2} ${hat1H / 2}" dur="7.5s" repeatCount="indefinite" additive="sum" />\n        ${renderHatFrames(hat1W, hat1H)}\n      </g>\n    </g>\n    ${windTrail2}\n    <g transform="translate(${hat2X}, ${hat2Y})">\n      <g class="wind-hat-ambient" opacity="0.65">\n        <animateTransform attributeName="transform" type="translate" values="0,0; 20,-7; 40,2; 18,8; 0,0" dur="6s" repeatCount="indefinite" />\n        <animateTransform attributeName="transform" type="rotate" values="-4 ${hat2W / 2} ${hat2H / 2}; 6 ${hat2W / 2} ${hat2H / 2}; -2 ${hat2W / 2} ${hat2H / 2}; 5 ${hat2W / 2} ${hat2H / 2}; -4 ${hat2W / 2} ${hat2H / 2}" dur="6s" repeatCount="indefinite" additive="sum" />\n        ${renderHatFrames(hat2W, hat2H)}\n      </g>\n    </g>\n  </g>`;
+    const windTrail1 = `<path d="M 20 80 Q 240 170 460 70 T 820 130" stroke="rgba(253, 224, 71, 0.22)" stroke-width="1.6" stroke-linecap="round" fill="none" stroke-dasharray="12 10" class="wind-gust" />`;
+    const windTrail2 = `<path d="M 40 ${Math.floor(height * 0.42)} Q 300 ${Math.floor(height * 0.34)} 540 ${Math.floor(height * 0.46)} T 800 ${Math.floor(height * 0.40)}" stroke="rgba(245, 158, 11, 0.18)" stroke-width="1.5" stroke-linecap="round" fill="none" stroke-dasharray="14 10" class="wind-gust" />`;
+    const windTrail3 = `<path d="M 50 ${Math.floor(height * 0.78)} Q 320 ${Math.floor(height * 0.86)} 560 ${Math.floor(height * 0.74)} T 810 ${Math.floor(height * 0.82)}" stroke="rgba(253, 224, 71, 0.16)" stroke-width="1.4" stroke-linecap="round" fill="none" stroke-dasharray="12 8" class="wind-gust" />`;
+
+    return `\n  <!-- Master Profile Canvas Floating Straw Hats (Roaming Full Space) -->\n  <g class="canvas-floating-hats" role="img" aria-label="Floating Straw Hats Roaming All Over Space">\n    ${windTrail1}\n    ${windTrail2}\n    ${windTrail3}\n    <g class="wind-hat-roam-canvas-1" transform="translate(50, 50)" opacity="0.95">\n      <animateTransform attributeName="transform" type="translate" values="50,50; 380,160; 730,80; 540,${hat1Y_mid}; 160,${hat1Y_low}; 420,${hat1Y_ret}; 50,50" dur="22s" repeatCount="indefinite" />\n      <g transform="rotate(-8 ${hat1W / 2} ${hat1H / 2})">\n        <animateTransform attributeName="transform" type="rotate" values="-8 ${hat1W / 2} ${hat1H / 2}; 14 ${hat1W / 2} ${hat1H / 2}; -12 ${hat1W / 2} ${hat1H / 2}; 16 ${hat1W / 2} ${hat1H / 2}; -15 ${hat1W / 2} ${hat1H / 2}; 8 ${hat1W / 2} ${hat1H / 2}; -8 ${hat1W / 2} ${hat1H / 2}" dur="22s" repeatCount="indefinite" additive="sum" />\n        ${renderHatFrames(hat1W, hat1H)}\n      </g>\n    </g>\n    <g class="wind-hat-roam-canvas-2" transform="translate(700, ${hat2Y_0})" opacity="0.75">\n      <animateTransform attributeName="transform" type="translate" values="700,${hat2Y_0}; 360,${hat2Y_1}; 80,${hat2Y_2}; 280,${hat2Y_3}; 660,${hat2Y_4}; 700,${hat2Y_0}" dur="26s" repeatCount="indefinite" />\n      <g transform="rotate(10 ${hat2W / 2} ${hat2H / 2})">\n        <animateTransform attributeName="transform" type="rotate" values="10 ${hat2W / 2} ${hat2H / 2}; -12 ${hat2W / 2} ${hat2H / 2}; 14 ${hat2W / 2} ${hat2H / 2}; -10 ${hat2W / 2} ${hat2H / 2}; 12 ${hat2W / 2} ${hat2H / 2}; 10 ${hat2W / 2} ${hat2H / 2}" dur="26s" repeatCount="indefinite" additive="sum" />\n        ${renderHatFrames(hat2W, hat2H)}\n      </g>\n    </g>\n    <g class="wind-hat-roam-canvas-3" transform="translate(120, ${hat3Y_0})" opacity="0.55">\n      <animateTransform attributeName="transform" type="translate" values="120,${hat3Y_0}; 460,${hat3Y_1}; 740,${hat3Y_2}; 340,${hat3Y_3}; 60,${hat3Y_4}; 120,${hat3Y_0}" dur="30s" repeatCount="indefinite" />\n      <g transform="rotate(-16 ${hat3W / 2} ${hat3H / 2})">\n        <animateTransform attributeName="transform" type="rotate" values="-16 ${hat3W / 2} ${hat3H / 2}; 18 ${hat3W / 2} ${hat3H / 2}; -14 ${hat3W / 2} ${hat3H / 2}; 12 ${hat3W / 2} ${hat3H / 2}; -10 ${hat3W / 2} ${hat3H / 2}; -16 ${hat3W / 2} ${hat3H / 2}" dur="30s" repeatCount="indefinite" additive="sum" />\n        ${renderHatFrames(hat3W, hat3H)}\n      </g>\n    </g>\n  </g>`;
   }
 
-  // Single card floating hat
-  let hatW = 42;
-  let hatH = 23;
-  let x = Math.max(16, width - 180);
-  let y = 14;
-
+  // Single card floating hat roaming all over the card space
   if (width <= 260) {
-    // Overall box (258 x 104): place floating hat in upper-mid background
-    hatW = 38;
-    hatH = 21;
-    x = 92;
-    y = 16;
-  } else if (height <= 100) {
-    // Profile card (800x96 or 420x96)
-    hatW = 40;
-    hatH = 22;
-    x = Math.max(160, width - 170);
-    y = 16;
-  } else if (width >= 700) {
-    // Contributions card (800 x 166)
-    hatW = 44;
-    hatH = 24;
-    x = Math.floor(width * 0.58);
-    y = 13;
+    // Overall / Streak box (258 x 104)
+    const hatW = 36;
+    const hatH = 20;
+    const trail = `<path d="M 10 32 Q 80 82 155 26 T 246 50" stroke="rgba(245, 158, 11, 0.22)" stroke-width="1.4" stroke-linecap="round" fill="none" stroke-dasharray="8 6" class="wind-gust" />`;
+    return `\n  <!-- Card Background Floating Straw Hat (Roaming Full Space) -->\n  <g class="card-floating-hat" role="img" aria-label="Floating Straw Hat Roaming All Over Space">\n    ${trail}\n    <g class="wind-hat-roam-overall" transform="translate(14, 16)" opacity="0.85">\n      <animateTransform attributeName="transform" type="translate" values="14,16; 95,68; 192,18; 135,42; 45,66; 14,16" dur="13s" repeatCount="indefinite" />\n      <g transform="rotate(-6 ${hatW / 2} ${hatH / 2})">\n        <animateTransform attributeName="transform" type="rotate" values="-6 ${hatW / 2} ${hatH / 2}; 12 ${hatW / 2} ${hatH / 2}; -8 ${hatW / 2} ${hatH / 2}; 10 ${hatW / 2} ${hatH / 2}; -12 ${hatW / 2} ${hatH / 2}; -6 ${hatW / 2} ${hatH / 2}" dur="13s" repeatCount="indefinite" additive="sum" />\n        ${renderHatFrames(hatW, hatH)}\n      </g>\n    </g>\n  </g>`;
   }
 
-  const trail = `<path d="M ${x - 30} ${y + 14} Q ${x + 18} ${y + 6} ${x + 65} ${y + 18}" stroke="rgba(245, 158, 11, 0.22)" stroke-width="1.4" stroke-linecap="round" fill="none" stroke-dasharray="8 6" class="wind-gust" />`;
+  if (height <= 100) {
+    // Profile card (800x96 or 420x96)
+    const hatW = 38;
+    const hatH = 21;
+    const isSmall = width <= 460;
+    const p1X = isSmall ? 200 : 340;
+    const p2X = isSmall ? 315 : 690;
+    const p3X = isSmall ? 220 : 490;
+    const cls = isSmall ? 'wind-hat-roam-profile-420' : 'wind-hat-roam-profile-800';
+    const dur = isSmall ? '14s' : '16s';
+    const trail = `<path d="M 80 34 Q ${Math.floor(width * 0.4)} 80 ${Math.floor(width * 0.7)} 24 T ${width - 40} 54" stroke="rgba(245, 158, 11, 0.22)" stroke-width="1.4" stroke-linecap="round" fill="none" stroke-dasharray="10 8" class="wind-gust" />`;
 
-  return `\n  <!-- Background Floating Straw Hat (Flapping in Wind) -->\n  <g class="card-floating-hat" role="img" aria-label="Floating Straw Hat in Wind">\n    ${trail}\n    <g transform="translate(${x}, ${y})">\n      <g class="wind-hat-ambient" opacity="0.85">\n        <animateTransform attributeName="transform" type="translate" values="0,0; 16,-6; 32,1; 14,8; 0,0" dur="5.5s" repeatCount="indefinite" />\n        <animateTransform attributeName="transform" type="rotate" values="-5 ${hatW / 2} ${hatH / 2}; 7 ${hatW / 2} ${hatH / 2}; -3 ${hatW / 2} ${hatH / 2}; 6 ${hatW / 2} ${hatH / 2}; -5 ${hatW / 2} ${hatH / 2}" dur="5.5s" repeatCount="indefinite" additive="sum" />\n        ${renderHatFrames(hatW, hatH)}\n      </g>\n    </g>\n  </g>`;
+    return `\n  <!-- Profile Card Background Floating Straw Hat (Roaming Full Space) -->\n  <g class="card-floating-hat" role="img" aria-label="Floating Straw Hat Roaming All Over Space">\n    ${trail}\n    <g class="${cls}" transform="translate(105, 14)" opacity="0.85">\n      <animateTransform attributeName="transform" type="translate" values="105,14; ${p1X},65; ${p2X},16; ${p3X},62; 105,14" dur="${dur}" repeatCount="indefinite" />\n      <g transform="rotate(-6 ${hatW / 2} ${hatH / 2})\">\n        <animateTransform attributeName="transform" type="rotate" values="-6 ${hatW / 2} ${hatH / 2}; 14 ${hatW / 2} ${hatH / 2}; -10 ${hatW / 2} ${hatH / 2}; 12 ${hatW / 2} ${hatH / 2}; -6 ${hatW / 2} ${hatH / 2}" dur="${dur}" repeatCount="indefinite" additive="sum" />\n        ${renderHatFrames(hatW, hatH)}\n      </g>\n    </g>\n  </g>`;
+  }
+
+  // Contributions card (800 x 166) or general wide cards
+  const hatW = 44;
+  const hatH = 24;
+  const trail = `<path d="M 25 36 Q 240 125 460 30 T 780 85" stroke="rgba(245, 158, 11, 0.22)" stroke-width="1.5" stroke-linecap="round" fill="none" stroke-dasharray="12 8" class="wind-gust" />`;
+
+  return `\n  <!-- Contributions Card Background Floating Straw Hat (Roaming Full Space) -->\n  <g class="card-floating-hat" role="img" aria-label="Floating Straw Hat Roaming All Over Space">\n    ${trail}\n    <g class="wind-hat-roam-contrib" transform="translate(35, 18)" opacity="0.85">\n      <animateTransform attributeName="transform" type="translate" values="35,18; 240,115; 480,22; 710,110; 360,125; 35,18" dur="18s" repeatCount="indefinite" />\n      <g transform="rotate(-8 ${hatW / 2} ${hatH / 2})">\n        <animateTransform attributeName="transform" type="rotate" values="-8 ${hatW / 2} ${hatH / 2}; 14 ${hatW / 2} ${hatH / 2}; -10 ${hatW / 2} ${hatH / 2}; 12 ${hatW / 2} ${hatH / 2}; -14 ${hatW / 2} ${hatH / 2}; -8 ${hatW / 2} ${hatH / 2}" dur="18s" repeatCount="indefinite" additive="sum" />\n        ${renderHatFrames(hatW, hatH)}\n      </g>\n    </g>\n  </g>`;
 }
 
 // ==========================================================
@@ -702,12 +782,14 @@ export function designStreakBox(
     </linearGradient>
     <style>
       ${getSvgFontImport(font)}
+      ${getMascotAnimationStyles(null, themeId)}
       .st-label { font: 600 14px ${font.fontFamily}; fill: ${theme.textSecondary}; }
       .st-val { font: 800 28px ${font.fontFamily}; fill: ${theme.textPrimary}; }
     </style>
   </defs>
 
   <rect width="${width}" height="${height}" rx="${theme.borderRadius}" fill="url(#streakGrad_${data.item})" stroke="none" />
+  ${renderFloatingBackgroundHats(themeId, width, height, false)}
 
   <text x="18" y="30" class="st-label" fill="${theme.textSecondary}">${label}</text>
   <text x="18" y="${height - 20}" class="st-val" fill="${theme.textPrimary}">${formatted}</text>
