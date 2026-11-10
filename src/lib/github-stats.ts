@@ -1,4 +1,5 @@
 import { getOctokit, GITHUB_LANG_COLORS } from './github';
+import { globalApiCache } from './cache';
 import {
   StatGrade,
   ProfileItemData,
@@ -19,43 +20,15 @@ import {
   FullCanvasData,
 } from '@/types/stats';
 
-// In-memory cache for raw GitHub API responses (60s TTL)
-interface CacheEntry<T> {
-  data: T;
-  expiry: number;
-}
-const cache = new Map<string, CacheEntry<any>>();
-const CACHE_TTL_MS = 60 * 1000;
-
 export function clearUserCache(username?: string): void {
   if (!username) {
-    cache.clear();
+    globalApiCache.clear();
     return;
   }
-  const prefix = username.toLowerCase();
-  cache.forEach((_, key) => {
-    if (key.includes(prefix)) {
-      cache.delete(key);
-    }
-  });
+  globalApiCache.deletePrefix(username);
 }
 
-function getCached<T>(key: string): T | null {
-  const entry = cache.get(key);
-  if (entry && entry.expiry > Date.now()) {
-    return entry.data;
-  }
-  return null;
-}
-
-function setCache<T>(key: string, data: T): void {
-  cache.set(key, {
-    data,
-    expiry: Date.now() + CACHE_TTL_MS,
-  });
-}
-
-// Coalesce concurrent requests for the same user so parallel item endpoints share one GitHub call
+// In-flight GraphQL promise coalescing to prevent duplicate concurrent queries
 const inflightGraphQL = new Map<string, Promise<any>>();
 
 const WEEKDAYS = [
@@ -68,7 +41,7 @@ const WEEKDAYS = [
   'Saturday',
 ];
 
-interface CalendarDay {
+export interface CalendarDay {
   contributionCount: number;
   date: string;
   weekday: number;
@@ -139,7 +112,7 @@ export function computeOverallGrade(grades: StatGrade[]): {
   score: number;
 } {
   if (grades.length === 0) return { grade: 'C', score: 50 };
-  const totalPoints = grades.reduce((sum, g) => sum + GRADE_POINTS[g], 0);
+  const totalPoints = grades.reduce((sum, g) => sum + (GRADE_POINTS[g] || 1), 0);
   const avg = totalPoints / grades.length;
   const score = Math.round((avg / 5) * 100);
 
@@ -161,9 +134,9 @@ export async function fetchUserRawGraphQL(
 ) {
   const key = `raw_graphql_${username.toLowerCase()}`;
   if (forceRefresh) {
-    clearUserCache(username);
+    globalApiCache.deletePrefix(username);
   } else {
-    const cached = getCached<any>(key);
+    const cached = globalApiCache.get(key);
     if (cached) return cached;
   }
 
@@ -261,7 +234,7 @@ export async function fetchUserRawGraphQL(
       if (!response?.user) {
         throw new Error(`GitHub user '${username}' not found.`);
       }
-      setCache(key, response.user);
+      globalApiCache.set(key, response.user);
       return response.user;
     } finally {
       inflightGraphQL.delete(key);
@@ -287,7 +260,7 @@ export async function fetchLifetimeCommits(
 
   const cacheKey = `lifetime_commits_${username.toLowerCase()}`;
   if (!forceRefresh) {
-    const cached = getCached<{ totalLifetimeCommits: number; restrictedLifetimeCommits: number }>(cacheKey);
+    const cached = globalApiCache.get<{ totalLifetimeCommits: number; restrictedLifetimeCommits: number }>(cacheKey);
     if (cached) return cached;
   }
 
@@ -328,7 +301,7 @@ export async function fetchLifetimeCommits(
       totalLifetimeCommits: total + restricted,
       restrictedLifetimeCommits: restricted,
     };
-    setCache(cacheKey, result);
+    globalApiCache.set(cacheKey, result);
     return result;
   } catch (err) {
     console.error('Failed to query lifetime commits aliases:', err);
@@ -336,40 +309,42 @@ export async function fetchLifetimeCommits(
   }
 }
 
-// ==========================================================
-// SEPARATE ORIGINAL-API ITEM FETCHERS (1 FETCHER PER ITEM)
-// ==========================================================
-
 /**
- * ITEM 1: Profile Header Data (PFP, Name, @nickname, Socials)
+ * Helper to fetch and base64-encode avatar image
  */
-export async function fetchProfileItem(
+export async function fetchAvatarBase64(
   username: string,
-  token?: string,
-  includeBase64Avatar = false,
+  avatarUrl: string,
   forceRefresh = false
-): Promise<ProfileItemData> {
-  const user = await fetchUserRawGraphQL(username, token, forceRefresh);
-
-  let avatarBase64: string | undefined;
-  if (includeBase64Avatar && user.avatarUrl) {
-    const avatarCacheKey = `avatar_b64_${username.toLowerCase()}`;
-    const cachedAvatar = !forceRefresh ? getCached<string>(avatarCacheKey) : null;
-    if (cachedAvatar) {
-      avatarBase64 = cachedAvatar;
-    } else {
-      try {
-        const res = await fetch(`${user.avatarUrl}&s=160`);
-        if (res.ok) {
-          const buf = await res.arrayBuffer();
-          const contentType = res.headers.get('content-type') || 'image/png';
-          avatarBase64 = `data:${contentType};base64,${Buffer.from(buf).toString('base64')}`;
-          setCache(avatarCacheKey, avatarBase64);
-        }
-      } catch (_) {}
-    }
+): Promise<string | undefined> {
+  if (!avatarUrl) return undefined;
+  const avatarCacheKey = `avatar_b64_${username.toLowerCase()}`;
+  if (!forceRefresh) {
+    const cached = globalApiCache.get<string>(avatarCacheKey);
+    if (cached) return cached;
   }
 
+  try {
+    const res = await fetch(`${avatarUrl}&s=160`);
+    if (res.ok) {
+      const buf = await res.arrayBuffer();
+      const contentType = res.headers.get('content-type') || 'image/png';
+      const b64 = `data:${contentType};base64,${Buffer.from(buf).toString('base64')}`;
+      globalApiCache.set(avatarCacheKey, b64);
+      return b64;
+    }
+  } catch (_) {}
+  return undefined;
+}
+
+// ==========================================================
+// PURE DATA EXTRACTORS FROM RAW GRAPHQL USER
+// ==========================================================
+
+export function extractProfileFromUser(
+  user: any,
+  avatarBase64?: string
+): ProfileItemData {
   return {
     item: 'profile',
     username: user.login,
@@ -389,26 +364,14 @@ export async function fetchProfileItem(
   };
 }
 
-/**
- * ITEM 2: Pinned Projects (Uses user's active GitHub pinned repositories; falls back to top repos only if none are pinned)
- */
-export async function fetchPinnedProjectsItem(
-  username: string,
-  token?: string,
-  forceRefresh = false
-): Promise<PinnedProjectsItemData> {
-  const user = await fetchUserRawGraphQL(username, token, forceRefresh);
+export function extractPinnedProjectsFromUser(user: any): PinnedProjectItem[] {
   const pinnedNodes: any[] = (user.pinnedItems?.nodes || []).filter(Boolean);
   const allRepoNodes: any[] = (user.repositories?.nodes || []).filter(Boolean);
 
-  // If user has pinned items on GitHub, use their actual pinned items (up to 6) without padding random repos!
-  // ONLY if the user has 0 pinned items on GitHub, fall back to their top public repositories.
   const projectsList =
-    pinnedNodes.length > 0
-      ? pinnedNodes.slice(0, 6)
-      : allRepoNodes.slice(0, 4);
+    pinnedNodes.length > 0 ? pinnedNodes.slice(0, 6) : allRepoNodes.slice(0, 4);
 
-  const projects: PinnedProjectItem[] = projectsList.map((r) => {
+  return projectsList.map((r) => {
     const langName = r.primaryLanguage?.name || null;
     const langColor =
       r.primaryLanguage?.color ||
@@ -425,106 +388,10 @@ export async function fetchPinnedProjectsItem(
       languageColor: langColor,
     };
   });
-
-  return {
-    item: 'pinned',
-    username: user.login,
-    projects,
-  };
 }
 
-export async function fetchSingleProjectItem(
-  username: string,
-  index = 0,
-  repoName?: string | null,
-  token?: string,
-  forceRefresh = false
-): Promise<PinnedProjectItem> {
-  const user = await fetchUserRawGraphQL(username, token, forceRefresh);
-  const pinnedNodes: any[] = (user.pinnedItems?.nodes || []).filter(Boolean);
-  const allRepoNodes: any[] = (user.repositories?.nodes || []).filter(Boolean);
-
-  if (repoName) {
-    const match =
-      pinnedNodes.find(
-        (r) => r?.name?.toLowerCase() === repoName.toLowerCase()
-      ) ||
-      allRepoNodes.find(
-        (r) => r?.name?.toLowerCase() === repoName.toLowerCase()
-      );
-    if (match) {
-      const langName = match.primaryLanguage?.name || null;
-      const langColor =
-        match.primaryLanguage?.color ||
-        (langName ? GITHUB_LANG_COLORS[langName] : null) ||
-        '#8b949e';
-      return {
-        name: match.name,
-        description: match.description ?? null,
-        url: match.url,
-        homepageUrl: match.homepageUrl || null,
-        stars: match.stargazerCount ?? 0,
-        forks: match.forkCount ?? 0,
-        language: langName,
-        languageColor: langColor,
-      };
-    }
-
-    // Direct fetch fallback if repoName is not in GraphQL top list
-    try {
-      const octokit = getOctokit(token);
-      const res = await octokit.rest.repos.get({
-        owner: username,
-        repo: repoName,
-      });
-      const langName = res.data.language || null;
-      return {
-        name: res.data.name,
-        description: res.data.description ?? null,
-        url: res.data.html_url,
-        homepageUrl: res.data.homepage || null,
-        stars: res.data.stargazers_count ?? 0,
-        forks: res.data.forks_count ?? 0,
-        language: langName,
-        languageColor:
-          (langName ? GITHUB_LANG_COLORS[langName] : null) || '#8b949e',
-      };
-    } catch (_) {}
-  }
-
-  const pinnedData = await fetchPinnedProjectsItem(username, token, forceRefresh);
-  return (
-    pinnedData.projects[index] || {
-      name: repoName || `Project ${index + 1}`,
-      description: 'Open-source repository on GitHub.',
-      url: `https://github.com/${username}`,
-      homepageUrl: null,
-      stars: 0,
-      forks: 0,
-      language: 'Code',
-      languageColor: '#8b949e',
-    }
-  );
-}
-
-
-/**
- * ITEM 3: Languages Breakdown (Directly from GitHub repo language edges)
- */
-export async function fetchLanguagesItem(
-  username: string,
-  token?: string,
-  forceRefresh = false
-): Promise<LanguagesItemData> {
-  const cacheKey = `item_languages_${username.toLowerCase()}`;
-  if (!forceRefresh) {
-    const cached = getCached<LanguagesItemData>(cacheKey);
-    if (cached) return cached;
-  }
-
-  const user = await fetchUserRawGraphQL(username, token, forceRefresh);
+export function extractLanguagesFromUser(user: any): LanguagesItemData {
   const repoNodes: any[] = user.repositories?.nodes || [];
-
   const languageBytes: Record<string, number> = {};
   const languageColors: Record<string, string> = {};
 
@@ -554,36 +421,27 @@ export async function fetchLanguagesItem(
     }))
     .sort((a, b) => b.bytes - a.bytes);
 
-  const data: LanguagesItemData = {
+  return {
     item: 'languages',
     username: user.login,
     languages: sortedLangs,
     totalBytes,
     totalLanguagesCount: sortedLangs.length,
   };
-
-  setCache(cacheKey, data);
-  return data;
 }
 
-/**
- * ITEM 4: Commits Count + Grade ('commits')
- */
-export async function fetchCommitsItem(
-  username: string,
-  token?: string,
-  forceRefresh = false
-): Promise<GradedMetricItemData> {
-  const user = await fetchUserRawGraphQL(username, token, forceRefresh);
+export function extractCommitsFromUser(
+  user: any,
+  lifetime?: { totalLifetimeCommits: number; restrictedLifetimeCommits: number }
+): GradedMetricItemData {
   const cc = user.contributionsCollection;
-  const years: number[] = cc?.contributionYears || [];
-
   const pastYearCommits =
     (cc?.totalCommitContributions || 0) +
     (cc?.restrictedContributionsCount || 0);
 
-  const lifetime = await fetchLifetimeCommits(username, years, token, forceRefresh);
-  const value = Math.max(pastYearCommits, lifetime.totalLifetimeCommits);
+  const value = lifetime
+    ? Math.max(pastYearCommits, lifetime.totalLifetimeCommits)
+    : pastYearCommits;
 
   return {
     item: 'commits',
@@ -594,18 +452,8 @@ export async function fetchCommitsItem(
   };
 }
 
-/**
- * ITEM 5: Pull Requests Count + Grade ('PR')
- */
-export async function fetchPRsItem(
-  username: string,
-  token?: string,
-  forceRefresh = false
-): Promise<GradedMetricItemData> {
-  const user = await fetchUserRawGraphQL(username, token, forceRefresh);
-  const value =
-    user.contributionsCollection?.totalPullRequestContributions || 0;
-
+export function extractPRsFromUser(user: any): GradedMetricItemData {
+  const value = user.contributionsCollection?.totalPullRequestContributions || 0;
   return {
     item: 'prs',
     username: user.login,
@@ -615,17 +463,8 @@ export async function fetchPRsItem(
   };
 }
 
-/**
- * ITEM 6: Issues Count + Grade ('issues')
- */
-export async function fetchIssuesItem(
-  username: string,
-  token?: string,
-  forceRefresh = false
-): Promise<GradedMetricItemData> {
-  const user = await fetchUserRawGraphQL(username, token, forceRefresh);
+export function extractIssuesFromUser(user: any): GradedMetricItemData {
   const value = user.contributionsCollection?.totalIssueContributions || 0;
-
   return {
     item: 'issues',
     username: user.login,
@@ -635,21 +474,12 @@ export async function fetchIssuesItem(
   };
 }
 
-/**
- * ITEM 7: Stars Earned + Grade ('stars earned')
- */
-export async function fetchStarsItem(
-  username: string,
-  token?: string,
-  forceRefresh = false
-): Promise<GradedMetricItemData> {
-  const user = await fetchUserRawGraphQL(username, token, forceRefresh);
+export function extractStarsFromUser(user: any): GradedMetricItemData {
   const repos = user.repositories?.nodes || [];
   const value = repos.reduce(
     (acc: number, r: any) => acc + (r.stargazerCount || 0),
     0
   );
-
   return {
     item: 'stars',
     username: user.login,
@@ -659,17 +489,8 @@ export async function fetchStarsItem(
   };
 }
 
-/**
- * ITEM 8: Repositories Count + Grade ('Repos')
- */
-export async function fetchReposItem(
-  username: string,
-  token?: string,
-  forceRefresh = false
-): Promise<GradedMetricItemData> {
-  const user = await fetchUserRawGraphQL(username, token, forceRefresh);
+export function extractReposFromUser(user: any): GradedMetricItemData {
   const value = user.repositories?.totalCount ?? 0;
-
   return {
     item: 'repos',
     username: user.login,
@@ -679,17 +500,10 @@ export async function fetchReposItem(
   };
 }
 
-/**
- * ITEM 9: Polyglot (Languages Count) + Grade ('Polyglot')
- */
-export async function fetchPolyglotItem(
-  username: string,
-  token?: string,
-  forceRefresh = false
-): Promise<GradedMetricItemData> {
-  const langsData = await fetchLanguagesItem(username, token, forceRefresh);
+export function extractPolyglotFromLanguages(
+  langsData: LanguagesItemData
+): GradedMetricItemData {
   const value = langsData.totalLanguagesCount;
-
   return {
     item: 'polyglot',
     username: langsData.username,
@@ -700,45 +514,8 @@ export async function fetchPolyglotItem(
 }
 
 /**
- * ITEM 10: Overall Grade ('overall')
- */
-export async function fetchOverallItem(
-  username: string,
-  token?: string,
-  forceRefresh = false
-): Promise<OverallItemData> {
-  const [commits, prs, issues, stars, repos, polyglot] = await Promise.all([
-    fetchCommitsItem(username, token, forceRefresh),
-    fetchPRsItem(username, token, forceRefresh),
-    fetchIssuesItem(username, token, forceRefresh),
-    fetchStarsItem(username, token, forceRefresh),
-    fetchReposItem(username, token, forceRefresh),
-    fetchPolyglotItem(username, token, forceRefresh),
-  ]);
-
-  const breakdown = {
-    commits: commits.grade,
-    prs: prs.grade,
-    issues: issues.grade,
-    stars: stars.grade,
-    repos: repos.grade,
-    polyglot: polyglot.grade,
-  };
-
-  const { grade, score } = computeOverallGrade(Object.values(breakdown));
-
-  return {
-    item: 'overall',
-    username: commits.username,
-    label: 'overall',
-    grade,
-    score,
-    breakdown,
-  };
-}
-
-/**
- * Helper: Calculate streak metrics from contribution calendar
+ * Robust Streak calculation from calendar days.
+ * Correctly accounts for future placeholder days that GitHub appends to finish the current week.
  */
 export function calculateStreakStats(days: CalendarDay[]): UserStreakStats {
   if (!days || days.length === 0) {
@@ -756,16 +533,19 @@ export function calculateStreakStats(days: CalendarDay[]): UserStreakStats {
   let longestStreakStart: string | null = null;
   let longestStreakEnd: string | null = null;
 
-  let currentStreak = 0;
-  let currentStreakStart: string | null = null;
-  let currentStreakEnd: string | null = null;
-
   let tempStreak = 0;
   let tempStreakStart: string | null = null;
 
+  // Calculate longest streak and active days across all calendar days
+  let activeDays = 0;
+  let totalContributions = 0;
+
   for (let i = 0; i < days.length; i++) {
     const day = days[i];
-    if (day.contributionCount > 0) {
+    const count = day.contributionCount || 0;
+    if (count > 0) {
+      activeDays++;
+      totalContributions += count;
       if (tempStreak === 0) {
         tempStreakStart = day.date;
       }
@@ -780,15 +560,38 @@ export function calculateStreakStats(days: CalendarDay[]): UserStreakStats {
     }
   }
 
-  const lastIndex = days.length - 1;
-  const today = days[lastIndex];
-  const yesterday = days.length > 1 ? days[lastIndex - 1] : null;
+  // Find the current active streak.
+  // GitHub returns calendar weeks up to Saturday. Find the most recent day <= today.
+  const now = new Date();
+  const todayUtc = now.toISOString().slice(0, 10);
+  const nowYear = now.getFullYear();
+  const nowMonth = String(now.getMonth() + 1).padStart(2, '0');
+  const nowDay = String(now.getDate()).padStart(2, '0');
+  const todayLocal = `${nowYear}-${nowMonth}-${nowDay}`;
+
+  let todayIdx = -1;
+  for (let i = days.length - 1; i >= 0; i--) {
+    if (days[i].date <= todayUtc || days[i].date <= todayLocal) {
+      todayIdx = i;
+      break;
+    }
+  }
+  if (todayIdx === -1) {
+    todayIdx = days.length - 1;
+  }
+
+  const todayDay = days[todayIdx];
+  const yesterdayDay = todayIdx > 0 ? days[todayIdx - 1] : null;
+
+  let currentStreak = 0;
+  let currentStreakStart: string | null = null;
+  let currentStreakEnd: string | null = null;
 
   let startIndex = -1;
-  if (today && today.contributionCount > 0) {
-    startIndex = lastIndex;
-  } else if (yesterday && yesterday.contributionCount > 0) {
-    startIndex = lastIndex - 1;
+  if (todayDay && todayDay.contributionCount > 0) {
+    startIndex = todayIdx;
+  } else if (yesterdayDay && yesterdayDay.contributionCount > 0) {
+    startIndex = todayIdx - 1;
   }
 
   if (startIndex !== -1) {
@@ -803,15 +606,12 @@ export function calculateStreakStats(days: CalendarDay[]): UserStreakStats {
     }
   }
 
-  const activeDays = days.filter((d) => d.contributionCount > 0).length;
-  const totalContributions = days.reduce((sum, d) => sum + d.contributionCount, 0);
-
   return {
     currentStreak: {
       days: currentStreak,
       startDate: currentStreakStart,
       endDate: currentStreakEnd,
-      isActiveToday: today ? today.contributionCount > 0 : false,
+      isActiveToday: todayDay ? todayDay.contributionCount > 0 : false,
     },
     longestStreak: {
       days: longestStreak,
@@ -821,22 +621,244 @@ export function calculateStreakStats(days: CalendarDay[]): UserStreakStats {
     totalActiveDays: activeDays,
     totalContributionsPastYear: totalContributions,
     completionRate: days.length > 0 ? Math.round((activeDays / days.length) * 100) : 0,
-    todayContributions: today?.contributionCount || 0,
+    todayContributions: todayDay?.contributionCount || 0,
   };
 }
 
-/**
- * ITEM 11: Current Streak ('streak')
- */
+export function extractStreakStatsFromCalendar(calendar: any): UserStreakStats {
+  const weeks = calendar?.weeks || [];
+  const days: CalendarDay[] = weeks.flatMap((w: any) => w.contributionDays || []);
+  return calculateStreakStats(days);
+}
+
+export function extractContributionsFromCalendar(
+  calendar: any,
+  username: string
+): ContributionsItemData {
+  const totalCommits = calendar?.totalContributions ?? 0;
+  const weeks = calendar?.weeks ?? [];
+  return {
+    item: 'contributions',
+    username,
+    label: 'contributions last year',
+    totalCommits,
+    rightLabel: `${totalCommits} contributions`,
+    weeks,
+  };
+}
+
+// ==========================================================
+// SEPARATE ITEM FETCHERS (For direct item endpoints)
+// ==========================================================
+
+export async function fetchProfileItem(
+  username: string,
+  token?: string,
+  includeBase64Avatar = false,
+  forceRefresh = false
+): Promise<ProfileItemData> {
+  const user = await fetchUserRawGraphQL(username, token, forceRefresh);
+  const avatarBase64 = includeBase64Avatar
+    ? await fetchAvatarBase64(username, user.avatarUrl, forceRefresh)
+    : undefined;
+  return extractProfileFromUser(user, avatarBase64);
+}
+
+export async function fetchPinnedProjectsItem(
+  username: string,
+  token?: string,
+  forceRefresh = false
+): Promise<PinnedProjectsItemData> {
+  const user = await fetchUserRawGraphQL(username, token, forceRefresh);
+  return {
+    item: 'pinned',
+    username: user.login,
+    projects: extractPinnedProjectsFromUser(user),
+  };
+}
+
+export async function fetchSingleProjectItem(
+  username: string,
+  index = 0,
+  repoName?: string | null,
+  token?: string,
+  forceRefresh = false
+): Promise<PinnedProjectItem> {
+  const user = await fetchUserRawGraphQL(username, token, forceRefresh);
+  const pinnedNodes: any[] = (user.pinnedItems?.nodes || []).filter(Boolean);
+  const allRepoNodes: any[] = (user.repositories?.nodes || []).filter(Boolean);
+
+  if (repoName) {
+    const targetName = repoName.toLowerCase();
+    const match =
+      pinnedNodes.find((r) => r?.name?.toLowerCase() === targetName) ||
+      allRepoNodes.find((r) => r?.name?.toLowerCase() === targetName);
+
+    if (match) {
+      const langName = match.primaryLanguage?.name || null;
+      const langColor =
+        match.primaryLanguage?.color ||
+        (langName ? GITHUB_LANG_COLORS[langName] : null) ||
+        '#8b949e';
+      return {
+        name: match.name,
+        description: match.description ?? null,
+        url: match.url,
+        homepageUrl: match.homepageUrl || null,
+        stars: match.stargazerCount ?? 0,
+        forks: match.forkCount ?? 0,
+        language: langName,
+        languageColor: langColor,
+      };
+    }
+
+    try {
+      const octokit = getOctokit(token);
+      const res = await octokit.rest.repos.get({
+        owner: username,
+        repo: repoName,
+      });
+      const langName = res.data.language || null;
+      return {
+        name: res.data.name,
+        description: res.data.description ?? null,
+        url: res.data.html_url,
+        homepageUrl: res.data.homepage || null,
+        stars: res.data.stargazers_count ?? 0,
+        forks: res.data.forks_count ?? 0,
+        language: langName,
+        languageColor:
+          (langName ? GITHUB_LANG_COLORS[langName] : null) || '#8b949e',
+      };
+    } catch (_) {}
+  }
+
+  const pinned = extractPinnedProjectsFromUser(user);
+  return (
+    pinned[index] || {
+      name: repoName || `Project ${index + 1}`,
+      description: 'Open-source repository on GitHub.',
+      url: `https://github.com/${username}`,
+      homepageUrl: null,
+      stars: 0,
+      forks: 0,
+      language: 'Code',
+      languageColor: '#8b949e',
+    }
+  );
+}
+
+export async function fetchLanguagesItem(
+  username: string,
+  token?: string,
+  forceRefresh = false
+): Promise<LanguagesItemData> {
+  const user = await fetchUserRawGraphQL(username, token, forceRefresh);
+  return extractLanguagesFromUser(user);
+}
+
+export async function fetchCommitsItem(
+  username: string,
+  token?: string,
+  forceRefresh = false
+): Promise<GradedMetricItemData> {
+  const user = await fetchUserRawGraphQL(username, token, forceRefresh);
+  const years: number[] = user.contributionsCollection?.contributionYears || [];
+  const lifetime = await fetchLifetimeCommits(username, years, token, forceRefresh);
+  return extractCommitsFromUser(user, lifetime);
+}
+
+export async function fetchPRsItem(
+  username: string,
+  token?: string,
+  forceRefresh = false
+): Promise<GradedMetricItemData> {
+  const user = await fetchUserRawGraphQL(username, token, forceRefresh);
+  return extractPRsFromUser(user);
+}
+
+export async function fetchIssuesItem(
+  username: string,
+  token?: string,
+  forceRefresh = false
+): Promise<GradedMetricItemData> {
+  const user = await fetchUserRawGraphQL(username, token, forceRefresh);
+  return extractIssuesFromUser(user);
+}
+
+export async function fetchStarsItem(
+  username: string,
+  token?: string,
+  forceRefresh = false
+): Promise<GradedMetricItemData> {
+  const user = await fetchUserRawGraphQL(username, token, forceRefresh);
+  return extractStarsFromUser(user);
+}
+
+export async function fetchReposItem(
+  username: string,
+  token?: string,
+  forceRefresh = false
+): Promise<GradedMetricItemData> {
+  const user = await fetchUserRawGraphQL(username, token, forceRefresh);
+  return extractReposFromUser(user);
+}
+
+export async function fetchPolyglotItem(
+  username: string,
+  token?: string,
+  forceRefresh = false
+): Promise<GradedMetricItemData> {
+  const user = await fetchUserRawGraphQL(username, token, forceRefresh);
+  const langsData = extractLanguagesFromUser(user);
+  return extractPolyglotFromLanguages(langsData);
+}
+
+export async function fetchOverallItem(
+  username: string,
+  token?: string,
+  forceRefresh = false
+): Promise<OverallItemData> {
+  const user = await fetchUserRawGraphQL(username, token, forceRefresh);
+  const years: number[] = user.contributionsCollection?.contributionYears || [];
+  const lifetime = await fetchLifetimeCommits(username, years, token, forceRefresh);
+
+  const commits = extractCommitsFromUser(user, lifetime);
+  const prs = extractPRsFromUser(user);
+  const issues = extractIssuesFromUser(user);
+  const stars = extractStarsFromUser(user);
+  const repos = extractReposFromUser(user);
+  const langsData = extractLanguagesFromUser(user);
+  const polyglot = extractPolyglotFromLanguages(langsData);
+
+  const breakdown = {
+    commits: commits.grade,
+    prs: prs.grade,
+    issues: issues.grade,
+    stars: stars.grade,
+    repos: repos.grade,
+    polyglot: polyglot.grade,
+  };
+
+  const { grade, score } = computeOverallGrade(Object.values(breakdown));
+
+  return {
+    item: 'overall',
+    username: user.login,
+    label: 'overall',
+    grade,
+    score,
+    breakdown,
+  };
+}
+
 export async function fetchStreakItem(
   username: string,
   token?: string,
   forceRefresh = false
 ): Promise<StreakMetricItemData> {
   const user = await fetchUserRawGraphQL(username, token, forceRefresh);
-  const weeks = user.contributionsCollection?.contributionCalendar?.weeks || [];
-  const days: CalendarDay[] = weeks.flatMap((w: any) => w.contributionDays);
-  const stats = calculateStreakStats(days);
+  const stats = extractStreakStatsFromCalendar(user.contributionsCollection?.contributionCalendar);
 
   return {
     item: 'streak',
@@ -851,18 +873,13 @@ export async function fetchStreakItem(
   };
 }
 
-/**
- * ITEM 12: Longest Streak ('longest streak')
- */
 export async function fetchLongestStreakItem(
   username: string,
   token?: string,
   forceRefresh = false
 ): Promise<StreakMetricItemData> {
   const user = await fetchUserRawGraphQL(username, token, forceRefresh);
-  const weeks = user.contributionsCollection?.contributionCalendar?.weeks || [];
-  const days: CalendarDay[] = weeks.flatMap((w: any) => w.contributionDays);
-  const stats = calculateStreakStats(days);
+  const stats = extractStreakStatsFromCalendar(user.contributionsCollection?.contributionCalendar);
 
   return {
     item: 'longest-streak',
@@ -876,18 +893,13 @@ export async function fetchLongestStreakItem(
   };
 }
 
-/**
- * ITEM 13: Active Days This Year ('active days this year')
- */
 export async function fetchActiveDaysItem(
   username: string,
   token?: string,
   forceRefresh = false
 ): Promise<StreakMetricItemData> {
   const user = await fetchUserRawGraphQL(username, token, forceRefresh);
-  const weeks = user.contributionsCollection?.contributionCalendar?.weeks || [];
-  const days: CalendarDay[] = weeks.flatMap((w: any) => w.contributionDays);
-  const stats = calculateStreakStats(days);
+  const stats = extractStreakStatsFromCalendar(user.contributionsCollection?.contributionCalendar);
 
   return {
     item: 'active-days',
@@ -899,27 +911,13 @@ export async function fetchActiveDaysItem(
   };
 }
 
-/**
- * ITEM 14: Contributions Last Year ('contributions last year')
- */
 export async function fetchContributionsItem(
   username: string,
   token?: string,
   forceRefresh = false
 ): Promise<ContributionsItemData> {
   const user = await fetchUserRawGraphQL(username, token, forceRefresh);
-  const calendar = user.contributionsCollection?.contributionCalendar;
-  const totalCommits = calendar?.totalContributions ?? 0;
-  const weeks = calendar?.weeks ?? [];
-
-  return {
-    item: 'contributions',
-    username: user.login,
-    label: 'contributions last year',
-    totalCommits,
-    rightLabel: `${totalCommits} contributions`,
-    weeks,
-  };
+  return extractContributionsFromCalendar(user.contributionsCollection?.contributionCalendar, user.login);
 }
 
 // ==========================================================
@@ -984,9 +982,7 @@ export async function fetchUserStreakStats(
   forceRefresh = false
 ): Promise<UserStreakStats> {
   const user = await fetchUserRawGraphQL(username, token, forceRefresh);
-  const weeks = user.contributionsCollection?.contributionCalendar?.weeks || [];
-  const days: CalendarDay[] = weeks.flatMap((w: any) => w.contributionDays);
-  return calculateStreakStats(days);
+  return extractStreakStatsFromCalendar(user.contributionsCollection?.contributionCalendar);
 }
 
 export async function fetchUserCommitStats(
@@ -1006,7 +1002,7 @@ export async function fetchUserCommitStats(
   const totalLifetime = Math.max(pastYearCommits, lifetime.totalLifetimeCommits);
 
   const weeks = cc?.contributionCalendar?.weeks || [];
-  const days: CalendarDay[] = weeks.flatMap((w: any) => w.contributionDays);
+  const days: CalendarDay[] = weeks.flatMap((w: any) => w.contributionDays || []);
 
   const dayCounts: Record<number, number> = { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 };
   const monthCounts: Record<string, number> = {};
@@ -1060,8 +1056,8 @@ export async function fetchUserLanguageStats(
   token?: string,
   forceRefresh = false
 ): Promise<UserLanguageStats> {
-  const data = await fetchLanguagesItem(username, token, forceRefresh);
   const user = await fetchUserRawGraphQL(username, token, forceRefresh);
+  const data = extractLanguagesFromUser(user);
   const repoNodes = user.repositories?.nodes || [];
   const repoCounts: Record<string, number> = {};
   for (const r of repoNodes) {
@@ -1085,7 +1081,7 @@ export async function fetchUserActivityStats(
   const user = await fetchUserRawGraphQL(username, token, forceRefresh);
   const cc = user.contributionsCollection;
   const weeks = cc?.contributionCalendar?.weeks || [];
-  const days: CalendarDay[] = weeks.flatMap((w: any) => w.contributionDays);
+  const days: CalendarDay[] = weeks.flatMap((w: any) => w.contributionDays || []);
 
   let weekendCount = 0;
   let weekdayCount = 0;
@@ -1161,6 +1157,11 @@ export async function fetchAllGitHubStats(
   };
 }
 
+/**
+ * HIGH-PERFORMANCE UNIFIED FULL CANVAS FETCHER
+ * Executes exactly ONE GraphQL query to fetch all core metrics and evaluates them
+ * in-memory synchronously. Eliminates 13 redundant asynchronous calls.
+ */
 export async function fetchFullCanvasData(
   username: string,
   options?: {
@@ -1178,48 +1179,90 @@ export async function fetchFullCanvasData(
     .filter((r) => r.length > 0)
     .slice(0, 6);
 
-  const projectsPromise: Promise<PinnedProjectItem[]> =
+  // 1. Fetch raw GraphQL user (or from in-flight/cache)
+  const user = await fetchUserRawGraphQL(username, token, forceRefresh);
+
+  // 2. Concurrently fetch lifetime commits, avatar base64, and any custom named repos
+  const years: number[] = user.contributionsCollection?.contributionYears || [];
+  const [lifetime, avatarBase64, customProjects] = await Promise.all([
+    fetchLifetimeCommits(username, years, token, forceRefresh),
+    fetchAvatarBase64(username, user.avatarUrl, forceRefresh),
     customRepos.length > 0
       ? Promise.all(
           customRepos.map((repoName, idx) =>
             fetchSingleProjectItem(username, idx, repoName, token, forceRefresh)
           )
         )
-      : fetchPinnedProjectsItem(username, token, forceRefresh).then((res) =>
-          res.projects.slice(0, options?.projectCount ?? 6)
-        );
-
-  const [
-    profile,
-    projects,
-    languages,
-    commits,
-    prs,
-    issues,
-    stars,
-    repos,
-    polyglot,
-    overall,
-    streak,
-    longestStreak,
-    activeDays,
-    contributions,
-  ] = await Promise.all([
-    fetchProfileItem(username, token, true, forceRefresh),
-    projectsPromise,
-    fetchLanguagesItem(username, token, forceRefresh),
-    fetchCommitsItem(username, token, forceRefresh),
-    fetchPRsItem(username, token, forceRefresh),
-    fetchIssuesItem(username, token, forceRefresh),
-    fetchStarsItem(username, token, forceRefresh),
-    fetchReposItem(username, token, forceRefresh),
-    fetchPolyglotItem(username, token, forceRefresh),
-    fetchOverallItem(username, token, forceRefresh),
-    fetchStreakItem(username, token, forceRefresh),
-    fetchLongestStreakItem(username, token, forceRefresh),
-    fetchActiveDaysItem(username, token, forceRefresh),
-    fetchContributionsItem(username, token, forceRefresh),
+      : Promise.resolve(null),
   ]);
+
+  // 3. Synchronously extract all metrics in memory
+  const profile = extractProfileFromUser(user, avatarBase64);
+  const projects =
+    customProjects ||
+    extractPinnedProjectsFromUser(user).slice(0, options?.projectCount ?? 6);
+  const languages = extractLanguagesFromUser(user);
+  const commits = extractCommitsFromUser(user, lifetime);
+  const prs = extractPRsFromUser(user);
+  const issues = extractIssuesFromUser(user);
+  const stars = extractStarsFromUser(user);
+  const repos = extractReposFromUser(user);
+  const polyglot = extractPolyglotFromLanguages(languages);
+
+  const breakdown = {
+    commits: commits.grade,
+    prs: prs.grade,
+    issues: issues.grade,
+    stars: stars.grade,
+    repos: repos.grade,
+    polyglot: polyglot.grade,
+  };
+  const { grade, score } = computeOverallGrade(Object.values(breakdown));
+  const overall: OverallItemData = {
+    item: 'overall',
+    username: user.login,
+    label: 'overall',
+    grade,
+    score,
+    breakdown,
+  };
+
+  const streakStats = extractStreakStatsFromCalendar(
+    user.contributionsCollection?.contributionCalendar
+  );
+  const streak: StreakMetricItemData = {
+    item: 'streak',
+    username: user.login,
+    label: 'streak',
+    value: streakStats.currentStreak.days,
+    unit: 'days',
+    formatted: `${streakStats.currentStreak.days} days`,
+    startDate: streakStats.currentStreak.startDate,
+    endDate: streakStats.currentStreak.endDate,
+    isActiveToday: streakStats.currentStreak.isActiveToday,
+  };
+  const longestStreak: StreakMetricItemData = {
+    item: 'longest-streak',
+    username: user.login,
+    label: 'longest streak',
+    value: streakStats.longestStreak.days,
+    unit: 'days',
+    formatted: `${streakStats.longestStreak.days}`,
+    startDate: streakStats.longestStreak.startDate,
+    endDate: streakStats.longestStreak.endDate,
+  };
+  const activeDays: StreakMetricItemData = {
+    item: 'active-days',
+    username: user.login,
+    label: 'active days this year',
+    value: streakStats.totalActiveDays,
+    unit: 'days',
+    formatted: `${streakStats.totalActiveDays} days`,
+  };
+  const contributions = extractContributionsFromCalendar(
+    user.contributionsCollection?.contributionCalendar,
+    user.login
+  );
 
   const effectiveProfile: ProfileItemData = options?.customName?.trim()
     ? { ...profile, name: options.customName.trim() }

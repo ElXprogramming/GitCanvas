@@ -12,17 +12,21 @@ import {
 import { getDesignTheme } from './themes';
 import { getDesignFont, getSvgFontImport } from './fonts';
 
-function escapeXml(unsafe: string | null | undefined): string {
+const XML_ESCAPE_MAP: Record<string, string> = {
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;',
+  '"': '&quot;',
+  "'": '&apos;',
+};
+const XML_ESCAPE_REGEX = /[&<>"']/g;
+
+export function escapeXml(unsafe: string | null | undefined): string {
   if (!unsafe) return '';
-  return unsafe
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&apos;');
+  return unsafe.replace(XML_ESCAPE_REGEX, (m) => XML_ESCAPE_MAP[m] || m);
 }
 
-function formatCompactNumber(num: number): string {
+export function formatCompactNumber(num: number): string {
   if (num >= 1_000_000) {
     return (num / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'M';
   }
@@ -32,12 +36,12 @@ function formatCompactNumber(num: number): string {
   return num.toString();
 }
 
-function truncateText(text: string, maxLength: number): string {
+export function truncateText(text: string, maxLength: number): string {
   if (text.length <= maxLength) return text;
   return text.slice(0, maxLength - 1).trimEnd() + '…';
 }
 
-function wrapTextTwoLines(
+export function wrapTextTwoLines(
   rawText: string,
   maxLine1 = 34,
   maxLine2 = 34
@@ -453,10 +457,15 @@ export function designContributionsBox(
     numWeeks > 1 ? (targetGridWidth - cellSize) / (numWeeks - 1) : 14.2;
   const stepY = 14.2;
 
+  // Precompute y offsets for each day of the week (0..6)
+  const yOffsets = Array.from({ length: 7 }, (_, dIdx) => (gridStartY + dIdx * stepY).toFixed(1));
+
   const cells: string[] = [];
 
   weeks.forEach((week, wIdx) => {
     const days = week.contributionDays || [];
+    const x = (gridStartX + wIdx * stepX).toFixed(1);
+
     days.forEach((day, dIdx) => {
       const count = day.contributionCount || 0;
       let level = 0;
@@ -466,8 +475,7 @@ export function designContributionsBox(
       else if (count >= 1) level = 1;
 
       const color = theme.heatmapLevels[level];
-      const x = (gridStartX + wIdx * stepX).toFixed(1);
-      const y = (gridStartY + dIdx * stepY).toFixed(1);
+      const y = yOffsets[dIdx] || (gridStartY + dIdx * stepY).toFixed(1);
 
       cells.push(
         `<rect x="${x}" y="${y}" width="${cellSize}" height="${cellSize}" rx="2.5" fill="${color}" />`
@@ -502,6 +510,11 @@ export function designContributionsBox(
 // ==========================================================
 // 9. FULL COMPOSITE PROFILE CANVAS CARD (Single-Line API)
 // ==========================================================
+
+/**
+ * Embeds a sub-SVG within a master composite SVG.
+ * Deduplicates nested Google Fonts @import rules and standardizes dimensions.
+ */
 function embedSubSvg(
   svgMarkup: string,
   x: number,
@@ -519,7 +532,11 @@ function embedSubSvg(
   const targetH = height ?? origH;
   const viewBox = viewBoxMatch ? viewBoxMatch[1] : `0 0 ${origW} ${origH}`;
 
-  return svgMarkup.replace(
+  // Strip redundant Google Font @import statements in nested sub-SVGs
+  // (the master SVG top-level <defs> already imports the font for the whole canvas)
+  const cleanedSvg = svgMarkup.replace(/@import\s+url\([^)]+\);?/g, '');
+
+  return cleanedSvg.replace(
     /^<svg[^>]*>/,
     `<svg x="${x}" y="${y}" width="${targetW}" height="${targetH}" viewBox="${viewBox}" fill="none">`
   );
@@ -862,5 +879,3 @@ export function designFullCanvasCard(
   ${elements.join('\n\n  ')}
 </svg>`;
 }
-
-

@@ -188,13 +188,13 @@ export default function GitCanvasPage() {
   };
 
   // Copy Markdown
-  const handleCopyMarkdown = () => {
+  const handleCopyMarkdown = useCallback(() => {
     navigator.clipboard.writeText(generatedMarkdown);
     showToast('success', 'Copied to Clipboard!', 'Markdown is ready to paste.');
-  };
+  }, [generatedMarkdown, showToast]);
 
   // Toggle Badge in Tech Stack
-  const handleToggleBadge = (badge: TechBadgeItem) => {
+  const handleToggleBadge = useCallback((badge: TechBadgeItem) => {
     setBlocks((prev) =>
       prev.map((block) => {
         if (block.id === 'tech_stack') {
@@ -215,31 +215,34 @@ export default function GitCanvasPage() {
         return block;
       })
     );
-  };
+  }, []);
 
   // Add Custom Badge
-  const handleAddCustomBadge = (badge: TechBadgeItem) => {
-    setBlocks((prev) =>
-      prev.map((block) => {
-        if (block.id === 'tech_stack') {
-          const current: TechBadgeItem[] = block.settings.selectedBadges || [];
-          return {
-            ...block,
-            settings: {
-              ...block.settings,
-              showCategoryHeaders: true,
-              selectedBadges: [...current, badge],
-            },
-          };
-        }
-        return block;
-      })
-    );
-    showToast('info', 'Badge Added', `Added ${badge.name} to tech stack.`);
-  };
+  const handleAddCustomBadge = useCallback(
+    (badge: TechBadgeItem) => {
+      setBlocks((prev) =>
+        prev.map((block) => {
+          if (block.id === 'tech_stack') {
+            const current: TechBadgeItem[] = block.settings.selectedBadges || [];
+            return {
+              ...block,
+              settings: {
+                ...block.settings,
+                showCategoryHeaders: true,
+                selectedBadges: [...current, badge],
+              },
+            };
+          }
+          return block;
+        })
+      );
+      showToast('info', 'Badge Added', `Added ${badge.name} to tech stack.`);
+    },
+    [showToast]
+  );
 
   // Reset to default presets
-  const handleResetDefaults = () => {
+  const handleResetDefaults = useCallback(() => {
     if (profile) {
       const resetBlocks = createDefaultBlocks(
         profile,
@@ -251,7 +254,7 @@ export default function GitCanvasPage() {
       setBlocks(resetBlocks);
       showToast('info', 'Reset Sections', 'Restored default block configurations.');
     }
-  };
+  }, [profile, archetype, languages, repositories, pinnedProjects, showToast]);
 
   const techStackBlock = blocks.find((b) => b.id === 'tech_stack');
   const selectedBadges = techStackBlock?.settings?.selectedBadges || [];

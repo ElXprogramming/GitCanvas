@@ -75,7 +75,10 @@ const githubSanitizeSchema = {
   ],
 };
 
-export default function GitHubSimulator({
+const remarkPlugins = [remarkGfm];
+const rehypePlugins: any = [rehypeRaw, [rehypeSanitize, githubSanitizeSchema]];
+
+function GitHubSimulatorComponent({
   markdown,
   username,
   onCopyMarkdown,
@@ -188,8 +191,8 @@ export default function GitHubSimulator({
         {viewMode === 'preview' ? (
           <div className="github-readme-body max-w-4xl mx-auto">
             <ReactMarkdown
-              remarkPlugins={[remarkGfm]}
-              rehypePlugins={[rehypeRaw, [rehypeSanitize, githubSanitizeSchema]]}
+              remarkPlugins={remarkPlugins}
+              rehypePlugins={rehypePlugins}
             >
               {markdown}
             </ReactMarkdown>
@@ -223,3 +226,6 @@ export default function GitHubSimulator({
     </div>
   );
 }
+
+const GitHubSimulator = React.memo(GitHubSimulatorComponent);
+export default GitHubSimulator;

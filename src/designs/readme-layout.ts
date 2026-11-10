@@ -64,8 +64,11 @@ export function buildCanvasCardUrl(
   const projectsBlockCfg = blocks.find((b) => b.id === 'pinned_projects');
   const projectsSettings = projectsBlockCfg?.settings as PinnedProjectsSettings | undefined;
 
-  const effectiveTheme = statsSettings?.cardTheme || cardTheme || 'default';
-  const effectiveFont = statsSettings?.cardFont || cardFont;
+  const effectiveTheme =
+    cardTheme && cardTheme !== 'default'
+      ? cardTheme
+      : statsSettings?.cardTheme || 'default';
+  const effectiveFont = cardFont || statsSettings?.cardFont;
 
   const hasBlocks = blocks.length > 0;
   const isEnabled = (id: string, defaultVal = true) => {

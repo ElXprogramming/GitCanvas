@@ -5,15 +5,20 @@ import {
   fetchUserLanguages,
   analyzeArchetype,
 } from '@/lib/github';
-import { fetchPinnedProjectsItem, clearUserCache } from '@/lib/github-stats';
+import {
+  fetchUserRawGraphQL,
+  fetchPinnedProjectsItem,
+  extractProfileFromUser,
+  extractPinnedProjectsFromUser,
+  extractLanguagesFromUser,
+  clearUserCache,
+} from '@/lib/github-stats';
+import { globalApiCache } from '@/lib/cache';
+import { GitHubUserProfile, Repository } from '@/types';
 
 // Force dynamic server route
 export const dynamic = 'force-dynamic';
 export const fetchCache = 'force-no-store';
-
-// In-memory cache for GitHub API responses (60s TTL)
-const cache = new Map<string, { data: any; expiry: number }>();
-const CACHE_TTL_MS = 60 * 1000;
 
 export async function GET(req: NextRequest) {
   try {
@@ -30,15 +35,15 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const cacheKey = username.toLowerCase();
+    const cacheKey = `profile_composite_${username.toLowerCase()}`;
     if (!forceRefresh) {
-      const cached = cache.get(cacheKey);
-      if (cached && cached.expiry > Date.now()) {
-        return NextResponse.json({ ...cached.data, cached: true });
+      const cached = globalApiCache.get(cacheKey);
+      if (cached) {
+        return NextResponse.json({ ...cached, cached: true });
       }
     } else {
-      cache.delete(cacheKey);
       clearUserCache(username);
+      globalApiCache.delete(cacheKey);
     }
 
     // Check for user-provided authorization or server environment token
@@ -47,31 +52,79 @@ export async function GET(req: NextRequest) {
       ? authHeader.slice(7)
       : undefined;
 
-    // Fetch user profile, repos, and actual pinned projects in parallel
-    const [profile, repos, pinnedData] = await Promise.all([
-      fetchUserProfile(username, userToken),
-      fetchUserRepos(username, userToken),
-      fetchPinnedProjectsItem(username, userToken, forceRefresh),
-    ]);
+    let result;
 
-    // Fetch language breakdown
-    const languages = await fetchUserLanguages(username, repos, userToken);
+    // Fast path: Ingest full user data via unified GraphQL in a single round-trip
+    try {
+      const rawUser = await fetchUserRawGraphQL(username, userToken, forceRefresh);
+      const profileData = extractProfileFromUser(rawUser);
 
-    // Analyze developer archetype
-    const archetype = analyzeArchetype(languages, repos, profile.bio);
+      const profile: GitHubUserProfile = {
+        login: rawUser.login,
+        name: profileData.name,
+        avatar_url: profileData.avatarUrl,
+        bio: profileData.bio,
+        company: profileData.company,
+        location: profileData.location,
+        blog: profileData.blog,
+        twitter_username: profileData.twitterUsername,
+        public_repos: rawUser.repositories?.totalCount ?? profileData.followers,
+        public_gists: rawUser.gists?.totalCount ?? 0,
+        followers: profileData.followers,
+        following: profileData.following,
+        created_at: profileData.createdAt,
+        html_url: profileData.htmlUrl,
+      };
 
-    const result = {
-      profile,
-      repos,
-      pinnedProjects: pinnedData.projects,
-      languages,
-      archetype,
-    };
+      const repos: Repository[] = (rawUser.repositories?.nodes || []).map((r: any) => ({
+        name: r.name,
+        full_name: `${rawUser.login}/${r.name}`,
+        description: r.description ?? null,
+        html_url: r.url,
+        stargazers_count: r.stargazerCount ?? 0,
+        forks_count: r.forkCount ?? 0,
+        language: r.primaryLanguage?.name ?? null,
+        topics: [],
+        homepage: r.homepageUrl ?? null,
+        fork: false,
+        updated_at: '',
+      }));
 
-    cache.set(cacheKey, {
-      data: result,
-      expiry: Date.now() + CACHE_TTL_MS,
-    });
+      const pinnedProjects = extractPinnedProjectsFromUser(rawUser);
+      const languagesData = extractLanguagesFromUser(rawUser);
+      const languages = languagesData.languages;
+      const archetype = analyzeArchetype(languages, repos, profile.bio);
+
+      result = {
+        profile,
+        repos,
+        pinnedProjects,
+        languages,
+        archetype,
+      };
+    } catch (graphqlError) {
+      console.warn('GraphQL profile ingestion failed, falling back to REST APIs:', graphqlError);
+
+      // Fallback: Query REST APIs
+      const [profile, repos, pinnedData] = await Promise.all([
+        fetchUserProfile(username, userToken),
+        fetchUserRepos(username, userToken),
+        fetchPinnedProjectsItem(username, userToken, forceRefresh).catch(() => ({ projects: [] })),
+      ]);
+
+      const languages = await fetchUserLanguages(username, repos, userToken);
+      const archetype = analyzeArchetype(languages, repos, profile.bio);
+
+      result = {
+        profile,
+        repos,
+        pinnedProjects: pinnedData.projects,
+        languages,
+        archetype,
+      };
+    }
+
+    globalApiCache.set(cacheKey, result);
 
     const cacheHeader = forceRefresh
       ? 'no-cache, no-store, must-revalidate'
