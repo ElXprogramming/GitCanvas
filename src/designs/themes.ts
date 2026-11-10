@@ -222,6 +222,26 @@ export const DESIGN_THEMES: Record<string, DesignTheme> = {
     heatmapLevels: ['#162038', '#1e3a8a', '#d97706', '#f59e0b', '#ef4444'],
     mascot: ONE_PIECE_MASCOTS.luffy_gatling,
   },
+  onepiece_straw_hat: {
+    id: 'onepiece_straw_hat',
+    label: 'Flapping Straw Hat (Pixel Art)',
+    cardBg: '#0b132b',
+    cardBgGradientEnd: '#070c1d',
+    border: '#d97706',
+    borderRadius: 14,
+    textPrimary: '#f8fafc',
+    textSecondary: '#fcd34d',
+    accent: '#ef4444',
+    gradeColors: {
+      S: { text: '#ef4444', bg: 'rgba(239, 68, 68, 0.16)', border: '#ef4444' },
+      A: { text: '#fbbf24', bg: 'rgba(251, 191, 36, 0.16)', border: '#fbbf24' },
+      B: { text: '#38bdf8', bg: 'rgba(56, 189, 248, 0.16)', border: '#38bdf8' },
+      C: { text: '#10b981', bg: 'rgba(16, 185, 129, 0.16)', border: '#10b981' },
+      D: { text: '#94a3b8', bg: 'rgba(148, 163, 184, 0.12)', border: '#64748b' },
+    },
+    heatmapLevels: ['#162038', '#1e3a8a', '#d97706', '#f59e0b', '#ef4444'],
+    mascot: ONE_PIECE_MASCOTS.straw_hat,
+  },
   onepiece_chopper: {
     id: 'onepiece_chopper',
     label: 'Chopper (Pixel Art)',
@@ -387,6 +407,14 @@ export function getDesignTheme(
     key === 'punch'
   ) {
     baseTheme = DESIGN_THEMES.onepiece_gatling;
+  } else if (
+    key === 'onepiece_straw_hat' ||
+    key === 'straw_hat_flapping' ||
+    key === 'flapping_hat' ||
+    key === 'flapping_straw_hat' ||
+    key === 'hat'
+  ) {
+    baseTheme = DESIGN_THEMES.onepiece_straw_hat;
   } else if (
     key === 'onepiece' ||
     key === 'one_piece' ||

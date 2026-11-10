@@ -235,3 +235,151 @@ test('designFullCanvasCard embeds profile card with mascot', () => {
   assert.ok(svg.includes('class="p-mascot"'), 'Full canvas card should include profile mascot badge');
   assert.ok(svg.includes('image-rendering: pixelated'));
 });
+
+test('flapping straw hat mascot is animated with 4 discrete pixel-perfect frames and GIF fallback', () => {
+  const hat = ONE_PIECE_MASCOTS.straw_hat;
+  assert.ok(hat, 'straw_hat mascot should be defined');
+  assert.equal(hat.isAnimated, true);
+  assert.equal(hat.frames?.length, 4);
+  assert.ok(hat.gifBase64?.startsWith('data:image/gif;base64,'));
+  assert.ok(hat.avatarBase64.startsWith('data:image/png;base64,'));
+  assert.equal(hat.width, 48);
+  assert.equal(hat.height, 26);
+
+  // Check mascot resolvers
+  assert.equal(getOnePieceMascot('straw_hat')?.id, 'straw_hat');
+  assert.equal(getOnePieceMascot('straw_hat_flapping')?.id, 'straw_hat');
+  assert.equal(getOnePieceMascot('flapping_hat')?.id, 'straw_hat');
+  assert.equal(getOnePieceMascot('flapping_straw_hat')?.id, 'straw_hat');
+  assert.equal(getOnePieceMascot('hat')?.id, 'straw_hat');
+  // Confirm 'strawhat' still maps to luffy
+  assert.equal(getOnePieceMascot('strawhat')?.id, 'luffy');
+});
+
+test('onepiece_straw_hat theme is configured with flapping straw hat mascot', () => {
+  const theme = getDesignTheme('onepiece_straw_hat');
+  assert.equal(theme.id, 'onepiece_straw_hat');
+  assert.equal(theme.mascot?.id, 'straw_hat');
+  assert.equal(theme.mascot?.isAnimated, true);
+
+  // Check theme aliases
+  assert.equal(getDesignTheme('flapping_hat').id, 'onepiece_straw_hat');
+  assert.equal(getDesignTheme('flapping_straw_hat').id, 'onepiece_straw_hat');
+  assert.equal(getDesignTheme('straw_hat_flapping').id, 'onepiece_straw_hat');
+  assert.equal(getDesignTheme('hat').id, 'onepiece_straw_hat');
+});
+
+test('onepiece_gatling theme renders floating flapping straw hat in background with wind animation', () => {
+  const profile = {
+    username: 'luffy',
+    name: 'Monkey D. Luffy',
+    avatarUrl: 'https://avatars.githubusercontent.com/u/1?v=4',
+  };
+
+  const overallData = {
+    item: 'overall' as const,
+    label: 'overall',
+    grade: 'S' as const,
+    score: 95,
+  };
+
+  // 1. Standalone overall box in onepiece_gatling theme
+  const overallSvg = designOverallBox(overallData, 'onepiece_gatling');
+  assert.ok(overallSvg.includes('class="card-floating-hat"'), 'Overall box should render floating straw hat');
+  assert.ok(overallSvg.includes('class="wind-hat-ambient"'), 'Floating hat should have ambient wind float animation');
+  assert.ok(overallSvg.includes('class="hat-f0"'), 'Floating hat should include flapping frame 0');
+  assert.ok(overallSvg.includes('class="hat-f1"'), 'Floating hat should include flapping frame 1');
+  assert.ok(overallSvg.includes('class="hat-f2"'), 'Floating hat should include flapping frame 2');
+  assert.ok(overallSvg.includes('class="hat-f3"'), 'Floating hat should include flapping frame 3');
+  assert.ok(overallSvg.includes('@keyframes windFloatAmbient'), 'CSS should include windFloatAmbient animation');
+  assert.ok(overallSvg.includes('@keyframes hatFlap0'), 'CSS should include hat flap keyframes');
+  assert.ok(overallSvg.includes('class="ov-mascot"'), 'Overall box should also retain Luffy Gatling mascot');
+
+  // 2. Standalone profile card in onepiece_gatling theme
+  const profileSvg = designProfileCard(profile, 'onepiece_gatling');
+  assert.ok(profileSvg.includes('class="card-floating-hat"'), 'Profile card should render floating straw hat');
+  assert.ok(profileSvg.includes('class="p-mascot"'), 'Profile card should render Luffy Gatling mascot');
+
+  // 3. Full master canvas in onepiece_gatling theme
+  const mockCanvasData: FullCanvasData = {
+    profile: {
+      username: 'luffy',
+      name: 'Monkey D. Luffy',
+      avatarUrl: 'https://avatars.githubusercontent.com/u/1?v=4',
+      bio: null,
+      company: null,
+      location: null,
+      email: null,
+      blog: null,
+      twitterUsername: null,
+      followers: 100,
+      following: 10,
+      createdAt: '2020-01-01',
+      htmlUrl: 'https://github.com/luffy',
+    },
+    projects: [],
+    languages: {
+      item: 'languages',
+      username: 'luffy',
+      languages: [{ name: 'TypeScript', bytes: 1000, percentage: 100, color: '#3178c6' }],
+      totalBytes: 1000,
+      totalLanguagesCount: 1,
+    },
+    commits: { item: 'commits', username: 'luffy', label: 'commits', value: 300, grade: 'S' },
+    prs: { item: 'prs', username: 'luffy', label: 'PR', value: 30, grade: 'S' },
+    issues: { item: 'issues', username: 'luffy', label: 'issues', value: 15, grade: 'A' },
+    stars: { item: 'stars', username: 'luffy', label: 'stars earned', value: 200, grade: 'S' },
+    repos: { item: 'repos', username: 'luffy', label: 'Repos', value: 12, grade: 'B' },
+    polyglot: { item: 'polyglot', username: 'luffy', label: 'Polyglot', value: 4, grade: 'C' },
+    overall: {
+      item: 'overall',
+      username: 'luffy',
+      label: 'overall',
+      grade: 'S',
+      score: 98,
+      breakdown: { commits: 'S', prs: 'S', issues: 'A', stars: 'S', repos: 'B', polyglot: 'C' },
+    },
+    streak: {
+      item: 'streak',
+      username: 'luffy',
+      label: 'streak',
+      value: 42,
+      unit: 'days',
+      formatted: '42 days',
+    },
+    longestStreak: {
+      item: 'longest-streak',
+      username: 'luffy',
+      label: 'longest streak',
+      value: 80,
+      unit: 'days',
+      formatted: '80 days',
+    },
+    activeDays: {
+      item: 'active-days',
+      username: 'luffy',
+      label: 'active days',
+      value: 250,
+      unit: 'days',
+      formatted: '250 days',
+    },
+    contributions: {
+      item: 'contributions',
+      username: 'luffy',
+      label: 'contributions last year',
+      totalCommits: 800,
+      rightLabel: '800 contributions',
+      weeks: [],
+    },
+  };
+
+  const canvasSvg = designFullCanvasCard(mockCanvasData, {
+    theme: 'onepiece_gatling',
+  });
+
+  assert.ok(canvasSvg.includes('class="canvas-floating-hats"'), 'Canvas should render master floating straw hats');
+  assert.ok(canvasSvg.includes('class="wind-hat-drift"'), 'Canvas should have drifting floating hat');
+  assert.ok(canvasSvg.includes('class="wind-gust"'), 'Canvas should render wind gust trails');
+  assert.ok(canvasSvg.includes('@keyframes windDriftAcross'), 'Canvas CSS should include windDriftAcross');
+  assert.ok(canvasSvg.includes('@keyframes windGustSweep'), 'Canvas CSS should include windGustSweep');
+});

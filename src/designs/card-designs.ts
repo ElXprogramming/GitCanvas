@@ -11,7 +11,7 @@ import {
 } from '@/types/stats';
 import { getDesignTheme } from './themes';
 import { getDesignFont, getSvgFontImport } from './fonts';
-import { OnePieceMascot } from './onepiece-stickers';
+import { OnePieceMascot, STRAW_HAT_FRAMES } from './onepiece-stickers';
 
 const XML_ESCAPE_MAP: Record<string, string> = {
   '&': '&amp;',
@@ -71,23 +71,98 @@ export function wrapTextTwoLines(
   return [line1, line2];
 }
 
-export function getMascotAnimationStyles(mascot?: OnePieceMascot | null): string {
-  if (!mascot?.frames || mascot.frames.length <= 1) return '';
-  const numFrames = mascot.frames.length;
-  const dur = ((mascot.frameDuration || 0.11) * numFrames).toFixed(2);
+export function isFloatingHatTheme(
+  themeId?: string | null,
+  mascotId?: string | null
+): boolean {
+  const t = (themeId || '').toLowerCase().trim();
+  const m = (mascotId || '').toLowerCase().trim();
+  return (
+    t === 'onepiece_gatling' ||
+    t === 'gatling' ||
+    t === 'luffy_gatling' ||
+    t === 'onepiece_straw_hat' ||
+    t === 'straw_hat_flapping' ||
+    t === 'flapping_hat' ||
+    t === 'flapping_straw_hat' ||
+    m === 'luffy_gatling' ||
+    m === 'gatling' ||
+    m === 'straw_hat' ||
+    m === 'straw_hat_flapping' ||
+    m === 'flapping_hat' ||
+    m === 'flapping_straw_hat' ||
+    m === 'hat'
+  );
+}
 
-  return `
+export function getMascotAnimationStyles(
+  mascot?: OnePieceMascot | null,
+  themeId?: string | null
+): string {
+  const hasGatling =
+    mascot?.id === 'luffy_gatling' ||
+    themeId === 'onepiece_gatling' ||
+    themeId === 'gatling' ||
+    (mascot?.frames && mascot.frames.length > 1 && mascot.id !== 'straw_hat');
+
+  const hasStrawHat =
+    mascot?.id === 'straw_hat' ||
+    isFloatingHatTheme(themeId, mascot?.id);
+
+  if (!hasGatling && !hasStrawHat && (!mascot?.frames || mascot.frames.length <= 1)) {
+    return '';
+  }
+
+  const gatlingStyles = hasGatling
+    ? `
       @keyframes gatlingF0 { 0%, 25% { opacity: 1; } 25.01%, 100% { opacity: 0; } }
       @keyframes gatlingF1 { 0%, 24.99% { opacity: 0; } 25%, 50% { opacity: 1; } 50.01%, 100% { opacity: 0; } }
       @keyframes gatlingF2 { 0%, 49.99% { opacity: 0; } 50%, 75% { opacity: 1; } 75.01%, 100% { opacity: 0; } }
       @keyframes gatlingF3 { 0%, 74.99% { opacity: 0; } 75%, 100% { opacity: 1; } }
-      .gatling-f0 { animation: gatlingF0 ${dur}s steps(1) infinite; }
-      .gatling-f1 { animation: gatlingF1 ${dur}s steps(1) infinite; }
-      .gatling-f2 { animation: gatlingF2 ${dur}s steps(1) infinite; }
-      .gatling-f3 { animation: gatlingF3 ${dur}s steps(1) infinite; }
+      .gatling-f0 { animation: gatlingF0 0.44s steps(1) infinite; }
+      .gatling-f1 { animation: gatlingF1 0.44s steps(1) infinite; }
+      .gatling-f2 { animation: gatlingF2 0.44s steps(1) infinite; }
+      .gatling-f3 { animation: gatlingF3 0.44s steps(1) infinite; }`
+    : '';
+
+  const strawHatStyles = hasStrawHat
+    ? `
+      @keyframes hatFlap0 { 0%, 25% { opacity: 1; } 25.01%, 100% { opacity: 0; } }
+      @keyframes hatFlap1 { 0%, 24.99% { opacity: 0; } 25%, 50% { opacity: 1; } 50.01%, 100% { opacity: 0; } }
+      @keyframes hatFlap2 { 0%, 49.99% { opacity: 0; } 50%, 75% { opacity: 1; } 75.01%, 100% { opacity: 0; } }
+      @keyframes hatFlap3 { 0%, 74.99% { opacity: 0; } 75%, 100% { opacity: 1; } }
+      .hat-f0 { animation: hatFlap0 0.52s steps(1) infinite; }
+      .hat-f1 { animation: hatFlap1 0.52s steps(1) infinite; }
+      .hat-f2 { animation: hatFlap2 0.52s steps(1) infinite; }
+      .hat-f3 { animation: hatFlap3 0.52s steps(1) infinite; }
+      @keyframes windFloatAmbient {
+        0% { transform: translate(0px, 0px) rotate(-5deg); }
+        25% { transform: translate(14px, -7px) rotate(5deg); }
+        50% { transform: translate(28px, 1px) rotate(-3deg); }
+        75% { transform: translate(12px, 7px) rotate(6deg); }
+        100% { transform: translate(0px, 0px) rotate(-5deg); }
+      }
+      @keyframes windDriftAcross {
+        0% { transform: translate(0px, 0px) rotate(-6deg); }
+        35% { transform: translate(35px, -12px) rotate(7deg); }
+        70% { transform: translate(70px, 5px) rotate(-4deg); }
+        100% { transform: translate(0px, 0px) rotate(-6deg); }
+      }
+      @keyframes windGustSweep {
+        0% { opacity: 0.12; stroke-dashoffset: 40; }
+        50% { opacity: 0.35; }
+        100% { opacity: 0.12; stroke-dashoffset: -40; }
+      }
+      .wind-hat-ambient { animation: windFloatAmbient 5.5s ease-in-out infinite; transform-origin: 21px 12px; }
+      .wind-hat-drift { animation: windDriftAcross 7.5s ease-in-out infinite; transform-origin: 26px 14px; }
+      .wind-gust { animation: windGustSweep 4s linear infinite; }`
+    : '';
+
+  return `${gatlingStyles}${strawHatStyles}
       @media (prefers-reduced-motion: reduce) {
-        .gatling-f0 { opacity: 1 !important; animation: none !important; }
-        .gatling-f1, .gatling-f2, .gatling-f3 { opacity: 0 !important; animation: none !important; }
+        .gatling-f0, .hat-f0 { opacity: 1 !important; animation: none !important; }
+        .gatling-f1, .gatling-f2, .gatling-f3, .hat-f1, .hat-f2, .hat-f3 { opacity: 0 !important; animation: none !important; }
+        .wind-hat-ambient, .wind-hat-drift, .wind-gust { animation: none !important; }
       }`;
 }
 
@@ -106,6 +181,7 @@ export function renderMascotSvg(
     const keyTimes = Array.from({ length: numFrames + 1 }, (_, i) =>
       (i / numFrames).toFixed(2)
     ).join(';');
+    const frameClassPrefix = mascot.id === 'straw_hat' ? 'hat-f' : 'gatling-f';
 
     const images = mascot.frames
       .map((frameB64, idx) => {
@@ -114,7 +190,7 @@ export function renderMascotSvg(
           return frameIndex === idx ? '1' : '0';
         }).join(';');
         const initOpacity = idx === 0 ? '1' : '0';
-        return `    <image href="${frameB64}" class="gatling-f${idx}" x="${x}" y="${y}" width="${width}" height="${height}" opacity="${initOpacity}" preserveAspectRatio="xMidYMid meet" style="image-rendering: pixelated; image-rendering: crisp-edges;">
+        return `    <image href="${frameB64}" class="${frameClassPrefix}${idx}" x="${x}" y="${y}" width="${width}" height="${height}" opacity="${initOpacity}" preserveAspectRatio="xMidYMid meet" style="image-rendering: pixelated; image-rendering: crisp-edges;">
       <animate attributeName="opacity" values="${vals}" keyTimes="${keyTimes}" dur="${dur}s" repeatCount="indefinite" calcMode="discrete" />
     </image>`;
       })
@@ -124,6 +200,81 @@ export function renderMascotSvg(
   }
 
   return `\n  <!-- Theme Character Mascot (Borderless) -->\n  <g class="${groupClass}" role="img" aria-label="${safeName}">\n    <image href="${mascot.avatarBase64}" x="${x}" y="${y}" width="${width}" height="${height}" preserveAspectRatio="xMidYMid meet" style="image-rendering: pixelated; image-rendering: crisp-edges;" />\n  </g>`;
+}
+
+export function renderFloatingBackgroundHats(
+  themeId?: string | null,
+  width = 800,
+  height = 104,
+  isMasterCanvas = false,
+  mascotId?: string | null
+): string {
+  if (!isFloatingHatTheme(themeId, mascotId)) return '';
+
+  const numFrames = STRAW_HAT_FRAMES.length; // 4
+  const frameDur = '0.52';
+  const keyTimes = '0.00;0.25;0.50;0.75;1.00';
+
+  const renderHatFrames = (hatW: number, hatH: number) => {
+    return STRAW_HAT_FRAMES.map((frameB64, idx) => {
+      const vals = Array.from({ length: numFrames + 1 }, (_, i) => {
+        const frameIndex = i === numFrames ? 0 : i;
+        return frameIndex === idx ? '1' : '0';
+      }).join(';');
+      const initOpacity = idx === 0 ? '1' : '0';
+      return `<image href="${frameB64}" class="hat-f${idx}" x="0" y="0" width="${hatW}" height="${hatH}" opacity="${initOpacity}" preserveAspectRatio="xMidYMid meet" style="image-rendering: pixelated; image-rendering: crisp-edges;">
+        <animate attributeName="opacity" values="${vals}" keyTimes="${keyTimes}" dur="${frameDur}s" repeatCount="indefinite" calcMode="discrete" />
+      </image>`;
+    }).join('\n      ');
+  };
+
+  if (isMasterCanvas) {
+    // Canvas-wide floating wind hats at different depths
+    const hat1W = 52;
+    const hat1H = 28;
+    const hat1X = Math.max(120, width - 240);
+    const hat1Y = 32;
+
+    const hat2W = 38;
+    const hat2H = 21;
+    const hat2X = 54;
+    const hat2Y = Math.min(height - 140, Math.max(380, Math.floor(height * 0.45)));
+
+    const windTrail1 = `<path d="M ${hat1X - 45} ${hat1Y + 18} Q ${hat1X + 25} ${hat1Y + 8} ${hat1X + 90} ${hat1Y + 22}" stroke="rgba(253, 224, 71, 0.22)" stroke-width="1.6" stroke-linecap="round" fill="none" stroke-dasharray="10 8" class="wind-gust" />`;
+    const windTrail2 = `<path d="M ${hat2X - 35} ${hat2Y + 14} Q ${hat2X + 20} ${hat2Y + 6} ${hat2X + 75} ${hat2Y + 18}" stroke="rgba(245, 158, 11, 0.18)" stroke-width="1.4" stroke-linecap="round" fill="none" stroke-dasharray="8 6" class="wind-gust" />`;
+
+    return `\n  <!-- Master Profile Canvas Floating Straw Hats (Flapping in Wind) -->\n  <g class="canvas-floating-hats" role="img" aria-label="Floating Straw Hats">\n    ${windTrail1}\n    <g transform="translate(${hat1X}, ${hat1Y})">\n      <g class="wind-hat-drift" opacity="0.92">\n        <animateTransform attributeName="transform" type="translate" values="0,0; 35,-12; 70,5; 35,10; 0,0" dur="7.5s" repeatCount="indefinite" />\n        <animateTransform attributeName="transform" type="rotate" values="-6 ${hat1W / 2} ${hat1H / 2}; 8 ${hat1W / 2} ${hat1H / 2}; -4 ${hat1W / 2} ${hat1H / 2}; 6 ${hat1W / 2} ${hat1H / 2}; -6 ${hat1W / 2} ${hat1H / 2}" dur="7.5s" repeatCount="indefinite" additive="sum" />\n        ${renderHatFrames(hat1W, hat1H)}\n      </g>\n    </g>\n    ${windTrail2}\n    <g transform="translate(${hat2X}, ${hat2Y})">\n      <g class="wind-hat-ambient" opacity="0.65">\n        <animateTransform attributeName="transform" type="translate" values="0,0; 20,-7; 40,2; 18,8; 0,0" dur="6s" repeatCount="indefinite" />\n        <animateTransform attributeName="transform" type="rotate" values="-4 ${hat2W / 2} ${hat2H / 2}; 6 ${hat2W / 2} ${hat2H / 2}; -2 ${hat2W / 2} ${hat2H / 2}; 5 ${hat2W / 2} ${hat2H / 2}; -4 ${hat2W / 2} ${hat2H / 2}" dur="6s" repeatCount="indefinite" additive="sum" />\n        ${renderHatFrames(hat2W, hat2H)}\n      </g>\n    </g>\n  </g>`;
+  }
+
+  // Single card floating hat
+  let hatW = 42;
+  let hatH = 23;
+  let x = Math.max(16, width - 180);
+  let y = 14;
+
+  if (width <= 260) {
+    // Overall box (258 x 104): place floating hat in upper-mid background
+    hatW = 38;
+    hatH = 21;
+    x = 92;
+    y = 16;
+  } else if (height <= 100) {
+    // Profile card (800x96 or 420x96)
+    hatW = 40;
+    hatH = 22;
+    x = Math.max(160, width - 170);
+    y = 16;
+  } else if (width >= 700) {
+    // Contributions card (800 x 166)
+    hatW = 44;
+    hatH = 24;
+    x = Math.floor(width * 0.58);
+    y = 13;
+  }
+
+  const trail = `<path d="M ${x - 30} ${y + 14} Q ${x + 18} ${y + 6} ${x + 65} ${y + 18}" stroke="rgba(245, 158, 11, 0.22)" stroke-width="1.4" stroke-linecap="round" fill="none" stroke-dasharray="8 6" class="wind-gust" />`;
+
+  return `\n  <!-- Background Floating Straw Hat (Flapping in Wind) -->\n  <g class="card-floating-hat" role="img" aria-label="Floating Straw Hat in Wind">\n    ${trail}\n    <g transform="translate(${x}, ${y})">\n      <g class="wind-hat-ambient" opacity="0.85">\n        <animateTransform attributeName="transform" type="translate" values="0,0; 16,-6; 32,1; 14,8; 0,0" dur="5.5s" repeatCount="indefinite" />\n        <animateTransform attributeName="transform" type="rotate" values="-5 ${hatW / 2} ${hatH / 2}; 7 ${hatW / 2} ${hatH / 2}; -3 ${hatW / 2} ${hatH / 2}; 6 ${hatW / 2} ${hatH / 2}; -5 ${hatW / 2} ${hatH / 2}" dur="5.5s" repeatCount="indefinite" additive="sum" />\n        ${renderHatFrames(hatW, hatH)}\n      </g>\n    </g>\n  </g>`;
 }
 
 // ==========================================================
@@ -138,6 +289,7 @@ export interface ProfileCardRenderOptions {
   width?: number;
   height?: number;
   mascot?: string | null;
+  isSubCard?: boolean;
 }
 
 export function designProfileCard(
@@ -181,6 +333,10 @@ export function designProfileCard(
     ? renderMascotSvg(mascot, width - 92, 6, 84, 84, 'p-mascot')
     : '';
 
+  const floatingHat = !options?.isSubCard
+    ? renderFloatingBackgroundHats(themeId, width, height, false, options?.mascot)
+    : '';
+
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" fill="none" role="img" aria-label="${name} (${nickname})">
   <defs>
     <clipPath id="pfpClip">
@@ -188,7 +344,7 @@ export function designProfileCard(
     </clipPath>
     <style>
       ${getSvgFontImport(font)}
-      ${getMascotAnimationStyles(mascot)}
+      ${getMascotAnimationStyles(mascot, themeId)}
       .p-name { font: 800 ${nameSize}px ${font.fontFamily}; fill: ${theme.textPrimary}; }
       .p-nick { font: 600 ${nickSize}px ${font.fontFamily}; fill: ${theme.textSecondary}; }
       .p-bio { font: 400 13px ${font.fontFamily}; fill: ${theme.textSecondary}; }
@@ -211,7 +367,7 @@ export function designProfileCard(
       ? `<tspan fill="${theme.textSecondary}" font-weight="400">  ·  </tspan><tspan fill="${theme.textPrimary}" font-weight="600">${company}</tspan>`
       : ''
   }</text>
-  ${bio ? `<text x="104" y="${bioY}" class="p-bio" fill="${theme.textSecondary}">${bio}</text>` : ''}${mascotBadge}
+  ${bio ? `<text x="104" y="${bioY}" class="p-bio" fill="${theme.textSecondary}">${bio}</text>` : ''}${floatingHat}${mascotBadge}
 </svg>`;
 }
 
@@ -504,13 +660,14 @@ export function designOverallBox(
     </linearGradient>
     <style>
       ${getSvgFontImport(font)}
-      ${getMascotAnimationStyles(mascot)}
+      ${getMascotAnimationStyles(mascot, themeId)}
       .ov-label { font: 600 14px ${font.fontFamily}; fill: ${theme.textSecondary}; }
       .ov-grade { font: 900 42px ${font.fontFamily}; fill: ${gColor.text}; }
     </style>
   </defs>
 
   <rect width="${width}" height="${height}" rx="${theme.borderRadius}" fill="url(#overallGrad)" stroke="none" />
+  ${renderFloatingBackgroundHats(themeId, width, height, false, mascotId)}
 
   <text x="${contentX}" y="28" text-anchor="middle" class="ov-label" fill="${theme.textSecondary}">overall</text>
   <text x="${contentX}" y="${height - 18}" text-anchor="middle" class="ov-grade" fill="${gColor.text}">${grade}</text>
@@ -614,12 +771,14 @@ export function designContributionsBox(
     </linearGradient>
     <style>
       ${getSvgFontImport(font)}
+      ${getMascotAnimationStyles(null, themeId)}
       .c-title { font: 600 14px ${font.fontFamily}; fill: ${theme.textSecondary}; }
       .c-right { font: 700 14px ${font.fontFamily}; fill: ${theme.textPrimary}; }
     </style>
   </defs>
 
   <rect width="800" height="166" rx="${theme.borderRadius}" fill="url(#contribGrad)" stroke="none" />
+  ${renderFloatingBackgroundHats(themeId, 800, 166, false)}
 
   <!-- Top Left & Top Right Labels -->
   <text x="22" y="29" class="c-title" fill="${theme.textSecondary}">contributions last year</text>
@@ -702,6 +861,7 @@ export function designFullCanvasCard(
           mascot: options?.mascot,
           width: innerWidth,
           height: 96,
+          isSubCard: true,
         }),
         padX,
         y,
@@ -963,7 +1123,7 @@ export function designFullCanvasCard(
   <defs>
     <style>
       ${getSvgFontImport(font)}
-      ${getMascotAnimationStyles(theme.mascot)}
+      ${getMascotAnimationStyles(theme.mascot, themeId)}
       .canvas-section-title { font: 700 20px ${font.fontFamily}; fill: ${theme.textPrimary}; }
       .canvas-tagline { font: 400 14px ${font.fontFamily}; fill: ${theme.textSecondary}; }
       .canvas-bio-line { font: 400 13.5px ${font.fontFamily}; }
@@ -972,6 +1132,7 @@ export function designFullCanvasCard(
 
   <!-- Master Profile Canvas Background -->
   <rect x="1" y="1" width="${canvasWidth - 2}" height="${totalHeight - 2}" rx="18" fill="${theme.cardBgGradientEnd}" stroke="${theme.border}" stroke-width="1.5" />
+  ${renderFloatingBackgroundHats(themeId, canvasWidth, totalHeight, true, options?.mascot)}
 
   ${elements.join('\n\n  ')}
 </svg>`;
