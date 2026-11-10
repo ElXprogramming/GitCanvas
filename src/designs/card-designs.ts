@@ -222,12 +222,13 @@ export function designLanguagesBarCard(
   const totalBytes = langs.reduce((acc, l) => acc + l.bytes, 0) || 1;
 
   const barX = 20;
-  const barY = 18;
+  const barY = 14;
   const barWidth = 760;
-  const barHeight = 24;
+  const barHeight = 8;
+  const cardHeight = 58;
 
-  // Compute normalized widths so every language is visible (min 8px) and total sum === barWidth (760px)
-  const minSegWidth = langs.length > 1 ? 8 : barWidth;
+  // Compute normalized widths so every language is visible (min 6px) and total sum === barWidth (760px)
+  const minSegWidth = langs.length > 1 ? 6 : barWidth;
   const rawWidths = langs.map((lang) =>
     Math.max(minSegWidth, (lang.bytes / totalBytes) * barWidth)
   );
@@ -263,7 +264,7 @@ export function designLanguagesBarCard(
 
     if (idx > 0 && currentX > barX && currentX < barX + barWidth) {
       dividers.push(
-        `<line x1="${currentX}" y1="${barY}" x2="${currentX}" y2="${barY + barHeight}" stroke="${theme.cardBg}" stroke-width="2" />`
+        `<line x1="${currentX}" y1="${barY}" x2="${currentX}" y2="${barY + barHeight}" stroke="${theme.cardBg}" stroke-width="1.5" />`
       );
     }
     currentX += w;
@@ -274,24 +275,24 @@ export function designLanguagesBarCard(
   const labels = langs.map((lang, idx) => {
     const x = barX + idx * slotWidth;
     const safeName = escapeXml(truncateText(lang.name, 12));
-    return `<g transform="translate(${x}, 66)">
-      <circle cx="6" cy="-5" r="4.5" fill="${lang.color || theme.accent}" />
-      <text x="15" y="0" font-size="13" font-weight="600" fill="${theme.textPrimary}" font-family="${FONT_FAMILY}">${safeName}</text>
-      <text x="15" y="16" font-size="11" font-weight="500" fill="${theme.textSecondary}" font-family="${FONT_FAMILY}">${lang.percentage}%</text>
+    return `<g transform="translate(${x}, 38)">
+      <circle cx="4" cy="-3.5" r="3" fill="${lang.color || theme.accent}" />
+      <text x="12" y="0" font-size="11" font-weight="600" fill="${theme.textPrimary}" font-family="${FONT_FAMILY}">${safeName}</text>
+      <text x="12" y="13" font-size="9.5" font-weight="400" fill="${theme.textSecondary}" font-family="${FONT_FAMILY}">${lang.percentage}%</text>
     </g>`;
   });
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="98" viewBox="0 0 800 98" fill="none" role="img" aria-label="Languages Distribution">
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="${cardHeight}" viewBox="0 0 800 ${cardHeight}" fill="none" role="img" aria-label="Languages Distribution">
   <defs>
     <clipPath id="langBarClip">
-      <rect x="${barX}" y="${barY}" width="${barWidth}" height="${barHeight}" rx="7" />
+      <rect x="${barX}" y="${barY}" width="${barWidth}" height="${barHeight}" rx="4" />
     </clipPath>
   </defs>
 
-  <rect x="0" y="0" width="800" height="98" rx="${theme.borderRadius}" fill="${theme.cardBg}" />
+  <rect x="0" y="0" width="800" height="${cardHeight}" rx="${theme.borderRadius}" fill="${theme.cardBg}" />
 
   <!-- Segmented Proportional Bar -->
-  <rect x="${barX}" y="${barY}" width="${barWidth}" height="${barHeight}" rx="7" fill="${theme.cardBg}" />
+  <rect x="${barX}" y="${barY}" width="${barWidth}" height="${barHeight}" rx="4" fill="${theme.cardBg}" />
   <g clip-path="url(#langBarClip)">
     ${segments.join('\n    ')}
     ${dividers.join('\n    ')}
@@ -734,10 +735,10 @@ export function designFullCanvasCard(
           padX,
           y,
           800,
-          98
+          58
         )
       );
-      y += 98 + 28;
+      y += 58 + 28;
     } else if (sec === 'github_stats' || sec === 'streak_trophies') {
       const rowsToRender: string[] = [];
       let j = i;
