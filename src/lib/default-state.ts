@@ -94,6 +94,10 @@ export function createDefaultBlocks(
     tagline:
       archetype?.tagline || 'Building software that makes a difference.',
     showWave: false,
+    showCompany: Boolean(profile?.company),
+    company: profile?.company || '',
+    showBio: Boolean(profile?.bio),
+    bio: profile?.bio || '',
   };
 
   // Bio block defaults

@@ -149,6 +149,18 @@ export async function GET(
               .filter(Boolean)
           : undefined;
 
+        const showCompany =
+          searchParams.get('show_company') === '1' ||
+          searchParams.get('show_company') === 'true';
+        const company = searchParams.get('company')?.trim() || null;
+        const showBio =
+          searchParams.get('show_bio') === '1' ||
+          searchParams.get('show_bio') === 'true';
+        const bioText =
+          searchParams.get('bio_text')?.trim() ||
+          searchParams.get('profile_bio')?.trim() ||
+          null;
+
         const hideProfile =
           searchParams.get('hide_profile') === '1' ||
           searchParams.get('hide_profile') === 'true';
@@ -166,6 +178,10 @@ export async function GET(
           customName,
           tagline,
           hideProfile,
+          showCompany,
+          customCompany: company,
+          showBio,
+          customBio: bioText,
           socials,
           sections,
           hideRows,
@@ -185,8 +201,24 @@ export async function GET(
       case 'profile': {
         const data = await fetchProfileItem(username, userToken, true, forceRefresh);
         const customName = searchParams.get('name')?.trim();
+        const showCompany =
+          searchParams.get('show_company') === '1' ||
+          searchParams.get('show_company') === 'true';
+        const company = searchParams.get('company')?.trim() || null;
+        const showBio =
+          searchParams.get('show_bio') === '1' ||
+          searchParams.get('show_bio') === 'true';
+        const bioText =
+          searchParams.get('bio_text')?.trim() ||
+          searchParams.get('profile_bio')?.trim() ||
+          null;
         const profileToRender = customName ? { ...data, name: customName } : data;
-        svg = designProfileCard(profileToRender, theme, font);
+        svg = designProfileCard(profileToRender, theme, font, {
+          showCompany,
+          companyText: company,
+          showBio,
+          bioText,
+        });
         break;
       }
       case 'project':

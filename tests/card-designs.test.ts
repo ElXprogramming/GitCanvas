@@ -73,6 +73,38 @@ test('designProfileCard outputs valid SVG', () => {
   assert.ok(svg.includes('@octocat'));
 });
 
+test('designProfileCard renders optional company and bio', () => {
+  const svg = designProfileCard(
+    {
+      item: 'profile',
+      username: 'octocat',
+      name: 'The Octocat',
+      avatarUrl: 'https://github.com/octocat.png',
+      bio: 'GitHub mascot',
+      company: '@github',
+      location: 'San Francisco',
+      email: null,
+      blog: 'https://github.blog',
+      twitterUsername: null,
+      followers: 5000,
+      following: 10,
+      createdAt: '2011-01-01',
+      htmlUrl: 'https://github.com/octocat',
+    },
+    'default',
+    'josefin_slab',
+    {
+      showCompany: true,
+      companyText: '@github',
+      showBio: true,
+      bioText: 'Custom synthesized bio for testing',
+    }
+  );
+
+  assert.ok(svg.includes('@github'));
+  assert.ok(svg.includes('Custom synthesized bio for testing'));
+});
+
 test('designGradedStatBox renders metric with grade color', () => {
   const svg = designGradedStatBox({
     item: 'commits',

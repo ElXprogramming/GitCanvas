@@ -91,6 +91,18 @@ export function buildCanvasCardUrl(
     if (heroSettings?.showWave && heroSettings?.tagline?.trim()) {
       params.set('tagline', heroSettings.tagline.trim());
     }
+    if (heroSettings?.showCompany) {
+      params.set('show_company', '1');
+      if (heroSettings.company?.trim()) {
+        params.set('company', heroSettings.company.trim());
+      }
+    }
+    if (heroSettings?.showBio) {
+      params.set('show_bio', '1');
+      if (heroSettings.bio?.trim()) {
+        params.set('bio_text', heroSettings.bio.trim());
+      }
+    }
   }
 
 

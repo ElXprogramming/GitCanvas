@@ -224,7 +224,53 @@ function HeroEditor({
         />
       </div>
 
-      <div className="pt-1 border-t border-slate-800/80 space-y-2">
+      {/* Company Name Option */}
+      <div className="pt-2 border-t border-slate-800/80 space-y-2">
+        <label className="flex items-center gap-1.5 cursor-pointer text-slate-300">
+          <input
+            type="checkbox"
+            checked={!!settings.showCompany}
+            onChange={(e) => onChange({ showCompany: e.target.checked })}
+            className="rounded bg-slate-900 border-slate-800 text-cyan-500"
+          />
+          <span>Include Company Name</span>
+        </label>
+
+        {settings.showCompany && (
+          <input
+            type="text"
+            value={settings.company ?? ''}
+            onChange={(e) => onChange({ company: e.target.value })}
+            placeholder="e.g. @company or Organization"
+            className="w-full px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 text-xs sm:text-sm"
+          />
+        )}
+      </div>
+
+      {/* GitHub Bio Option */}
+      <div className="pt-2 border-t border-slate-800/80 space-y-2">
+        <label className="flex items-center gap-1.5 cursor-pointer text-slate-300">
+          <input
+            type="checkbox"
+            checked={!!settings.showBio}
+            onChange={(e) => onChange({ showBio: e.target.checked })}
+            className="rounded bg-slate-900 border-slate-800 text-cyan-500"
+          />
+          <span>Include Bio</span>
+        </label>
+
+        {settings.showBio && (
+          <textarea
+            rows={2}
+            value={settings.bio ?? ''}
+            onChange={(e) => onChange({ bio: e.target.value })}
+            placeholder="Your bio description..."
+            className="w-full px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 text-xs sm:text-sm resize-none"
+          />
+        )}
+      </div>
+
+      <div className="pt-2 border-t border-slate-800/80 space-y-2">
         <label className="flex items-center gap-1.5 cursor-pointer text-slate-300">
           <input
             type="checkbox"

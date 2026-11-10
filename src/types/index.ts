@@ -77,6 +77,10 @@ export interface HeroSettings {
   greeting: string;
   tagline: string;
   showWave: boolean;
+  showCompany?: boolean;
+  company?: string;
+  showBio?: boolean;
+  bio?: string;
 }
 
 export interface BioSettings {

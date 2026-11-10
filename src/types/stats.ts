@@ -142,6 +142,10 @@ export interface FullCanvasRenderOptions {
   customName?: string | null;
   tagline?: string | null;
   hideProfile?: boolean;
+  showCompany?: boolean;
+  customCompany?: string | null;
+  showBio?: boolean;
+  customBio?: string | null;
   socials?: Array<{ type: string; label: string }>;
   sections?: string[];
   hideRows?: string[];

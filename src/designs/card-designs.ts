@@ -73,26 +73,61 @@ export function wrapTextTwoLines(
 // ==========================================================
 // 1. PROFILE HEADER CARD (PFP + Name + @nickname)
 // ==========================================================
+export interface ProfileCardRenderOptions {
+  customName?: string | null;
+  showCompany?: boolean;
+  companyText?: string | null;
+  showBio?: boolean;
+  bioText?: string | null;
+  width?: number;
+  height?: number;
+}
+
 export function designProfileCard(
   profile: ProfileItemData,
   themeId?: string | null,
-  fontId?: string | null
+  fontId?: string | null,
+  options?: ProfileCardRenderOptions
 ): string {
   const theme = getDesignTheme(themeId);
   const font = getDesignFont(fontId);
-  const name = escapeXml(truncateText(profile.name || profile.username, 22));
+  const width = options?.width || (options?.showBio || options?.showCompany ? 800 : 420);
+  const height = options?.height || 96;
+  const name = escapeXml(
+    truncateText(options?.customName || profile.name || profile.username, 26)
+  );
   const nickname = escapeXml(`@${profile.username}`);
   const avatarHref = profile.avatarBase64 || profile.avatarUrl;
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="420" height="96" viewBox="0 0 420 96" fill="none" role="img" aria-label="${name} (${nickname})">
+  const showCompany =
+    Boolean(options?.showCompany) && Boolean(options?.companyText || profile.company);
+  const company = showCompany
+    ? escapeXml(truncateText(options?.companyText || profile.company || '', 32))
+    : null;
+
+  const showBio =
+    Boolean(options?.showBio) && Boolean(options?.bioText || profile.bio);
+  const bio = showBio
+    ? escapeXml(truncateText(options?.bioText || profile.bio || '', 85))
+    : null;
+
+  const hasExtra = Boolean(company || bio);
+  const nameY = hasExtra ? 28 : 44;
+  const nameSize = hasExtra ? 22 : 26;
+  const nickY = hasExtra ? 50 : 72;
+  const nickSize = hasExtra ? 15 : 18;
+  const bioY = 74;
+
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" fill="none" role="img" aria-label="${name} (${nickname})">
   <defs>
     <clipPath id="pfpClip">
       <rect x="8" y="8" width="80" height="80" rx="14" />
     </clipPath>
     <style>
       ${getSvgFontImport(font)}
-      .name { font: 800 26px ${font.fontFamily}; fill: ${theme.textPrimary}; }
-      .nick { font: 600 18px ${font.fontFamily}; fill: ${theme.textSecondary}; }
+      .p-name { font: 800 ${nameSize}px ${font.fontFamily}; fill: ${theme.textPrimary}; }
+      .p-nick { font: 600 ${nickSize}px ${font.fontFamily}; fill: ${theme.textSecondary}; }
+      .p-bio { font: 400 13px ${font.fontFamily}; fill: ${theme.textSecondary}; }
     </style>
   </defs>
 
@@ -105,9 +140,14 @@ export function designProfileCard(
   }
   <rect x="8" y="8" width="80" height="80" rx="14" fill="none" stroke="${theme.border}" stroke-width="2" />
 
-  <!-- Name & @nickname -->
-  <text x="104" y="44" class="name" fill="${theme.textPrimary}">${name}</text>
-  <text x="104" y="72" class="nick" fill="${theme.textSecondary}">${nickname}</text>
+  <!-- Name & @nickname & optional company -->
+  <text x="104" y="${nameY}" class="p-name" fill="${theme.textPrimary}">${name}</text>
+  <text x="104" y="${nickY}" class="p-nick" fill="${theme.textSecondary}"><tspan>${nickname}</tspan>${
+    company
+      ? `<tspan fill="${theme.textSecondary}" font-weight="400">  ·  </tspan><tspan fill="${theme.textPrimary}" font-weight="600">${company}</tspan>`
+      : ''
+  }</text>
+  ${bio ? `<text x="104" y="${bioY}" class="p-bio" fill="${theme.textSecondary}">${bio}</text>` : ''}
 </svg>`;
 }
 
@@ -580,10 +620,18 @@ export function designFullCanvasCard(
   if (showProfile) {
     elements.push(
       embedSubSvg(
-        designProfileCard(data.profile, themeId, fontId),
+        designProfileCard(data.profile, themeId, fontId, {
+          customName: options?.customName,
+          showCompany: options?.showCompany,
+          companyText: options?.customCompany,
+          showBio: options?.showBio,
+          bioText: options?.customBio,
+          width: innerWidth,
+          height: 96,
+        }),
         padX,
         y,
-        420,
+        innerWidth,
         96
       )
     );
