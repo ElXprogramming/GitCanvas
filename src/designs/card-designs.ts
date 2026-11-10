@@ -95,6 +95,27 @@ export function isFloatingHatTheme(
   );
 }
 
+export function isFloatingSakuraTheme(
+  themeId?: string | null,
+  mascotId?: string | null
+): boolean {
+  const t = (themeId || '').toLowerCase().trim();
+  const m = (mascotId || '').toLowerCase().trim();
+  return (
+    t === 'wano_zoro' ||
+    t === 'zoro' ||
+    t === 'santoryu' ||
+    t === 'wano' ||
+    t === 'lost_zoro' ||
+    t === 'onepiece_zoro' ||
+    m === 'zoro' ||
+    m === 'roronoa_zoro' ||
+    m === 'wano_zoro' ||
+    m === 'lost_zoro' ||
+    m === 'santoryu'
+  );
+}
+
 export function getMascotAnimationStyles(
   mascot?: OnePieceMascot | null,
   themeId?: string | null
@@ -109,7 +130,9 @@ export function getMascotAnimationStyles(
     mascot?.id === 'straw_hat' ||
     isFloatingHatTheme(themeId, mascot?.id);
 
-  if (!hasGatling && !hasStrawHat && (!mascot?.frames || mascot.frames.length <= 1)) {
+  const hasZoro = isFloatingSakuraTheme(themeId, mascot?.id);
+
+  if (!hasGatling && !hasStrawHat && !hasZoro && (!mascot?.frames || mascot.frames.length <= 1)) {
     return '';
   }
 
@@ -220,7 +243,200 @@ export function getMascotAnimationStyles(
       .wind-gust { animation: windGustSweep 4s linear infinite; }`
     : '';
 
-  return `${gatlingStyles}${strawHatStyles}
+  const zoroStyles = hasZoro
+    ? `
+      /* ==================== ZORO CROSS-CARD WANDERER ==================== */
+      @keyframes zoroRoamProfile800 {
+        0%   { transform: translate(0px, 0px); opacity: 1; }
+        3%   { transform: translate(-70px, -3px); opacity: 1; }
+        6%   { transform: translate(-140px, 0px); opacity: 1; }
+        9%   { transform: translate(-210px, -3px); opacity: 1; }
+        12%  { transform: translate(-280px, 0px); opacity: 1; }
+        15%  { transform: translate(-350px, -3px); opacity: 1; }
+        18%  { transform: translate(-420px, 0px); opacity: 1; }
+        20%  { transform: translate(-460px, -2px); opacity: 1; }
+        22%  { transform: translate(-460px, 0px); opacity: 1; }
+        38%  { transform: translate(-460px, 0px); opacity: 1; }
+        40%  { transform: translate(-460px, 0px); opacity: 1; }
+        43%  { transform: translate(-360px, -3px); opacity: 1; }
+        46%  { transform: translate(-260px, 0px); opacity: 1; }
+        49%  { transform: translate(-160px, -3px); opacity: 1; }
+        52%  { transform: translate(-60px, 0px); opacity: 1; }
+        55%  { transform: translate(40px, -3px); opacity: 1; }
+        57%  { transform: translate(110px, 0px); opacity: 0; }
+        59%  { transform: translate(-740px, 0px); opacity: 0; }
+        60%  { transform: translate(-740px, 0px); opacity: 1; }
+        63%  { transform: translate(-580px, -3px); opacity: 1; }
+        66%  { transform: translate(-420px, 0px); opacity: 1; }
+        69%  { transform: translate(-260px, -3px); opacity: 1; }
+        72%  { transform: translate(-100px, 0px); opacity: 1; }
+        75%  { transform: translate(60px, -3px); opacity: 1; }
+        78%  { transform: translate(130px, 0px); opacity: 0; }
+        86%  { transform: translate(130px, 0px); opacity: 0; }
+        92%  { transform: translate(0px, 0px); opacity: 0; }
+        96%  { transform: translate(0px, 0px); opacity: 1; }
+        100% { transform: translate(0px, 0px); opacity: 1; }
+      }
+      @keyframes zoroRoamProfile420 {
+        0%   { transform: translate(0px, 0px); opacity: 1; }
+        4%   { transform: translate(-45px, -3px); opacity: 1; }
+        8%   { transform: translate(-90px, 0px); opacity: 1; }
+        12%  { transform: translate(-135px, -3px); opacity: 1; }
+        16%  { transform: translate(-180px, 0px); opacity: 1; }
+        20%  { transform: translate(-230px, -2px); opacity: 1; }
+        22%  { transform: translate(-230px, 0px); opacity: 1; }
+        38%  { transform: translate(-230px, 0px); opacity: 1; }
+        40%  { transform: translate(-230px, 0px); opacity: 1; }
+        44%  { transform: translate(-160px, -3px); opacity: 1; }
+        48%  { transform: translate(-90px, 0px); opacity: 1; }
+        52%  { transform: translate(-20px, -3px); opacity: 1; }
+        56%  { transform: translate(50px, 0px); opacity: 1; }
+        59%  { transform: translate(90px, 0px); opacity: 0; }
+        60%  { transform: translate(-360px, 0px); opacity: 1; }
+        64%  { transform: translate(-280px, -3px); opacity: 1; }
+        68%  { transform: translate(-200px, 0px); opacity: 1; }
+        72%  { transform: translate(-120px, -3px); opacity: 1; }
+        76%  { transform: translate(-40px, 0px); opacity: 1; }
+        80%  { transform: translate(40px, -3px); opacity: 1; }
+        84%  { transform: translate(90px, 0px); opacity: 0; }
+        92%  { transform: translate(0px, 0px); opacity: 0; }
+        96%  { transform: translate(0px, 0px); opacity: 1; }
+        100% { transform: translate(0px, 0px); opacity: 1; }
+      }
+      @keyframes zoroFlip800 {
+        0%, 39.99%  { transform: scaleX(1); }
+        40%, 86.99% { transform: scaleX(-1); }
+        87%, 100%   { transform: scaleX(1); }
+      }
+      @keyframes zoroFlip420 {
+        0%, 39.99%  { transform: scaleX(1); }
+        40%, 86.99% { transform: scaleX(-1); }
+        87%, 100%   { transform: scaleX(1); }
+      }
+      @keyframes zoroSignpost {
+        0%, 21%   { opacity: 0; transform: scale(0.6); }
+        23%, 38%  { opacity: 1; transform: scale(1); }
+        40%, 100% { opacity: 0; transform: scale(0.6); }
+      }
+      @keyframes zoroDustPuff {
+        0%, 39%   { opacity: 0; transform: scale(0.3); }
+        41%, 47%  { opacity: 0.85; transform: scale(1.1); }
+        49%, 100% { opacity: 0; transform: scale(0.3); }
+      }
+      .zoro-wander-track-800 { animation: zoroRoamProfile800 15s ease-in-out infinite; }
+      .zoro-wander-track-420 { animation: zoroRoamProfile420 15s ease-in-out infinite; }
+      .zoro-wander-flip-800  { animation: zoroFlip800 15s steps(1) infinite; transform-origin: 42px 42px; }
+      .zoro-wander-flip-420  { animation: zoroFlip420 15s steps(1) infinite; transform-origin: 42px 42px; }
+      .zoro-signpost         { animation: zoroSignpost 15s ease-in-out infinite; transform-origin: 22px 20px; }
+      .zoro-dust             { animation: zoroDustPuff 15s ease-in-out infinite; transform-origin: 14px 74px; }
+
+      /* ==================== WANO SAKURA & BAMBOO FALLING ==================== */
+      @keyframes windSlashGust {
+        0%   { opacity: 0.12; stroke-dashoffset: 40; }
+        50%  { opacity: 0.38; }
+        100% { opacity: 0.12; stroke-dashoffset: -40; }
+      }
+      .wind-slash-gust { animation: windSlashGust 3.8s linear infinite; }
+
+      @keyframes sakuraFallCanvas1 {
+        0%   { transform: translate(-25px, 20px) rotate(-15deg); }
+        33%  { transform: translate(240px, 240px) rotate(45deg); }
+        66%  { transform: translate(520px, 520px) rotate(-20deg); }
+        100% { transform: translate(850px, 800px) rotate(60deg); }
+      }
+      @keyframes sakuraFallCanvas2 {
+        0%   { transform: translate(100px, -25px) rotate(25deg); }
+        33%  { transform: translate(360px, 300px) rotate(-35deg); }
+        66%  { transform: translate(640px, 640px) rotate(40deg); }
+        100% { transform: translate(850px, 880px) rotate(-20deg); }
+      }
+      @keyframes sakuraFallCanvas3 {
+        0%   { transform: translate(-30px, 260px) rotate(-30deg); }
+        33%  { transform: translate(260px, 540px) rotate(30deg); }
+        66%  { transform: translate(580px, 800px) rotate(-45deg); }
+        100% { transform: translate(850px, 980px) rotate(20deg); }
+      }
+      @keyframes sakuraFallCanvas4 {
+        0%   { transform: translate(320px, -25px) rotate(10deg); }
+        50%  { transform: translate(540px, 240px) rotate(-30deg); }
+        100% { transform: translate(850px, 680px) rotate(25deg); }
+      }
+      @keyframes sakuraFallCanvas5 {
+        0%   { transform: translate(-25px, 500px) rotate(-10deg); }
+        50%  { transform: translate(220px, 720px) rotate(50deg); }
+        100% { transform: translate(850px, 940px) rotate(35deg); }
+      }
+      @keyframes sakuraFallCanvas6 {
+        0%   { transform: translate(200px, 320px) rotate(15deg); }
+        50%  { transform: translate(450px, 580px) rotate(-25deg); }
+        100% { transform: translate(850px, 840px) rotate(35deg); }
+      }
+      .sakura-fall-canvas-1 { animation: sakuraFallCanvas1 18s ease-in-out infinite; transform-origin: 0 0; }
+      .sakura-fall-canvas-2 { animation: sakuraFallCanvas2 22s ease-in-out infinite; transform-origin: 0 0; }
+      .sakura-fall-canvas-3 { animation: sakuraFallCanvas3 20s ease-in-out infinite; transform-origin: 0 0; }
+      .sakura-fall-canvas-4 { animation: sakuraFallCanvas4 16s ease-in-out infinite; transform-origin: 0 0; }
+      .sakura-fall-canvas-5 { animation: sakuraFallCanvas5 15s ease-in-out infinite; transform-origin: 0 0; }
+      .sakura-fall-canvas-6 { animation: sakuraFallCanvas6 19s ease-in-out infinite; transform-origin: 0 0; }
+
+      @keyframes sakuraFallProfile1 {
+        0%   { transform: translate(-20px, 5px) rotate(-15deg); }
+        35%  { transform: translate(320px, 45px) rotate(35deg); }
+        70%  { transform: translate(640px, 80px) rotate(-25deg); }
+        100% { transform: translate(870px, 115px) rotate(45deg); }
+      }
+      @keyframes sakuraFallProfile2 {
+        0%   { transform: translate(140px, -15px) rotate(20deg); }
+        45%  { transform: translate(470px, 35px) rotate(-30deg); }
+        80%  { transform: translate(690px, 80px) rotate(30deg); }
+        100% { transform: translate(870px, 110px) rotate(-15deg); }
+      }
+      @keyframes sakuraFallProfile3 {
+        0%   { transform: translate(-25px, 35px) rotate(-20deg); }
+        40%  { transform: translate(260px, 65px) rotate(40deg); }
+        75%  { transform: translate(560px, 95px) rotate(-30deg); }
+        100% { transform: translate(850px, 120px) rotate(25deg); }
+      }
+      .sakura-fall-profile-1 { animation: sakuraFallProfile1 12s ease-in-out infinite; transform-origin: 0 0; }
+      .sakura-fall-profile-2 { animation: sakuraFallProfile2 15s ease-in-out infinite; transform-origin: 0 0; }
+      .sakura-fall-profile-3 { animation: sakuraFallProfile3 13s ease-in-out infinite; transform-origin: 0 0; }
+
+      @keyframes sakuraFallContrib1 {
+        0%   { transform: translate(-20px, 15px) rotate(-15deg); }
+        40%  { transform: translate(260px, 65px) rotate(40deg); }
+        75%  { transform: translate(540px, 115px) rotate(-20deg); }
+        100% { transform: translate(860px, 175px) rotate(45deg); }
+      }
+      @keyframes sakuraFallContrib2 {
+        0%   { transform: translate(160px, -15px) rotate(25deg); }
+        45%  { transform: translate(420px, 55px) rotate(-35deg); }
+        80%  { transform: translate(680px, 110px) rotate(30deg); }
+        100% { transform: translate(860px, 160px) rotate(-15deg); }
+      }
+      @keyframes sakuraFallContrib3 {
+        0%   { transform: translate(-25px, 45px) rotate(-25deg); }
+        40%  { transform: translate(220px, 95px) rotate(30deg); }
+        75%  { transform: translate(500px, 135px) rotate(-35deg); }
+        100% { transform: translate(840px, 180px) rotate(20deg); }
+      }
+      .sakura-fall-contrib-1 { animation: sakuraFallContrib1 14s ease-in-out infinite; transform-origin: 0 0; }
+      .sakura-fall-contrib-2 { animation: sakuraFallContrib2 17s ease-in-out infinite; transform-origin: 0 0; }
+      .sakura-fall-contrib-3 { animation: sakuraFallContrib3 15s ease-in-out infinite; transform-origin: 0 0; }
+
+      @keyframes sakuraFallOverall1 {
+        0%   { transform: translate(-15px, 10px) rotate(-15deg); }
+        50%  { transform: translate(110px, 45px) rotate(35deg); }
+        100% { transform: translate(280px, 110px) rotate(-20deg); }
+      }
+      @keyframes sakuraFallOverall2 {
+        0%   { transform: translate(60px, -10px) rotate(20deg); }
+        50%  { transform: translate(160px, 45px) rotate(-25deg); }
+        100% { transform: translate(280px, 105px) rotate(25deg); }
+      }
+      .sakura-fall-overall-1 { animation: sakuraFallOverall1 9s ease-in-out infinite; transform-origin: 0 0; }
+      .sakura-fall-overall-2 { animation: sakuraFallOverall2 11s ease-in-out infinite; transform-origin: 0 0; }`
+    : '';
+
+  return `${gatlingStyles}${strawHatStyles}${zoroStyles}
       @media (prefers-reduced-motion: reduce) {
         .gatling-f0, .hat-f0 { opacity: 1 !important; animation: none !important; }
         .gatling-f1, .gatling-f2, .gatling-f3, .hat-f1, .hat-f2, .hat-f3 { opacity: 0 !important; animation: none !important; }
@@ -229,7 +445,98 @@ export function getMascotAnimationStyles(
         .wind-hat-roam-contrib, .wind-hat-ambient, .wind-hat-drift, .wind-gust {
           animation: none !important;
         }
+        .zoro-wander-track-800, .zoro-wander-track-420 {
+          animation: none !important;
+          transform: translate(0px, 0px) !important;
+          opacity: 1 !important;
+        }
+        .zoro-wander-flip-800, .zoro-wander-flip-420, .zoro-signpost, .zoro-dust,
+        .sakura-fall-canvas-1, .sakura-fall-canvas-2, .sakura-fall-canvas-3,
+        .sakura-fall-canvas-4, .sakura-fall-canvas-5, .sakura-fall-canvas-6,
+        .sakura-fall-profile-1, .sakura-fall-profile-2, .sakura-fall-profile-3,
+        .sakura-fall-contrib-1, .sakura-fall-contrib-2, .sakura-fall-contrib-3,
+        .sakura-fall-overall-1, .sakura-fall-overall-2,
+        .wind-slash-gust {
+          animation: none !important;
+        }
+        .zoro-signpost, .zoro-dust {
+          opacity: 0 !important;
+        }
       }`;
+}
+
+export function renderZoroWandererSvg(
+  mascot: OnePieceMascot,
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  groupClass = 'p-mascot',
+  isSmall = false
+): string {
+  const safeName = escapeXml(mascot.name);
+  const trackClass = isSmall ? 'zoro-wander-track-420' : 'zoro-wander-track-800';
+  const flipClass = isSmall ? 'zoro-wander-flip-420' : 'zoro-wander-flip-800';
+
+  const roamValues = isSmall
+    ? '0,0; -45,-3; -90,0; -135,-3; -180,0; -230,-2; -230,0; -230,0; -230,0; -160,-3; -90,0; -20,-3; 50,0; 90,0; -360,0; -280,-3; -200,0; -120,-3; -40,0; 40,-3; 90,0; 90,0; 0,0'
+    : '0,0; -70,-3; -140,0; -210,-3; -280,0; -350,-3; -420,0; -460,-2; -460,0; -460,0; -460,0; -360,-3; -260,0; -160,-3; -60,0; 40,-3; 110,0; 110,0; -740,0; -580,-3; -420,0; -260,-3; -100,0; 60,-3; 130,0; 130,0; 0,0';
+
+  const keyTimes = isSmall
+    ? '0.00;0.04;0.08;0.12;0.16;0.20;0.22;0.38;0.40;0.44;0.48;0.52;0.56;0.59;0.60;0.64;0.68;0.72;0.76;0.80;0.84;0.92;1.00'
+    : '0.00;0.03;0.06;0.09;0.12;0.15;0.18;0.20;0.22;0.38;0.40;0.43;0.46;0.49;0.52;0.55;0.57;0.59;0.60;0.63;0.66;0.69;0.72;0.75;0.78;0.88;1.00';
+
+  const opacityValues = isSmall
+    ? '1;1;1;1;1;1;1;1;1;1;1;1;1;0;0;1;1;1;1;1;0;0;1'
+    : '1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;0;0;1;1;1;1;1;1;0;0;1';
+
+  const flipValues = '1 1; 1 1; -1 1; -1 1; 1 1';
+  const flipTimes = '0.00; 0.399; 0.40; 0.869; 0.87; 1.00';
+
+  const signOpacity = '0; 0; 1; 1; 0; 0';
+  const signTimes = '0.00; 0.21; 0.23; 0.38; 0.40; 1.00';
+
+  const dustOpacity = '0; 0; 0.85; 0.85; 0; 0';
+  const dustTimes = '0.00; 0.39; 0.41; 0.47; 0.49; 1.00';
+
+  const halfW = width / 2;
+  const halfH = height / 2;
+
+  return `\n  <!-- Roronoa Zoro (Cross-Card Wanderer) -->
+  <g class="${groupClass} zoro-wanderer" role="img" aria-label="${safeName} (Cross-Card Wanderer)">
+    <g class="${trackClass}" transform="translate(${x}, ${y})">
+      <animateTransform attributeName="transform" type="translate" values="${roamValues}" keyTimes="${keyTimes}" dur="15s" repeatCount="indefinite" />
+      <animate attributeName="opacity" values="${opacityValues}" keyTimes="${keyTimes}" dur="15s" repeatCount="indefinite" />
+
+      <!-- Comedic Signpost & Sweat Bubble Popup -->
+      <g class="zoro-signpost" transform="translate(18, -26)" opacity="0">
+        <animate attributeName="opacity" values="${signOpacity}" keyTimes="${signTimes}" dur="15s" repeatCount="indefinite" />
+        <rect x="20" y="8" width="4" height="28" rx="1" fill="#78350f" />
+        <path d="M 4 8 L 20 8 L 20 18 L 4 18 L 0 13 Z" fill="#b45309" stroke="#78350f" stroke-width="0.7" />
+        <text x="3" y="15.5" font-size="7" font-weight="800" fill="#fef3c7" font-family="sans-serif">COMMITS</text>
+        <path d="M 24 14 L 40 14 L 44 19 L 40 24 L 24 24 Z" fill="#92400e" stroke="#78350f" stroke-width="0.7" />
+        <text x="26" y="21.5" font-size="7" font-weight="800" fill="#fde68a" font-family="sans-serif">NORTH</text>
+        <text x="18" y="-2" font-size="18" font-weight="900" fill="#ef4444" font-family="sans-serif">?</text>
+        <path d="M 34 2 C 32 2 30 4 31 6 C 32 8 34 10 34 10 C 34 10 36 8 37 6 C 38 4 36 2 34 2 Z" fill="#38bdf8" />
+      </g>
+
+      <!-- Cartoon Dust Cloud when turning/running -->
+      <g class="zoro-dust" opacity="0">
+        <animate attributeName="opacity" values="${dustOpacity}" keyTimes="${dustTimes}" dur="15s" repeatCount="indefinite" />
+        <circle cx="14" cy="74" r="5" fill="#e2e8f0" opacity="0.6" />
+        <circle cx="8" cy="77" r="3.5" fill="#cbd5e1" opacity="0.5" />
+        <circle cx="20" cy="76" r="4" fill="#cbd5e1" opacity="0.5" />
+      </g>
+
+      <!-- Centered Image Container for Pixel-Perfect 180 Flip -->
+      <g transform="translate(${halfW}, ${halfH})">
+        <g class="${flipClass}">
+          <animateTransform attributeName="transform" type="scale" values="${flipValues}" keyTimes="${flipTimes}" dur="15s" repeatCount="indefinite" />
+          <image href="${mascot.avatarBase64}" x="-${halfW}" y="-${halfH}" width="${width}" height="${height}" preserveAspectRatio="xMidYMid meet" style="image-rendering: pixelated; image-rendering: crisp-edges;" />
+        </g>
+      </g>
+    </g>
+  </g>`;
 }
 
 export function renderMascotSvg(
@@ -238,9 +545,16 @@ export function renderMascotSvg(
   y: number,
   width: number,
   height: number,
-  groupClass = 'p-mascot'
+  groupClass = 'p-mascot',
+  isSmall = false
 ): string {
   const safeName = escapeXml(mascot.name);
+
+  // Zoro Cross-Card Wanderer animation in profile header
+  if (mascot.id === 'zoro' && groupClass === 'p-mascot') {
+    return renderZoroWandererSvg(mascot, x, y, width, height, groupClass, isSmall);
+  }
+
   if (mascot.frames && mascot.frames.length > 1) {
     const numFrames = mascot.frames.length;
     const dur = ((mascot.frameDuration || 0.11) * numFrames).toFixed(2);
@@ -268,6 +582,162 @@ export function renderMascotSvg(
   return `\n  <!-- Theme Character Mascot (Borderless) -->\n  <g class="${groupClass}" role="img" aria-label="${safeName}">\n    <image href="${mascot.avatarBase64}" x="${x}" y="${y}" width="${width}" height="${height}" preserveAspectRatio="xMidYMid meet" style="image-rendering: pixelated; image-rendering: crisp-edges;" />\n  </g>`;
 }
 
+export function renderFloatingSakura(
+  themeId?: string | null,
+  width = 800,
+  height = 104,
+  isMasterCanvas = false,
+  mascotId?: string | null
+): string {
+  const sakuraPetal1 = `<path d="M 0 -10 C -3 -14 -7 -14 -9 -8 C -11 -2 -7 5 0 14 C 7 5 11 -2 9 -8 C 7 -14 3 -14 0 -10 Z" fill="#fda4af" stroke="#f472b6" stroke-width="0.8" />`;
+  const sakuraPetal2 = `<path d="M -2 -8 C -7 -11 -10 -7 -9 -1 C -8 5 -2 11 3 13 C 4 8 7 2 5 -4 C 4 -8 0 -11 -2 -8 Z" fill="#fbcfe8" stroke="#f472b6" stroke-width="0.8" />`;
+  const bambooLeaf1 = `<path d="M 0 -16 C -5 -8 -6 2 0 16 C 6 2 5 -8 0 -16 Z" fill="#10b981" stroke="#059669" stroke-width="0.7" />`;
+  const bambooLeaf2 = `<path d="M -3 -14 C -7 -6 -5 4 2 14 C 6 4 4 -6 -3 -14 Z" fill="#34d399" stroke="#10b981" stroke-width="0.7" />`;
+
+  if (isMasterCanvas) {
+    const windTrail1 = `<path d="M 20 40 Q 280 220 540 400 T 820 620" stroke="rgba(16, 185, 129, 0.28)" stroke-width="1.6" stroke-linecap="round" fill="none" stroke-dasharray="16 10" class="wind-slash-gust" />`;
+    const windTrail2 = `<path d="M 40 ${Math.floor(height * 0.32)} Q 320 ${Math.floor(height * 0.50)} 560 ${Math.floor(height * 0.68)} T 820 ${Math.floor(height * 0.88)}" stroke="rgba(52, 211, 153, 0.24)" stroke-width="1.5" stroke-linecap="round" fill="none" stroke-dasharray="14 10" class="wind-slash-gust" />`;
+    const windTrail3 = `<path d="M 60 ${Math.floor(height * 0.55)} Q 340 ${Math.floor(height * 0.72)} 580 ${Math.floor(height * 0.88)} T 810 ${height + 20}" stroke="rgba(168, 85, 247, 0.22)" stroke-width="1.4" stroke-linecap="round" fill="none" stroke-dasharray="12 8" class="wind-slash-gust" />`;
+
+    return `\n  <!-- Master Profile Canvas Falling Wano Sakura & Bamboo Leaves (Top-Left to Bottom-Right) -->
+  <g class="canvas-floating-sakura" role="img" aria-label="Wano Sakura and Bamboo Leaves Falling">
+    ${windTrail1}
+    ${windTrail2}
+    ${windTrail3}
+    <g class="sakura-fall-canvas-1" transform="translate(-25, 20)" opacity="0.9">
+      <animateTransform attributeName="transform" type="translate" values="-25,20; 240,${Math.floor(height * 0.25)}; 520,${Math.floor(height * 0.55)}; 850,${Math.floor(height * 0.85)}; -25,20" dur="18s" repeatCount="indefinite" />
+      <g transform="rotate(-15 0 0)">
+        <animateTransform attributeName="transform" type="rotate" values="-15 0 0; 45 0 0; -20 0 0; 60 0 0; -15 0 0" dur="18s" repeatCount="indefinite" additive="sum" />
+        ${sakuraPetal1}
+      </g>
+    </g>
+    <g class="sakura-fall-canvas-2" transform="translate(100, -25)" opacity="0.85">
+      <animateTransform attributeName="transform" type="translate" values="100,-25; 360,${Math.floor(height * 0.32)}; 640,${Math.floor(height * 0.68)}; 850,${Math.floor(height * 0.92)}; 100,-25" dur="22s" repeatCount="indefinite" />
+      <g transform="rotate(25 0 0)">
+        <animateTransform attributeName="transform" type="rotate" values="25 0 0; -35 0 0; 40 0 0; -20 0 0; 25 0 0" dur="22s" repeatCount="indefinite" additive="sum" />
+        ${bambooLeaf1}
+      </g>
+    </g>
+    <g class="sakura-fall-canvas-3" transform="translate(-30, ${Math.floor(height * 0.28)})" opacity="0.8">
+      <animateTransform attributeName="transform" type="translate" values="-30,${Math.floor(height * 0.28)}; 260,${Math.floor(height * 0.58)}; 580,${Math.floor(height * 0.86)}; 850,${height + 20}; -30,${Math.floor(height * 0.28)}" dur="20s" repeatCount="indefinite" />
+      <g transform="rotate(-30 0 0)">
+        <animateTransform attributeName="transform" type="rotate" values="-30 0 0; 30 0 0; -45 0 0; 20 0 0; -30 0 0" dur="20s" repeatCount="indefinite" additive="sum" />
+        ${sakuraPetal2}
+      </g>
+    </g>
+    <g class="sakura-fall-canvas-4" transform="translate(320, -25)" opacity="0.8">
+      <animateTransform attributeName="transform" type="translate" values="320,-25; 540,${Math.floor(height * 0.26)}; 760,${Math.floor(height * 0.58)}; 850,${Math.floor(height * 0.72)}; 320,-25" dur="16s" repeatCount="indefinite" />
+      <g transform="rotate(10 0 0)">
+        <animateTransform attributeName="transform" type="rotate" values="10 0 0; -30 0 0; 25 0 0; -15 0 0; 10 0 0" dur="16s" repeatCount="indefinite" additive="sum" />
+        ${bambooLeaf2}
+      </g>
+    </g>
+    <g class="sakura-fall-canvas-5" transform="translate(-25, ${Math.floor(height * 0.55)})" opacity="0.85">
+      <animateTransform attributeName="transform" type="translate" values="-25,${Math.floor(height * 0.55)}; 220,${Math.floor(height * 0.78)}; 560,${height + 15}; 850,${height + 25}; -25,${Math.floor(height * 0.55)}" dur="15s" repeatCount="indefinite" />
+      <g transform="rotate(-10 0 0)">
+        <animateTransform attributeName="transform" type="rotate" values="-10 0 0; 50 0 0; -25 0 0; 35 0 0; -10 0 0" dur="15s" repeatCount="indefinite" additive="sum" />
+        ${sakuraPetal1}
+      </g>
+    </g>
+    <g class="sakura-fall-canvas-6" transform="translate(200, ${Math.floor(height * 0.35)})" opacity="0.75">
+      <animateTransform attributeName="transform" type="translate" values="200,${Math.floor(height * 0.35)}; 450,${Math.floor(height * 0.62)}; 720,${Math.floor(height * 0.88)}; 850,${height + 20}; 200,${Math.floor(height * 0.35)}" dur="19s" repeatCount="indefinite" />
+      <g transform="rotate(15 0 0)">
+        <animateTransform attributeName="transform" type="rotate" values="15 0 0; -25 0 0; 35 0 0; -10 0 0; 15 0 0" dur="19s" repeatCount="indefinite" additive="sum" />
+        ${sakuraPetal2}
+      </g>
+    </g>
+  </g>`;
+  }
+
+  // Profile Card or Wide Cards (falling top-left to bottom-right)
+  if (height <= 104 && width > 260) {
+    const isSmall = width <= 460;
+    const p1X = isSmall ? 180 : 320;
+    const p2X = isSmall ? 300 : 640;
+    const dur1 = isSmall ? '10s' : '12s';
+    const dur2 = isSmall ? '13s' : '15s';
+    const dur3 = isSmall ? '11s' : '13s';
+    const trail = `<path d="M 15 15 Q ${Math.floor(width * 0.4)} 50 ${Math.floor(width * 0.7)} 80 T ${width + 20} 110" stroke="rgba(16, 185, 129, 0.25)" stroke-width="1.5" stroke-linecap="round" fill="none" stroke-dasharray="14 10" class="wind-slash-gust" />`;
+
+    return `\n  <!-- Profile Card Falling Wano Sakura (Top-Left to Bottom-Right) -->
+  <g class="card-floating-sakura" role="img" aria-label="Wano Sakura Falling">
+    ${trail}
+    <g class="sakura-fall-profile-1" transform="translate(-20, 5)" opacity="0.85">
+      <animateTransform attributeName="transform" type="translate" values="-20,5; ${p1X},45; ${p2X},80; ${width + 30},115; -20,5" dur="${dur1}" repeatCount="indefinite" />
+      <g transform="rotate(-15 0 0)">
+        <animateTransform attributeName="transform" type="rotate" values="-15 0 0; 35 0 0; -25 0 0; 45 0 0; -15 0 0" dur="${dur1}" repeatCount="indefinite" additive="sum" />
+        ${sakuraPetal1}
+      </g>
+    </g>
+    <g class="sakura-fall-profile-2" transform="translate(140, -15)" opacity="0.8">
+      <animateTransform attributeName="transform" type="translate" values="140,-15; ${p1X + 150},35; ${p2X + 50},80; ${width + 30},110; 140,-15" dur="${dur2}" repeatCount="indefinite" />
+      <g transform="rotate(20 0 0)">
+        <animateTransform attributeName="transform" type="rotate" values="20 0 0; -30 0 0; 30 0 0; -15 0 0; 20 0 0" dur="${dur2}" repeatCount="indefinite" additive="sum" />
+        ${bambooLeaf1}
+      </g>
+    </g>
+    <g class="sakura-fall-profile-3" transform="translate(-25, 35)" opacity="0.75">
+      <animateTransform attributeName="transform" type="translate" values="-25,35; ${p1X - 60},65; ${p2X - 80},95; ${width + 20},120; -25,35" dur="${dur3}" repeatCount="indefinite" />
+      <g transform="rotate(-20 0 0)">
+        <animateTransform attributeName="transform" type="rotate" values="-20 0 0; 40 0 0; -30 0 0; 25 0 0; -20 0 0" dur="${dur3}" repeatCount="indefinite" additive="sum" />
+        ${sakuraPetal2}
+      </g>
+    </g>
+  </g>`;
+  }
+
+  // Contributions Card (800 x 166)
+  if (width > 260) {
+    const trail = `<path d="M 25 20 Q 280 80 540 120 T 820 170" stroke="rgba(16, 185, 129, 0.25)" stroke-width="1.5" stroke-linecap="round" fill="none" stroke-dasharray="14 10" class="wind-slash-gust" />`;
+    return `\n  <!-- Contributions Card Falling Wano Sakura (Top-Left to Bottom-Right) -->
+  <g class="card-floating-sakura" role="img" aria-label="Wano Sakura Falling">
+    ${trail}
+    <g class="sakura-fall-contrib-1" transform="translate(-20, 15)" opacity="0.85">
+      <animateTransform attributeName="transform" type="translate" values="-20,15; 260,65; 540,115; 840,175; -20,15" dur="14s" repeatCount="indefinite" />
+      <g transform="rotate(-15 0 0)">
+        <animateTransform attributeName="transform" type="rotate" values="-15 0 0; 40 0 0; -20 0 0; 45 0 0; -15 0 0" dur="14s" repeatCount="indefinite" additive="sum" />
+        ${sakuraPetal1}
+      </g>
+    </g>
+    <g class="sakura-fall-contrib-2" transform="translate(160, -15)" opacity="0.8">
+      <animateTransform attributeName="transform" type="translate" values="160,-15; 420,55; 680,110; 840,160; 160,-15" dur="17s" repeatCount="indefinite" />
+      <g transform="rotate(25 0 0)">
+        <animateTransform attributeName="transform" type="rotate" values="25 0 0; -35 0 0; 30 0 0; -15 0 0; 25 0 0" dur="17s" repeatCount="indefinite" additive="sum" />
+        ${bambooLeaf1}
+      </g>
+    </g>
+    <g class="sakura-fall-contrib-3" transform="translate(-25, 45)" opacity="0.75">
+      <animateTransform attributeName="transform" type="translate" values="-25,45; 220,95; 500,135; 820,180; -25,45" dur="15s" repeatCount="indefinite" />
+      <g transform="rotate(-25 0 0)">
+        <animateTransform attributeName="transform" type="rotate" values="-25 0 0; 30 0 0; -35 0 0; 20 0 0; -25 0 0" dur="15s" repeatCount="indefinite" additive="sum" />
+        ${sakuraPetal2}
+      </g>
+    </g>
+  </g>`;
+  }
+
+  // Overall / Streak small box (258 x 104)
+  const trail = `<path d="M 10 20 Q 90 50 170 75 T 260 105" stroke="rgba(16, 185, 129, 0.22)" stroke-width="1.3" stroke-linecap="round" fill="none" stroke-dasharray="8 6" class="wind-slash-gust" />`;
+  return `\n  <!-- Card Background Falling Wano Sakura (Top-Left to Bottom-Right) -->
+  <g class="card-floating-sakura" role="img" aria-label="Wano Sakura Falling">
+    ${trail}
+    <g class="sakura-fall-overall-1" transform="translate(-15, 10)" opacity="0.8">
+      <animateTransform attributeName="transform" type="translate" values="-15,10; 90,45; 180,75; 270,110; -15,10" dur="9s" repeatCount="indefinite" />
+      <g transform="rotate(-15 0 0)">
+        <animateTransform attributeName="transform" type="rotate" values="-15 0 0; 35 0 0; -20 0 0; 30 0 0; -15 0 0" dur="9s" repeatCount="indefinite" additive="sum" />
+        ${sakuraPetal1}
+      </g>
+    </g>
+    <g class="sakura-fall-overall-2" transform="translate(60, -10)" opacity="0.75">
+      <animateTransform attributeName="transform" type="translate" values="60,-10; 150,38; 230,75; 270,105; 60,-10" dur="11s" repeatCount="indefinite" />
+      <g transform="rotate(20 0 0)">
+        <animateTransform attributeName="transform" type="rotate" values="20 0 0; -25 0 0; 25 0 0; -10 0 0; 20 0 0" dur="11s" repeatCount="indefinite" additive="sum" />
+        ${bambooLeaf1}
+      </g>
+    </g>
+  </g>`;
+}
+
 export function renderFloatingBackgroundHats(
   themeId?: string | null,
   width = 800,
@@ -275,6 +745,9 @@ export function renderFloatingBackgroundHats(
   isMasterCanvas = false,
   mascotId?: string | null
 ): string {
+  if (isFloatingSakuraTheme(themeId, mascotId)) {
+    return renderFloatingSakura(themeId, width, height, isMasterCanvas, mascotId);
+  }
   if (!isFloatingHatTheme(themeId, mascotId)) return '';
 
   const numFrames = STRAW_HAT_FRAMES.length; // 4
@@ -410,7 +883,7 @@ export function designProfileCard(
   const bioY = 74;
 
   const mascotBadge = mascot
-    ? renderMascotSvg(mascot, width - 92, 6, 84, 84, 'p-mascot')
+    ? renderMascotSvg(mascot, width - 92, 6, 84, 84, 'p-mascot', width <= 460)
     : '';
 
   const floatingHat = !options?.isSubCard

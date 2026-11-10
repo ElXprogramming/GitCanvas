@@ -419,17 +419,142 @@ test('NORMAL_THEMES, SHOWCASE_THEMES, and ON_HOLD_THEMES are correctly categoriz
     assert.equal(t.mascot, undefined);
   }
 
-  // Showcase: only Luffy Gatling is showcased
-  assert.equal(SHOWCASE_THEMES.length, 1);
-  assert.equal(SHOWCASE_THEMES[0].id, 'onepiece_gatling');
-  assert.equal(SHOWCASE_THEMES[0].category, 'showcase');
-  assert.equal(SHOWCASE_THEMES[0].mascot?.isAnimated, true);
+  // Showcase: Luffy Gatling and Wano Zoro are showcased
+  assert.equal(SHOWCASE_THEMES.length, 2);
+  const showcaseIds = SHOWCASE_THEMES.map((t) => t.id);
+  assert.ok(showcaseIds.includes('onepiece_gatling'));
+  assert.ok(showcaseIds.includes('wano_zoro'));
+  for (const t of SHOWCASE_THEMES) {
+    assert.equal(t.category, 'showcase');
+    assert.equal(t.mascot?.isAnimated, true);
+  }
 
-  // On hold themes: 11 static pixel art themes put on hold
-  assert.equal(ON_HOLD_THEMES.length, 11);
+  // On hold themes: 10 static pixel art themes put on hold
+  assert.equal(ON_HOLD_THEMES.length, 10);
   for (const t of ON_HOLD_THEMES) {
     assert.equal(t.category, 'on_hold');
     assert.equal(t.onHold, true);
   }
+});
+
+test('wano_zoro theme renders Cross-Card Wanderer mascot with signpost, dust puff, and SMIL/CSS animations', () => {
+  const profile = {
+    username: 'zoro',
+    name: 'Roronoa Zoro',
+    avatarUrl: 'https://avatars.githubusercontent.com/u/2?v=4',
+  };
+
+  const profileSvg = designProfileCard(profile, 'wano_zoro', null, { width: 800 });
+  assert.ok(profileSvg.includes('class="p-mascot zoro-wanderer"'), 'Profile card should render Zoro Cross-Card Wanderer');
+  assert.ok(profileSvg.includes('class="zoro-wander-track-800"'), 'Profile card should have wander track animation');
+  assert.ok(profileSvg.includes('class="zoro-signpost"'), 'Profile card should render comedic wooden signpost');
+  assert.ok(profileSvg.includes('COMMITS'), 'Signpost should have COMMITS label');
+  assert.ok(profileSvg.includes('NORTH'), 'Signpost should have NORTH label');
+  assert.ok(profileSvg.includes('class="zoro-dust"'), 'Profile card should render dust puff effect');
+  assert.ok(profileSvg.includes('<animateTransform attributeName="transform" type="translate"'), 'Zoro wanderer must have SMIL translate animation');
+  assert.ok(profileSvg.includes('<animateTransform attributeName="transform" type="scale"'), 'Zoro wanderer must have SMIL scale flip animation');
+  assert.ok(profileSvg.includes('@keyframes zoroRoamProfile800'), 'CSS keyframes for roam must be defined');
+  assert.ok(profileSvg.includes('@keyframes zoroFlip800'), 'CSS keyframes for flip must be defined');
+  assert.ok(profileSvg.includes('@keyframes zoroSignpost'), 'CSS keyframes for signpost must be defined');
+
+  const smallProfileSvg = designProfileCard(profile, 'wano_zoro', null, { width: 420 });
+  assert.ok(smallProfileSvg.includes('class="zoro-wander-track-420"'), 'Compact profile card should have 420 wander track animation');
+});
+
+test('wano_zoro theme renders falling Wano Sakura petals, bamboo leaves, and green flying slash wind trails from top-left to bottom-right', () => {
+  const profile = {
+    username: 'zoro',
+    name: 'Roronoa Zoro',
+    avatarUrl: 'https://avatars.githubusercontent.com/u/2?v=4',
+  };
+
+  const profileSvg = designProfileCard(profile, 'wano_zoro');
+  assert.ok(profileSvg.includes('class="card-floating-sakura"'), 'Profile card should render floating sakura');
+  assert.ok(profileSvg.includes('class="sakura-fall-profile-1"'), 'Profile card should have primary falling sakura petal');
+  assert.ok(profileSvg.includes('class="wind-slash-gust"'), 'Profile card should have emerald wind slash gust');
+
+  const mockCanvasData: FullCanvasData = {
+    profile: {
+      username: 'zoro',
+      name: 'Roronoa Zoro',
+      avatarUrl: 'https://avatars.githubusercontent.com/u/2?v=4',
+      bio: 'King of Hell / Santoryu Swordsman',
+      company: 'Straw Hat Pirates',
+      location: 'Wano Country',
+      email: null,
+      blog: null,
+      twitterUsername: null,
+      followers: 4000,
+      following: 5,
+      createdAt: '2020-01-01',
+      htmlUrl: 'https://github.com/zoro',
+    },
+    projects: [],
+    languages: {
+      item: 'languages',
+      username: 'zoro',
+      languages: [{ name: 'TypeScript', bytes: 1000, percentage: 100, color: '#3178c6' }],
+      totalBytes: 1000,
+      totalLanguagesCount: 1,
+    },
+    commits: { item: 'commits', username: 'zoro', label: 'commits', value: 450, grade: 'S' },
+    prs: { item: 'prs', username: 'zoro', label: 'PR', value: 25, grade: 'S' },
+    issues: { item: 'issues', username: 'zoro', label: 'issues', value: 10, grade: 'A' },
+    stars: { item: 'stars', username: 'zoro', label: 'stars earned', value: 350, grade: 'S' },
+    repos: { item: 'repos', username: 'zoro', label: 'Repos', value: 9, grade: 'B' },
+    polyglot: { item: 'polyglot', username: 'zoro', label: 'Polyglot', value: 3, grade: 'C' },
+    overall: {
+      item: 'overall',
+      username: 'zoro',
+      label: 'overall',
+      grade: 'S',
+      score: 97,
+      breakdown: { commits: 'S', prs: 'S', issues: 'A', stars: 'S', repos: 'B', polyglot: 'C' },
+    },
+    streak: {
+      item: 'streak',
+      username: 'zoro',
+      label: 'streak',
+      value: 60,
+      unit: 'days',
+      formatted: '60 days',
+    },
+    longestStreak: {
+      item: 'longest-streak',
+      username: 'zoro',
+      label: 'longest streak',
+      value: 95,
+      unit: 'days',
+      formatted: '95 days',
+    },
+    activeDays: {
+      item: 'active-days',
+      username: 'zoro',
+      label: 'active days',
+      value: 280,
+      unit: 'days',
+      formatted: '280 days',
+    },
+    contributions: {
+      item: 'contributions',
+      username: 'zoro',
+      label: 'contributions last year',
+      totalCommits: 900,
+      rightLabel: '900 contributions',
+      weeks: [],
+    },
+  };
+
+  const canvasSvg = designFullCanvasCard(mockCanvasData, {
+    theme: 'wano_zoro',
+  });
+
+  assert.ok(canvasSvg.includes('class="canvas-floating-sakura"'), 'Canvas should render master falling sakura group');
+  assert.ok(canvasSvg.includes('class="sakura-fall-canvas-1"'), 'Canvas should have primary falling sakura petal');
+  assert.ok(canvasSvg.includes('class="sakura-fall-canvas-2"'), 'Canvas should have bamboo leaf falling');
+  assert.ok(canvasSvg.includes('class="wind-slash-gust"'), 'Canvas should render flying slash wind trails');
+  assert.ok(canvasSvg.includes('@keyframes sakuraFallCanvas1'), 'Canvas CSS should include sakuraFallCanvas1');
+  assert.ok(canvasSvg.includes('@keyframes windSlashGust'), 'Canvas CSS should include windSlashGust');
+  assert.ok(canvasSvg.includes('zoro-wanderer'), 'Canvas should embed Zoro wanderer mascot');
 });
 

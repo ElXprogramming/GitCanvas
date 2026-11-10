@@ -198,9 +198,8 @@ export const DESIGN_THEMES: Record<string, DesignTheme> = {
   },
   wano_zoro: {
     id: 'wano_zoro',
-    label: 'Wano Zoro (Pixel Art)',
-    category: 'on_hold',
-    onHold: true,
+    label: 'Wano Zoro (Lost in Wano)',
+    category: 'showcase',
     cardBg: '#071811',
     cardBgGradientEnd: '#030c08',
     border: '#10b981',
@@ -430,12 +429,12 @@ export const NORMAL_THEMES: DesignTheme[] = [
 
 export const SHOWCASE_THEMES: DesignTheme[] = [
   DESIGN_THEMES.onepiece_gatling,
+  DESIGN_THEMES.wano_zoro,
 ];
 
 export const ON_HOLD_THEMES: DesignTheme[] = [
   DESIGN_THEMES.straw_hat,
   DESIGN_THEMES.gear_5_nika,
-  DESIGN_THEMES.wano_zoro,
   DESIGN_THEMES.onepiece_straw_hat,
   DESIGN_THEMES.onepiece_chopper,
   DESIGN_THEMES.onepiece_ace,
@@ -488,7 +487,14 @@ export function getDesignTheme(
     baseTheme = DESIGN_THEMES.straw_hat;
   } else if (key === 'nika' || key === 'gear5' || key === 'gear_5') {
     baseTheme = DESIGN_THEMES.gear_5_nika;
-  } else if (key === 'zoro' || key === 'santoryu' || key === 'wano') {
+  } else if (
+    key === 'zoro' ||
+    key === 'santoryu' ||
+    key === 'wano' ||
+    key === 'wano_zoro' ||
+    key === 'lost_zoro' ||
+    key === 'onepiece_zoro'
+  ) {
     baseTheme = DESIGN_THEMES.wano_zoro;
   } else if (key === 'ace' || key === 'fire_fist' || key === 'portgas') {
     baseTheme = DESIGN_THEMES.onepiece_ace;
