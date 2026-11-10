@@ -264,6 +264,9 @@ test('designFullCanvasCard renders complete unified SVG with single font import'
   assert.ok(svg.endsWith('</svg>'));
   assert.ok(svg.includes('octocat'));
   assert.ok(svg.includes('Coding dreams into reality'));
+  assert.ok(!svg.includes('aria-label="email"'));
+  assert.ok(!svg.includes('aria-label="LinkedIn"'));
+  assert.ok(!svg.includes('aria-label="Portfolio"'));
 
   // Verify font import is deduplicated (only in top-level <defs>)
   const importMatches = svg.match(/@import\s+url/g);

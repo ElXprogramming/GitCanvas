@@ -564,15 +564,6 @@ export function designFullCanvasCard(
   const padX = 20;
   const innerWidth = 800; // 840 - 2 * 20
 
-  const socials =
-    options?.socials !== undefined
-      ? options.socials
-      : [
-          { type: 'email', label: 'email' },
-          { type: 'linkedin', label: 'LinkedIn' },
-          { type: 'website', label: 'Portfolio' },
-        ];
-
   const sections =
     options?.sections && options.sections.length > 0
       ? options.sections
@@ -584,60 +575,23 @@ export function designFullCanvasCard(
   let y = 20;
 
   const showProfile = !options?.hideProfile;
-  const visibleSocials = (socials || []).slice(0, 5);
 
-  // 1. Header Row: Profile Card (Left) + Social Item Cards (Right)
-  if (showProfile || visibleSocials.length > 0) {
-    if (showProfile) {
-      elements.push(
-        embedSubSvg(
-          designProfileCard(data.profile, themeId, fontId),
-          padX,
-          y,
-          420,
-          96
-        )
-      );
-    }
+  // 1. Header Row: Profile Card
+  if (showProfile) {
+    elements.push(
+      embedSubSvg(
+        designProfileCard(data.profile, themeId, fontId),
+        padX,
+        y,
+        420,
+        96
+      )
+    );
 
-    const socialW = 68;
-    const socialH = 44;
-    const socialGap = 8;
-
-    if (visibleSocials.length > 0) {
-      const totalSocialsW =
-        visibleSocials.length * socialW +
-        (visibleSocials.length - 1) * socialGap;
-      const startX = padX + innerWidth - totalSocialsW;
-      const socialY = showProfile
-        ? y + Math.round((96 - socialH) / 2)
-        : y + 4;
-
-      visibleSocials.forEach((soc, idx) => {
-        const sx = startX + idx * (socialW + socialGap);
-        elements.push(
-          embedSubSvg(
-            designSocialItemCard(
-              soc.type,
-              soc.label,
-              themeId,
-              fontId,
-              socialW,
-              socialH
-            ),
-            sx,
-            socialY,
-            socialW,
-            socialH
-          )
-        );
-      });
-    }
-
-    y += (showProfile ? 96 : socialH + 12) + 14;
+    y += 96 + 14;
 
     // Optional Tagline
-    if (showProfile && options?.tagline && options.tagline.trim().length > 0) {
+    if (options?.tagline && options.tagline.trim().length > 0) {
       const safeTagline = escapeXml(truncateText(options.tagline.trim(), 96));
       elements.push(
         `<text x="${padX + 8}" y="${y + 14}" class="canvas-tagline" fill="${theme.textSecondary}">${safeTagline}</text>`

@@ -9,7 +9,6 @@ import {
   TechStackSettings,
   GitHubStatsSettings,
   PinnedProjectsSettings,
-  SocialLinksSettings,
   FeaturedProject,
   TechBadgeItem,
   PinnedProjectItem,
@@ -141,30 +140,12 @@ export function createDefaultBlocks(
     featuredProjects,
   };
 
-  // Social links settings
-  const socialSettings: SocialLinksSettings = {
-    links: {
-      linkedin: '',
-      twitter: profile?.twitter_username || '',
-      portfolio: profile?.blog || '',
-      discord: '',
-      youtube: '',
-      email: '',
-    },
-  };
-
   return [
     {
       id: 'hero',
       title: 'Profile Header Card',
       enabled: true,
       settings: heroSettings,
-    },
-    {
-      id: 'social_connect',
-      title: 'Social Header Links',
-      enabled: true,
-      settings: socialSettings,
     },
     {
       id: 'pinned_projects',

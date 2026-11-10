@@ -10,7 +10,6 @@ import {
   TechStackSettings,
   GitHubStatsSettings,
   PinnedProjectsSettings,
-  SocialLinksSettings,
   BioTone,
   BadgeStyle,
   Repository,
@@ -191,14 +190,6 @@ export default function SortableBlockItem({
               settings={block.settings as PinnedProjectsSettings}
               onChange={updateSettings}
               userRepos={userRepos}
-            />
-          )}
-
-          {/* 7. SOCIAL CONNECT BLOCK EDITOR */}
-          {block.id === 'social_connect' && (
-            <SocialConnectEditor
-              settings={block.settings as SocialLinksSettings}
-              onChange={updateSettings}
             />
           )}
         </div>
@@ -718,54 +709,6 @@ function PinnedProjectsEditor({
           </div>
         </div>
       )}
-    </div>
-  );
-}
-
-function SocialConnectEditor({
-  settings,
-  onChange,
-}: {
-  settings: SocialLinksSettings;
-  onChange: (s: Partial<SocialLinksSettings>) => void;
-}) {
-  const updateLink = (key: string, val: string) => {
-    onChange({
-      links: { ...settings.links, [key]: val },
-    });
-  };
-
-  const fields = [
-    { key: 'email', label: 'Email', placeholder: 'e.g. contact@domain.com' },
-    { key: 'linkedin', label: 'LinkedIn', placeholder: 'e.g. username or url' },
-    {
-      key: 'portfolio',
-      label: 'Website / Portfolio',
-      placeholder: 'e.g. myportfolio.dev',
-    },
-    { key: 'twitter', label: 'Twitter / X', placeholder: 'e.g. @handle or url' },
-    { key: 'discord', label: 'Discord Invite', placeholder: 'e.g. invite-code' },
-    { key: 'youtube', label: 'YouTube', placeholder: 'e.g. @channel' },
-  ];
-
-  return (
-    <div className="space-y-2.5">
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-        {fields.map((f) => (
-          <div key={f.key}>
-            <label className="block text-slate-400 font-medium mb-1">
-              {f.label}
-            </label>
-            <input
-              type="text"
-              value={(settings.links as any)[f.key] || ''}
-              onChange={(e) => updateLink(f.key, e.target.value)}
-              placeholder={f.placeholder}
-              className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-200 placeholder:text-slate-600 focus:outline-none focus:border-cyan-500"
-            />
-          </div>
-        ))}
-      </div>
     </div>
   );
 }

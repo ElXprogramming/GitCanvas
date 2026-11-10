@@ -4,7 +4,6 @@ import {
   HeroSettings,
   BioSettings,
   PinnedProjectsSettings,
-  SocialLinksSettings,
   GitHubStatsSettings,
 } from '@/types';
 
@@ -58,9 +57,6 @@ export function buildCanvasCardUrl(
   const statsBlockCfg = blocks.find((b) => b.id === 'github_stats');
   const statsSettings = statsBlockCfg?.settings as GitHubStatsSettings | undefined;
 
-  const socialBlockCfg = blocks.find((b) => b.id === 'social_connect');
-  const socialSettings = socialBlockCfg?.settings as SocialLinksSettings | undefined;
-
   const projectsBlockCfg = blocks.find((b) => b.id === 'pinned_projects');
   const projectsSettings = projectsBlockCfg?.settings as PinnedProjectsSettings | undefined;
 
@@ -97,25 +93,6 @@ export function buildCanvasCardUrl(
     }
   }
 
-  // Social header badges override
-  if (!isEnabled('social_connect', true)) {
-    params.set('socials', 'none');
-  } else if (socialSettings?.links) {
-    const links = socialSettings.links;
-    const extraSocials: string[] = [];
-    if (links.twitter?.trim()) extraSocials.push('twitter:X');
-    if (links.discord?.trim()) extraSocials.push('discord:Discord');
-    if (links.youtube?.trim()) extraSocials.push('youtube:YouTube');
-    if (extraSocials.length > 0) {
-      const allSocials = [
-        'email:email',
-        'linkedin:LinkedIn',
-        'website:Portfolio',
-        ...extraSocials,
-      ];
-      params.set('socials', allSocials.join(','));
-    }
-  }
 
   // Active & ordered body sections
   if (hasBlocks) {
