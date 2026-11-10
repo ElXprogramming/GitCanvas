@@ -18,6 +18,8 @@ export interface DesignTheme {
   gradeColors: Record<StatGrade, { text: string; bg: string; border: string }>;
   heatmapLevels: [string, string, string, string, string]; // 0 (empty) to 4 (most active)
   mascot?: OnePieceMascot;
+  category?: 'showcase' | 'normal' | 'on_hold';
+  onHold?: boolean;
 }
 
 const DEFAULT_GRADE_COLORS: Record<
@@ -35,6 +37,7 @@ export const DESIGN_THEMES: Record<string, DesignTheme> = {
   default: {
     id: 'default',
     label: 'Default Dark',
+    category: 'normal',
     cardBg: '#111622',
     cardBgGradientEnd: '#0d111a',
     border: '#262f45',
@@ -48,6 +51,7 @@ export const DESIGN_THEMES: Record<string, DesignTheme> = {
   catppuccin_mocha: {
     id: 'catppuccin_mocha',
     label: 'Catppuccin Mocha',
+    category: 'normal',
     cardBg: '#1e1e2e',
     cardBgGradientEnd: '#181825',
     border: '#313244',
@@ -67,6 +71,7 @@ export const DESIGN_THEMES: Record<string, DesignTheme> = {
   tokyonight: {
     id: 'tokyonight',
     label: 'Tokyo Night',
+    category: 'normal',
     cardBg: '#1a1b26',
     cardBgGradientEnd: '#16161e',
     border: '#292e42',
@@ -80,6 +85,7 @@ export const DESIGN_THEMES: Record<string, DesignTheme> = {
   dracula: {
     id: 'dracula',
     label: 'Dracula',
+    category: 'normal',
     cardBg: '#282a36',
     cardBgGradientEnd: '#21222c',
     border: '#44475a',
@@ -93,6 +99,7 @@ export const DESIGN_THEMES: Record<string, DesignTheme> = {
   nord: {
     id: 'nord',
     label: 'Nord',
+    category: 'normal',
     cardBg: '#2e3440',
     cardBgGradientEnd: '#242933',
     border: '#3b4252',
@@ -106,6 +113,7 @@ export const DESIGN_THEMES: Record<string, DesignTheme> = {
   github_dark: {
     id: 'github_dark',
     label: 'GitHub Dark',
+    category: 'normal',
     cardBg: '#0d1117',
     cardBgGradientEnd: '#010409',
     border: '#30363d',
@@ -119,6 +127,7 @@ export const DESIGN_THEMES: Record<string, DesignTheme> = {
   radical: {
     id: 'radical',
     label: 'Radical',
+    category: 'normal',
     cardBg: '#141321',
     cardBgGradientEnd: '#0a0914',
     border: '#2a2744',
@@ -132,6 +141,7 @@ export const DESIGN_THEMES: Record<string, DesignTheme> = {
   sunset: {
     id: 'sunset',
     label: 'Sunset',
+    category: 'normal',
     cardBg: '#1f132b',
     cardBgGradientEnd: '#140c1c',
     border: '#3c2554',
@@ -145,6 +155,8 @@ export const DESIGN_THEMES: Record<string, DesignTheme> = {
   straw_hat: {
     id: 'straw_hat',
     label: 'Straw Hat Luffy (Pixel Art)',
+    category: 'on_hold',
+    onHold: true,
     cardBg: '#0b132b',
     cardBgGradientEnd: '#070c1d',
     border: '#d97706',
@@ -165,6 +177,8 @@ export const DESIGN_THEMES: Record<string, DesignTheme> = {
   gear_5_nika: {
     id: 'gear_5_nika',
     label: 'Sun God Nika (Gear 5)',
+    category: 'on_hold',
+    onHold: true,
     cardBg: '#13141f',
     cardBgGradientEnd: '#0b0c13',
     border: '#cbd5e1',
@@ -185,6 +199,8 @@ export const DESIGN_THEMES: Record<string, DesignTheme> = {
   wano_zoro: {
     id: 'wano_zoro',
     label: 'Wano Zoro (Pixel Art)',
+    category: 'on_hold',
+    onHold: true,
     cardBg: '#071811',
     cardBgGradientEnd: '#030c08',
     border: '#10b981',
@@ -205,6 +221,7 @@ export const DESIGN_THEMES: Record<string, DesignTheme> = {
   onepiece_gatling: {
     id: 'onepiece_gatling',
     label: 'Luffy Gatling (Animated GIF)',
+    category: 'showcase',
     cardBg: '#0b132b',
     cardBgGradientEnd: '#070c1d',
     border: 'transparent',
@@ -225,6 +242,8 @@ export const DESIGN_THEMES: Record<string, DesignTheme> = {
   onepiece_straw_hat: {
     id: 'onepiece_straw_hat',
     label: 'Flapping Straw Hat (Pixel Art)',
+    category: 'on_hold',
+    onHold: true,
     cardBg: '#0b132b',
     cardBgGradientEnd: '#070c1d',
     border: '#d97706',
@@ -245,6 +264,8 @@ export const DESIGN_THEMES: Record<string, DesignTheme> = {
   onepiece_chopper: {
     id: 'onepiece_chopper',
     label: 'Chopper (Pixel Art)',
+    category: 'on_hold',
+    onHold: true,
     cardBg: '#131124',
     cardBgGradientEnd: '#090812',
     border: '#ff6b8b',
@@ -265,6 +286,8 @@ export const DESIGN_THEMES: Record<string, DesignTheme> = {
   onepiece_ace: {
     id: 'onepiece_ace',
     label: 'Fire Fist Ace (Pixel Art)',
+    category: 'on_hold',
+    onHold: true,
     cardBg: '#180e0a',
     cardBgGradientEnd: '#0c0604',
     border: '#f97316',
@@ -285,6 +308,8 @@ export const DESIGN_THEMES: Record<string, DesignTheme> = {
   onepiece_law: {
     id: 'onepiece_law',
     label: 'Trafalgar Law (Pixel Art)',
+    category: 'on_hold',
+    onHold: true,
     cardBg: '#0d131f',
     cardBgGradientEnd: '#060910',
     border: '#eab308',
@@ -305,6 +330,8 @@ export const DESIGN_THEMES: Record<string, DesignTheme> = {
   onepiece_sanji: {
     id: 'onepiece_sanji',
     label: 'Black Leg Sanji (Pixel Art)',
+    category: 'on_hold',
+    onHold: true,
     cardBg: '#091528',
     cardBgGradientEnd: '#040b17',
     border: '#0284c7',
@@ -325,6 +352,8 @@ export const DESIGN_THEMES: Record<string, DesignTheme> = {
   onepiece_brook: {
     id: 'onepiece_brook',
     label: 'Soul King Brook (Pixel Art)',
+    category: 'on_hold',
+    onHold: true,
     cardBg: '#0c0a17',
     cardBgGradientEnd: '#06050d',
     border: '#a855f7',
@@ -345,6 +374,8 @@ export const DESIGN_THEMES: Record<string, DesignTheme> = {
   onepiece_nami: {
     id: 'onepiece_nami',
     label: 'Cat Burglar Nami (Pixel Art)',
+    category: 'on_hold',
+    onHold: true,
     cardBg: '#081c24',
     cardBgGradientEnd: '#040e12',
     border: '#f97316',
@@ -365,6 +396,8 @@ export const DESIGN_THEMES: Record<string, DesignTheme> = {
   bounty_poster: {
     id: 'bounty_poster',
     label: 'Grand Line Bounty',
+    category: 'on_hold',
+    onHold: true,
     cardBg: '#1c1512',
     cardBgGradientEnd: '#110c09',
     border: '#78350f',
@@ -383,6 +416,35 @@ export const DESIGN_THEMES: Record<string, DesignTheme> = {
     mascot: ONE_PIECE_MASCOTS.chopper_giant,
   },
 };
+
+export const NORMAL_THEMES: DesignTheme[] = [
+  DESIGN_THEMES.default,
+  DESIGN_THEMES.catppuccin_mocha,
+  DESIGN_THEMES.tokyonight,
+  DESIGN_THEMES.dracula,
+  DESIGN_THEMES.nord,
+  DESIGN_THEMES.github_dark,
+  DESIGN_THEMES.radical,
+  DESIGN_THEMES.sunset,
+];
+
+export const SHOWCASE_THEMES: DesignTheme[] = [
+  DESIGN_THEMES.onepiece_gatling,
+];
+
+export const ON_HOLD_THEMES: DesignTheme[] = [
+  DESIGN_THEMES.straw_hat,
+  DESIGN_THEMES.gear_5_nika,
+  DESIGN_THEMES.wano_zoro,
+  DESIGN_THEMES.onepiece_straw_hat,
+  DESIGN_THEMES.onepiece_chopper,
+  DESIGN_THEMES.onepiece_ace,
+  DESIGN_THEMES.onepiece_law,
+  DESIGN_THEMES.onepiece_sanji,
+  DESIGN_THEMES.onepiece_brook,
+  DESIGN_THEMES.onepiece_nami,
+  DESIGN_THEMES.bounty_poster,
+];
 
 export function getDesignTheme(
   themeId?: string | null,

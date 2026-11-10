@@ -15,7 +15,12 @@ import {
   Repository,
   DeveloperArchetype,
 } from '@/types';
-import { DESIGN_THEMES } from '@/designs/themes';
+import {
+  DESIGN_THEMES,
+  NORMAL_THEMES,
+  SHOWCASE_THEMES,
+  ON_HOLD_THEMES,
+} from '@/designs/themes';
 import {
   GripVertical,
   ChevronDown,
@@ -548,8 +553,6 @@ function GitHubStatsEditor({
   settings: GitHubStatsSettings;
   onChange: (s: Partial<GitHubStatsSettings>) => void;
 }) {
-  const themes = Object.values(DESIGN_THEMES);
-
   return (
     <div className="space-y-3">
       <div>
@@ -557,15 +560,31 @@ function GitHubStatsEditor({
           Card Theme
         </label>
         <select
-          value={settings.cardTheme || 'default'}
+          value={settings.cardTheme || 'onepiece_gatling'}
           onChange={(e) => onChange({ cardTheme: e.target.value })}
           className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-200"
         >
-          {themes.map((t) => (
-            <option key={t.id} value={t.id}>
-              {t.label}
-            </option>
-          ))}
+          <optgroup label="Showcase Theme (Animated)">
+            {SHOWCASE_THEMES.map((t) => (
+              <option key={t.id} value={t.id}>
+                {t.label}
+              </option>
+            ))}
+          </optgroup>
+          <optgroup label="Normal Color Themes">
+            {NORMAL_THEMES.map((t) => (
+              <option key={t.id} value={t.id}>
+                {t.label}
+              </option>
+            ))}
+          </optgroup>
+          <optgroup label="On Hold (Pending Animation)">
+            {ON_HOLD_THEMES.map((t) => (
+              <option key={t.id} value={t.id}>
+                {t.label} (On Hold)
+              </option>
+            ))}
+          </optgroup>
         </select>
       </div>
 

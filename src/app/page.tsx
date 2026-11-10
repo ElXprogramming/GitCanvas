@@ -36,7 +36,7 @@ export default function GitCanvasPage() {
   );
 
   const [theme, setTheme] = useState<ThemeConfig>({
-    cardTheme: 'default',
+    cardTheme: 'onepiece_gatling',
     cardFont: 'josefin_slab',
   });
 

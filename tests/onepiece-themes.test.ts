@@ -4,7 +4,13 @@ import {
   ONE_PIECE_MASCOTS,
   getOnePieceMascot,
 } from '../src/designs/onepiece-stickers';
-import { getDesignTheme, DESIGN_THEMES } from '../src/designs/themes';
+import {
+  getDesignTheme,
+  DESIGN_THEMES,
+  NORMAL_THEMES,
+  SHOWCASE_THEMES,
+  ON_HOLD_THEMES,
+} from '../src/designs/themes';
 import {
   designProfileCard,
   designOverallBox,
@@ -395,3 +401,35 @@ test('onepiece_gatling theme renders floating flapping straw hat in background w
   assert.ok(canvasSvg.includes('@keyframes windRoamCanvas3'), 'Canvas CSS should include windRoamCanvas3');
   assert.ok(canvasSvg.includes('@keyframes windGustSweep'), 'Canvas CSS should include windGustSweep');
 });
+
+test('NORMAL_THEMES, SHOWCASE_THEMES, and ON_HOLD_THEMES are correctly categorized', () => {
+  // Normal colored themes (8 basic themes without mascots)
+  assert.equal(NORMAL_THEMES.length, 8);
+  const normalIds = NORMAL_THEMES.map((t) => t.id);
+  assert.ok(normalIds.includes('default'));
+  assert.ok(normalIds.includes('catppuccin_mocha'));
+  assert.ok(normalIds.includes('tokyonight'));
+  assert.ok(normalIds.includes('dracula'));
+  assert.ok(normalIds.includes('nord'));
+  assert.ok(normalIds.includes('github_dark'));
+  assert.ok(normalIds.includes('radical'));
+  assert.ok(normalIds.includes('sunset'));
+  for (const t of NORMAL_THEMES) {
+    assert.equal(t.category, 'normal');
+    assert.equal(t.mascot, undefined);
+  }
+
+  // Showcase: only Luffy Gatling is showcased
+  assert.equal(SHOWCASE_THEMES.length, 1);
+  assert.equal(SHOWCASE_THEMES[0].id, 'onepiece_gatling');
+  assert.equal(SHOWCASE_THEMES[0].category, 'showcase');
+  assert.equal(SHOWCASE_THEMES[0].mascot?.isAnimated, true);
+
+  // On hold themes: 11 static pixel art themes put on hold
+  assert.equal(ON_HOLD_THEMES.length, 11);
+  for (const t of ON_HOLD_THEMES) {
+    assert.equal(t.category, 'on_hold');
+    assert.equal(t.onHold, true);
+  }
+});
+
