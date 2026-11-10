@@ -729,7 +729,13 @@ export function designOverallBox(
   const font = getDesignFont(fontId);
   const grade = data.grade;
   const gColor = theme.gradeColors[grade] || theme.gradeColors.C;
-  const mascot = theme.mascot;
+  // Exclude Luffy punching (luffy_gatling) and straw_hat from the overall grade box
+  const mascot =
+    theme.mascot &&
+    theme.mascot.id !== 'luffy_gatling' &&
+    theme.mascot.id !== 'straw_hat'
+      ? theme.mascot
+      : null;
   const contentX = mascot ? (width - 48) / 2 : width / 2;
 
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" fill="none" role="img" aria-label="overall grade: ${grade}">
@@ -747,7 +753,6 @@ export function designOverallBox(
   </defs>
 
   <rect width="${width}" height="${height}" rx="${theme.borderRadius}" fill="url(#overallGrad)" stroke="none" />
-  ${renderFloatingBackgroundHats(themeId, width, height, false, mascotId)}
 
   <text x="${contentX}" y="28" text-anchor="middle" class="ov-label" fill="${theme.textSecondary}">overall</text>
   <text x="${contentX}" y="${height - 18}" text-anchor="middle" class="ov-grade" fill="${gColor.text}">${grade}</text>
@@ -782,14 +787,12 @@ export function designStreakBox(
     </linearGradient>
     <style>
       ${getSvgFontImport(font)}
-      ${getMascotAnimationStyles(null, themeId)}
       .st-label { font: 600 14px ${font.fontFamily}; fill: ${theme.textSecondary}; }
       .st-val { font: 800 28px ${font.fontFamily}; fill: ${theme.textPrimary}; }
     </style>
   </defs>
 
   <rect width="${width}" height="${height}" rx="${theme.borderRadius}" fill="url(#streakGrad_${data.item})" stroke="none" />
-  ${renderFloatingBackgroundHats(themeId, width, height, false)}
 
   <text x="18" y="30" class="st-label" fill="${theme.textSecondary}">${label}</text>
   <text x="18" y="${height - 20}" class="st-val" fill="${theme.textPrimary}">${formatted}</text>

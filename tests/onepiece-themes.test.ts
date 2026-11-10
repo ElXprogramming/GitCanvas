@@ -8,6 +8,7 @@ import { getDesignTheme, DESIGN_THEMES } from '../src/designs/themes';
 import {
   designProfileCard,
   designOverallBox,
+  designStreakBox,
   designFullCanvasCard,
 } from '../src/designs/card-designs';
 import { FullCanvasData } from '../src/types/stats';
@@ -283,25 +284,31 @@ test('onepiece_gatling theme renders floating flapping straw hat in background w
     score: 95,
   };
 
-  // 1. Standalone overall box in onepiece_gatling theme
+  // 1. Standalone overall box in onepiece_gatling theme (Luffy punching and hats removed)
   const overallSvg = designOverallBox(overallData, 'onepiece_gatling');
-  assert.ok(overallSvg.includes('class="card-floating-hat"'), 'Overall box should render floating straw hat');
-  assert.ok(overallSvg.includes('class="wind-hat-roam-overall"'), 'Floating hat should roam all over the box space');
-  assert.ok(overallSvg.includes('class="hat-f0"'), 'Floating hat should include flapping frame 0');
-  assert.ok(overallSvg.includes('class="hat-f1"'), 'Floating hat should include flapping frame 1');
-  assert.ok(overallSvg.includes('class="hat-f2"'), 'Floating hat should include flapping frame 2');
-  assert.ok(overallSvg.includes('class="hat-f3"'), 'Floating hat should include flapping frame 3');
-  assert.ok(overallSvg.includes('@keyframes windRoamOverall'), 'CSS should include windRoamOverall animation');
-  assert.ok(overallSvg.includes('@keyframes hatFlap0'), 'CSS should include hat flap keyframes');
-  assert.ok(overallSvg.includes('class="ov-mascot"'), 'Overall box should also retain Luffy Gatling mascot');
+  assert.ok(!overallSvg.includes('class="ov-mascot"'), 'Overall box should NOT have Luffy punching');
+  assert.ok(!overallSvg.includes('class="card-floating-hat"'), 'Overall box should NOT have floating hats');
+  assert.ok(overallSvg.includes('text-anchor="middle"'), 'Overall box content should be centered');
 
-  // 2. Standalone profile card in onepiece_gatling theme
+  // 2. Streak metric box in onepiece_gatling theme (streak, longest streak, active days: hats removed)
+  const streakData = {
+    item: 'streak' as const,
+    username: 'luffy',
+    label: 'streak',
+    value: 42,
+    unit: 'days',
+    formatted: '42 days',
+  };
+  const streakSvg = designStreakBox(streakData, 'onepiece_gatling');
+  assert.ok(!streakSvg.includes('class="card-floating-hat"'), 'Streak box should NOT have floating hats');
+
+  // 3. Standalone profile card in onepiece_gatling theme (retains mascot and floating hat in header)
   const profileSvg = designProfileCard(profile, 'onepiece_gatling');
   assert.ok(profileSvg.includes('class="card-floating-hat"'), 'Profile card should render floating straw hat');
   assert.ok(profileSvg.includes('wind-hat-roam-profile'), 'Profile card floating hat should roam across the space');
   assert.ok(profileSvg.includes('class="p-mascot"'), 'Profile card should render Luffy Gatling mascot');
 
-  // 3. Full master canvas in onepiece_gatling theme
+  // 4. Full master canvas in onepiece_gatling theme (straw hats roaming all over the canvas space)
   const mockCanvasData: FullCanvasData = {
     profile: {
       username: 'luffy',
