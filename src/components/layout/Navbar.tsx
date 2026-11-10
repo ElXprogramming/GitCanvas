@@ -7,7 +7,6 @@ import {
   Search,
   UploadCloud,
   Copy,
-  Download,
   Key,
   LogOut,
   User,
@@ -32,7 +31,6 @@ interface NavbarProps {
   onOpenDeployModal: () => void;
   onOpenTokenModal: () => void;
   onCopyMarkdown: () => void;
-  onDownloadMarkdown: () => void;
   hasPersonalToken: boolean;
 }
 
@@ -43,7 +41,6 @@ export default function Navbar({
   onOpenDeployModal,
   onOpenTokenModal,
   onCopyMarkdown,
-  onDownloadMarkdown,
   hasPersonalToken,
 }: NavbarProps) {
   const { data: session, status: authStatus } = useSession();
@@ -184,16 +181,6 @@ export default function Navbar({
                 <span>Copy</span>
               </>
             )}
-          </button>
-
-          {/* Download Button */}
-          <button
-            onClick={onDownloadMarkdown}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 hover:border-slate-700 transition-colors"
-            title="Download README.md file"
-          >
-            <Download className="w-3.5 h-3.5 text-slate-400" />
-            <span className="hidden sm:inline">Download</span>
           </button>
 
           {/* Deploy to GitHub Primary CTA */}

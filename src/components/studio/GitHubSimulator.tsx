@@ -11,7 +11,6 @@ import {
   Code,
   Copy,
   Check,
-  Download,
   ExternalLink,
   Terminal,
 } from 'lucide-react';
@@ -21,7 +20,6 @@ interface GitHubSimulatorProps {
   markdown: string;
   username: string;
   onCopyMarkdown: () => void;
-  onDownloadMarkdown: () => void;
 }
 
 // GitHub permissive sanitize schema allowing align, width, height, target, etc.
@@ -81,7 +79,6 @@ export default function GitHubSimulator({
   markdown,
   username,
   onCopyMarkdown,
-  onDownloadMarkdown,
 }: GitHubSimulatorProps) {
   const [viewMode, setViewMode] = useState<'preview' | 'code'>('preview');
   const [copied, setCopied] = useState(false);

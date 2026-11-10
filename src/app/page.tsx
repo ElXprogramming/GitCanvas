@@ -229,20 +229,6 @@ export default function GitCanvasPage() {
     showToast('success', 'Copied to Clipboard!', 'Markdown is ready to paste.');
   };
 
-  // Download Markdown
-  const handleDownloadMarkdown = () => {
-    const blob = new Blob([generatedMarkdown], { type: 'text/markdown;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = 'README.md';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-    showToast('success', 'Downloaded', 'README.md saved to your computer.');
-  };
-
   // Toggle Badge in Tech Stack
   const handleToggleBadge = (badge: TechBadgeItem) => {
     setBlocks((prev) =>
@@ -316,7 +302,6 @@ export default function GitCanvasPage() {
         onOpenDeployModal={() => setIsDeployModalOpen(true)}
         onOpenTokenModal={() => setIsTokenModalOpen(true)}
         onCopyMarkdown={handleCopyMarkdown}
-        onDownloadMarkdown={handleDownloadMarkdown}
         hasPersonalToken={!!personalToken}
       />
 
@@ -359,7 +344,6 @@ export default function GitCanvasPage() {
                 markdown={generatedMarkdown}
                 username={username}
                 onCopyMarkdown={handleCopyMarkdown}
-                onDownloadMarkdown={handleDownloadMarkdown}
               />
             </div>
           </div>
