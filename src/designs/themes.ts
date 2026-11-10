@@ -136,10 +136,90 @@ export const DESIGN_THEMES: Record<string, DesignTheme> = {
     gradeColors: DEFAULT_GRADE_COLORS,
     heatmapLevels: ['#2c1b3d', '#5c2a5d', '#943764', '#cc4964', '#ff7e67'],
   },
+  straw_hat: {
+    id: 'straw_hat',
+    label: 'Straw Hat (Mugiwara)',
+    cardBg: '#0b132b',
+    cardBgGradientEnd: '#070c1d',
+    border: '#d97706',
+    borderRadius: 14,
+    textPrimary: '#f8fafc',
+    textSecondary: '#fcd34d',
+    accent: '#ef4444',
+    gradeColors: {
+      S: { text: '#ef4444', bg: 'rgba(239, 68, 68, 0.16)', border: '#ef4444' },
+      A: { text: '#fbbf24', bg: 'rgba(251, 191, 36, 0.16)', border: '#fbbf24' },
+      B: { text: '#38bdf8', bg: 'rgba(56, 189, 248, 0.16)', border: '#38bdf8' },
+      C: { text: '#10b981', bg: 'rgba(16, 185, 129, 0.16)', border: '#10b981' },
+      D: { text: '#94a3b8', bg: 'rgba(148, 163, 184, 0.12)', border: '#64748b' },
+    },
+    heatmapLevels: ['#162038', '#1e3a8a', '#d97706', '#f59e0b', '#ef4444'],
+  },
+  gear_5_nika: {
+    id: 'gear_5_nika',
+    label: 'Sun God Nika (Gear 5)',
+    cardBg: '#13141f',
+    cardBgGradientEnd: '#0b0c13',
+    border: '#cbd5e1',
+    borderRadius: 16,
+    textPrimary: '#ffffff',
+    textSecondary: '#fde047',
+    accent: '#f59e0b',
+    gradeColors: {
+      S: { text: '#fde047', bg: 'rgba(253, 224, 71, 0.18)', border: '#fde047' },
+      A: { text: '#a855f7', bg: 'rgba(168, 85, 247, 0.18)', border: '#a855f7' },
+      B: { text: '#38bdf8', bg: 'rgba(56, 189, 248, 0.18)', border: '#38bdf8' },
+      C: { text: '#fb923c', bg: 'rgba(251, 146, 60, 0.18)', border: '#fb923c' },
+      D: { text: '#94a3b8', bg: 'rgba(148, 163, 184, 0.12)', border: '#64748b' },
+    },
+    heatmapLevels: ['#1e1f30', '#6366f1', '#a855f7', '#fbbf24', '#fef08a'],
+  },
+  wano_zoro: {
+    id: 'wano_zoro',
+    label: 'Wano Ronin (Zoro)',
+    cardBg: '#071811',
+    cardBgGradientEnd: '#030c08',
+    border: '#7c3aed',
+    borderRadius: 12,
+    textPrimary: '#f0fdf4',
+    textSecondary: '#4ade80',
+    accent: '#a855f7',
+    gradeColors: {
+      S: { text: '#a855f7', bg: 'rgba(168, 85, 247, 0.2)', border: '#a855f7' },
+      A: { text: '#34d399', bg: 'rgba(52, 211, 153, 0.2)', border: '#34d399' },
+      B: { text: '#38bdf8', bg: 'rgba(56, 189, 248, 0.2)', border: '#38bdf8' },
+      C: { text: '#fbbf24', bg: 'rgba(251, 191, 36, 0.2)', border: '#fbbf24' },
+      D: { text: '#94a3b8', bg: 'rgba(148, 163, 184, 0.12)', border: '#64748b' },
+    },
+    heatmapLevels: ['#0f291e', '#065f46', '#059669', '#10b981', '#a855f7'],
+  },
+  bounty_poster: {
+    id: 'bounty_poster',
+    label: 'Grand Line Bounty',
+    cardBg: '#1c1512',
+    cardBgGradientEnd: '#110c09',
+    border: '#78350f',
+    borderRadius: 12,
+    textPrimary: '#fef3c7',
+    textSecondary: '#d97706',
+    accent: '#dc2626',
+    gradeColors: {
+      S: { text: '#dc2626', bg: 'rgba(220, 38, 38, 0.18)', border: '#dc2626' },
+      A: { text: '#d97706', bg: 'rgba(217, 119, 6, 0.18)', border: '#d97706' },
+      B: { text: '#f59e0b', bg: 'rgba(245, 158, 11, 0.18)', border: '#f59e0b' },
+      C: { text: '#ca8a04', bg: 'rgba(202, 138, 4, 0.18)', border: '#ca8a04' },
+      D: { text: '#78716c', bg: 'rgba(120, 113, 108, 0.14)', border: '#57534e' },
+    },
+    heatmapLevels: ['#291e17', '#451a03', '#78350f', '#b45309', '#f59e0b'],
+  },
 };
 
 export function getDesignTheme(themeId?: string | null): DesignTheme {
   const key = (themeId || 'default').toLowerCase().trim();
   if (key === 'dark') return DESIGN_THEMES.github_dark;
+  if (key === 'onepiece' || key === 'one_piece' || key === 'luffy') return DESIGN_THEMES.straw_hat;
+  if (key === 'nika' || key === 'gear5' || key === 'gear_5') return DESIGN_THEMES.gear_5_nika;
+  if (key === 'zoro') return DESIGN_THEMES.wano_zoro;
+  if (key === 'bounty') return DESIGN_THEMES.bounty_poster;
   return DESIGN_THEMES[key] || DESIGN_THEMES.default;
 }
