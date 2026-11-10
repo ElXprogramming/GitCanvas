@@ -119,6 +119,41 @@ export interface ContributionsItemData {
   }[];
 }
 
+export interface FullCanvasData {
+  profile: ProfileItemData;
+  projects: PinnedProjectItem[];
+  languages: LanguagesItemData;
+  commits: GradedMetricItemData;
+  prs: GradedMetricItemData;
+  issues: GradedMetricItemData;
+  stars: GradedMetricItemData;
+  repos: GradedMetricItemData;
+  polyglot: GradedMetricItemData;
+  overall: OverallItemData;
+  streak: StreakMetricItemData;
+  longestStreak: StreakMetricItemData;
+  activeDays: StreakMetricItemData;
+  contributions: ContributionsItemData;
+}
+
+export interface FullCanvasRenderOptions {
+  theme?: string | null;
+  customName?: string | null;
+  tagline?: string | null;
+  hideProfile?: boolean;
+  socials?: Array<{ type: string; label: string }>;
+  sections?: string[];
+  hideRows?: string[];
+  bio?: {
+    workingOn?: string;
+    learning?: string;
+    askMeAbout?: string;
+    funFact?: string;
+    focusAreas?: string[];
+  };
+}
+
+
 // Legacy compatibility exports for any existing consumers
 export interface UserOverviewStats {
   username: string;

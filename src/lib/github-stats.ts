@@ -16,6 +16,7 @@ import {
   UserActivityStats,
   DeveloperRank,
   UnifiedGitHubStats,
+  FullCanvasData,
 } from '@/types/stats';
 
 // In-memory cache for raw GitHub API responses (10-minute TTL)
@@ -1090,5 +1091,85 @@ export async function fetchAllGitHubStats(
     ...(languages && { languages }),
     ...(activity && { activity }),
     rank,
+  };
+}
+
+export async function fetchFullCanvasData(
+  username: string,
+  options?: {
+    repos?: string[];
+    customName?: string | null;
+    projectCount?: number;
+    token?: string;
+  }
+): Promise<FullCanvasData> {
+  const token = options?.token;
+  const customRepos = (options?.repos || [])
+    .map((r) => r.trim())
+    .filter((r) => r.length > 0)
+    .slice(0, 6);
+
+  const projectsPromise: Promise<PinnedProjectItem[]> =
+    customRepos.length > 0
+      ? Promise.all(
+          customRepos.map((repoName, idx) =>
+            fetchSingleProjectItem(username, idx, repoName, token)
+          )
+        )
+      : fetchPinnedProjectsItem(username, token).then((res) =>
+          res.projects.slice(0, options?.projectCount ?? 4)
+        );
+
+  const [
+    profile,
+    projects,
+    languages,
+    commits,
+    prs,
+    issues,
+    stars,
+    repos,
+    polyglot,
+    overall,
+    streak,
+    longestStreak,
+    activeDays,
+    contributions,
+  ] = await Promise.all([
+    fetchProfileItem(username, token, true),
+    projectsPromise,
+    fetchLanguagesItem(username, token),
+    fetchCommitsItem(username, token),
+    fetchPRsItem(username, token),
+    fetchIssuesItem(username, token),
+    fetchStarsItem(username, token),
+    fetchReposItem(username, token),
+    fetchPolyglotItem(username, token),
+    fetchOverallItem(username, token),
+    fetchStreakItem(username, token),
+    fetchLongestStreakItem(username, token),
+    fetchActiveDaysItem(username, token),
+    fetchContributionsItem(username, token),
+  ]);
+
+  const effectiveProfile: ProfileItemData = options?.customName?.trim()
+    ? { ...profile, name: options.customName.trim() }
+    : profile;
+
+  return {
+    profile: effectiveProfile,
+    projects,
+    languages,
+    commits,
+    prs,
+    issues,
+    stars,
+    repos,
+    polyglot,
+    overall,
+    streak,
+    longestStreak,
+    activeDays,
+    contributions,
   };
 }

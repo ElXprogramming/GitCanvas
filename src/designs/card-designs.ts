@@ -6,6 +6,8 @@ import {
   OverallItemData,
   StreakMetricItemData,
   ContributionsItemData,
+  FullCanvasData,
+  FullCanvasRenderOptions,
 } from '@/types/stats';
 import { getDesignTheme } from './themes';
 
@@ -148,6 +150,7 @@ export function designPinnedProjectCard(
 ): string {
   const theme = getDesignTheme(themeId);
   const name = escapeXml(truncateText(project.name, 26));
+  const safeId = project.name.replace(/[^a-zA-Z0-9_-]/g, '_') || 'repo';
   const rawDesc = project.description || 'Open-source repository on GitHub.';
   const [rawLine1, rawLine2] = wrapTextTwoLines(rawDesc, 46, 46);
   const line1 = escapeXml(rawLine1);
@@ -159,7 +162,7 @@ export function designPinnedProjectCard(
 
   return `<svg xmlns="http://www.w3.org/2000/svg" width="390" height="122" viewBox="0 0 390 122" fill="none" role="img" aria-label="Pinned Project: ${name}">
   <defs>
-    <linearGradient id="projGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+    <linearGradient id="projGrad_${safeId}" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="${theme.cardBg}" />
       <stop offset="100%" stop-color="${theme.cardBgGradientEnd}" />
     </linearGradient>
@@ -170,7 +173,7 @@ export function designPinnedProjectCard(
     </style>
   </defs>
 
-  <rect x="1" y="1" width="388" height="120" rx="${theme.borderRadius}" fill="url(#projGrad)" stroke="${theme.border}" stroke-width="1.5" />
+  <rect x="1" y="1" width="388" height="120" rx="${theme.borderRadius}" fill="url(#projGrad_${safeId})" stroke="${theme.border}" stroke-width="1.5" />
 
   <!-- Repo Icon + Title -->
   <g transform="translate(20, 22)">
@@ -319,7 +322,7 @@ export function designGradedStatBox(
     <style>
       .stat-label { font: 600 13.5px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; fill: ${theme.textSecondary}; }
       .stat-value { font: 800 28px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; fill: ${theme.textPrimary}; }
-      .stat-grade { font: 800 15px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; fill: ${gColor.text}; }
+      .stat-grade-${data.item} { font: 800 15px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; fill: ${gColor.text}; }
     </style>
   </defs>
 
@@ -331,7 +334,7 @@ export function designGradedStatBox(
   <!-- Top-Right Grade Pill -->
   <g transform="translate(${width - 42}, 11)">
     <rect x="0" y="0" width="26" height="24" rx="7" fill="${gColor.bg}" stroke="${gColor.border}" stroke-width="1.2" />
-    <text x="13" y="17" text-anchor="middle" class="stat-grade">${grade}</text>
+    <text x="13" y="17" text-anchor="middle" class="stat-grade-${data.item}" fill="${gColor.text}">${grade}</text>
   </g>
 
   <!-- Main Value -->
@@ -367,7 +370,7 @@ export function designOverallBox(
   <rect x="1" y="1" width="${width - 2}" height="${height - 2}" rx="${theme.borderRadius}" fill="url(#overallGrad)" stroke="${theme.border}" stroke-width="1.5" />
 
   <text x="${width / 2}" y="28" text-anchor="middle" class="ov-label">overall</text>
-  <text x="${width / 2}" y="${height - 18}" text-anchor="middle" class="ov-grade">${grade}</text>
+  <text x="${width / 2}" y="${height - 18}" text-anchor="middle" class="ov-grade" fill="${gColor.text}">${grade}</text>
 </svg>`;
 }
 
@@ -468,4 +471,360 @@ export function designContributionsBox(
   ${cells.join('\n  ')}
 </svg>`;
 }
+
+// ==========================================================
+// 9. FULL COMPOSITE PROFILE CANVAS CARD (Single-Line API)
+// ==========================================================
+function embedSubSvg(
+  svgMarkup: string,
+  x: number,
+  y: number,
+  width?: number,
+  height?: number
+): string {
+  const widthMatch = svgMarkup.match(/\bwidth="(\d+(?:\.\d+)?)"/);
+  const heightMatch = svgMarkup.match(/\bheight="(\d+(?:\.\d+)?)"/);
+  const viewBoxMatch = svgMarkup.match(/\bviewBox="([^"]+)"/);
+
+  const origW = widthMatch ? Number(widthMatch[1]) : 100;
+  const origH = heightMatch ? Number(heightMatch[1]) : 100;
+  const targetW = width ?? origW;
+  const targetH = height ?? origH;
+  const viewBox = viewBoxMatch ? viewBoxMatch[1] : `0 0 ${origW} ${origH}`;
+
+  return svgMarkup.replace(
+    /^<svg[^>]*>/,
+    `<svg x="${x}" y="${y}" width="${targetW}" height="${targetH}" viewBox="${viewBox}" fill="none">`
+  );
+}
+
+export function designFullCanvasCard(
+  data: FullCanvasData,
+  options?: FullCanvasRenderOptions
+): string {
+  const themeId = options?.theme;
+  const theme = getDesignTheme(themeId);
+  const canvasWidth = 840;
+  const padX = 20;
+  const innerWidth = 800; // 840 - 2 * 20
+
+  const socials =
+    options?.socials !== undefined
+      ? options.socials
+      : [
+          { type: 'email', label: 'email' },
+          { type: 'linkedin', label: 'LinkedIn' },
+          { type: 'website', label: 'Portfolio' },
+        ];
+
+  const sections =
+    options?.sections && options.sections.length > 0
+      ? options.sections
+      : ['pinned_projects', 'tech_stack', 'github_stats', 'streak_trophies'];
+
+  const hideRows = new Set(options?.hideRows || []);
+
+  const elements: string[] = [];
+  let y = 20;
+
+  const showProfile = !options?.hideProfile;
+  const visibleSocials = (socials || []).slice(0, 4);
+
+  // 1. Header Row: Profile Card (Left) + Social Item Cards (Right)
+  if (showProfile || visibleSocials.length > 0) {
+    if (showProfile) {
+      elements.push(
+        embedSubSvg(designProfileCard(data.profile, themeId), padX, y, 420, 96)
+      );
+    }
+
+    if (visibleSocials.length > 0) {
+      const socialW = 96;
+      const socialH = 64;
+      const socialGap = 10;
+      const totalSocialsW =
+        visibleSocials.length * socialW +
+        (visibleSocials.length - 1) * socialGap;
+      const startX = padX + innerWidth - totalSocialsW;
+      const socialY = showProfile ? y + 16 : y + 4;
+
+      visibleSocials.forEach((soc, idx) => {
+        const sx = startX + idx * (socialW + socialGap);
+        elements.push(
+          embedSubSvg(
+            designSocialItemCard(soc.type, soc.label, themeId),
+            sx,
+            socialY,
+            socialW,
+            socialH
+          )
+        );
+      });
+    }
+
+    y += (showProfile ? 96 : 72) + 14;
+
+    // Optional Tagline
+    if (showProfile && options?.tagline && options.tagline.trim().length > 0) {
+      const safeTagline = escapeXml(truncateText(options.tagline.trim(), 96));
+      elements.push(
+        `<text x="${padX + 8}" y="${y + 14}" class="canvas-tagline">${safeTagline}</text>`
+      );
+      y += 26;
+    }
+
+    // Divider Line under Header
+    elements.push(
+      `<line x1="${padX}" y1="${y}" x2="${padX + innerWidth}" y2="${y}" stroke="${theme.border}" stroke-width="1.5" />`
+    );
+    y += 24;
+  }
+
+  const renderSectionHeading = (title: string) => {
+    elements.push(
+      `<text x="${padX + 2}" y="${y + 20}" class="canvas-section-title">${escapeXml(title)}</text>`
+    );
+    y += 32;
+  };
+
+  const renderStatsRows = (rowIds: string[]) => {
+    const activeRows = rowIds.filter((r) => !hideRows.has(r));
+    if (activeRows.length === 0) return;
+
+    renderSectionHeading('Github stats');
+
+    activeRows.forEach((rowId) => {
+      if (rowId === 'r1') {
+        // Row 1: commits | PR | issues | stars earned (4 x 191 + 3 x 12 = 800px)
+        const boxW = 191;
+        const boxH = 98;
+        const gap = 12;
+        const r1Items = [data.commits, data.prs, data.issues, data.stars];
+        r1Items.forEach((metric, idx) => {
+          const bx = padX + idx * (boxW + gap);
+          elements.push(
+            embedSubSvg(
+              designGradedStatBox(metric, themeId, boxW, boxH),
+              bx,
+              y,
+              boxW,
+              boxH
+            )
+          );
+        });
+        y += boxH + 14;
+      } else if (rowId === 'r2') {
+        // Row 2: Repos | Polyglot | overall (3 x 258 + 2 x 13 = 800px)
+        const boxW = 258;
+        const boxH = 104;
+        const gap = 13;
+        elements.push(
+          embedSubSvg(
+            designGradedStatBox(data.repos, themeId, boxW, boxH),
+            padX,
+            y,
+            boxW,
+            boxH
+          )
+        );
+        elements.push(
+          embedSubSvg(
+            designGradedStatBox(data.polyglot, themeId, boxW, boxH),
+            padX + (boxW + gap),
+            y,
+            boxW,
+            boxH
+          )
+        );
+        elements.push(
+          embedSubSvg(
+            designOverallBox(data.overall, themeId, boxW, boxH),
+            padX + 2 * (boxW + gap),
+            y,
+            boxW,
+            boxH
+          )
+        );
+        y += boxH + 14;
+      } else if (rowId === 'r3') {
+        // Row 3: streak | longest streak | active days (3 x 258 + 2 x 13 = 800px)
+        const boxW = 258;
+        const boxH = 104;
+        const gap = 13;
+        const r3Items = [data.streak, data.longestStreak, data.activeDays];
+        r3Items.forEach((metric, idx) => {
+          const bx = padX + idx * (boxW + gap);
+          elements.push(
+            embedSubSvg(
+              designStreakBox(metric, themeId, boxW, boxH),
+              bx,
+              y,
+              boxW,
+              boxH
+            )
+          );
+        });
+        y += boxH + 14;
+      } else if (rowId === 'r4') {
+        // Row 4: contributions last year (800 x 166)
+        elements.push(
+          embedSubSvg(
+            designContributionsBox(data.contributions, themeId),
+            padX,
+            y,
+            800,
+            166
+          )
+        );
+        y += 166 + 14;
+      }
+    });
+
+    y += 14;
+  };
+
+  // Iterate through ordered sections, coalescing adjacent github_stats & streak_trophies
+  const processedStatsIndices = new Set<number>();
+
+  for (let i = 0; i < sections.length; i++) {
+    if (processedStatsIndices.has(i)) continue;
+    const sec = sections[i];
+
+    if (sec === 'pinned_projects') {
+      const projects = (data.projects || []).slice(0, 6);
+      if (projects.length > 0) {
+        renderSectionHeading('Pinned projects');
+        const cardW = 392;
+        const cardH = 122;
+        const colGap = 16; // 392 * 2 + 16 = 800px
+        const rowGap = 14;
+
+        projects.forEach((proj, idx) => {
+          const col = idx % 2;
+          const row = Math.floor(idx / 2);
+          const px = padX + col * (cardW + colGap);
+          const py = y + row * (cardH + rowGap);
+          elements.push(
+            embedSubSvg(
+              designPinnedProjectCard(proj, themeId),
+              px,
+              py,
+              cardW,
+              cardH
+            )
+          );
+        });
+
+        const numRows = Math.ceil(projects.length / 2);
+        y += numRows * cardH + (numRows - 1) * rowGap + 28;
+      }
+    } else if (sec === 'tech_stack') {
+      renderSectionHeading('Languages');
+      elements.push(
+        embedSubSvg(
+          designLanguagesBarCard(data.languages, themeId),
+          padX,
+          y,
+          800,
+          98
+        )
+      );
+      y += 98 + 28;
+    } else if (sec === 'github_stats' || sec === 'streak_trophies') {
+      const rowsToRender: string[] = [];
+      let j = i;
+      while (
+        j < sections.length &&
+        (sections[j] === 'github_stats' || sections[j] === 'streak_trophies')
+      ) {
+        processedStatsIndices.add(j);
+        if (sections[j] === 'github_stats') {
+          rowsToRender.push('r1', 'r2');
+        } else {
+          rowsToRender.push('r3', 'r4');
+        }
+        j++;
+      }
+      renderStatsRows(rowsToRender);
+    } else if (sec === 'bio') {
+      const bioLines: Array<{ label: string; value: string }> = [];
+      if (options?.bio?.workingOn) {
+        bioLines.push({
+          label: 'Currently working on:',
+          value: options.bio.workingOn,
+        });
+      }
+      if (options?.bio?.learning) {
+        bioLines.push({
+          label: 'Currently learning:',
+          value: options.bio.learning,
+        });
+      }
+      if (options?.bio?.askMeAbout) {
+        bioLines.push({
+          label: 'Ask me about:',
+          value: options.bio.askMeAbout,
+        });
+      }
+      if (options?.bio?.funFact) {
+        bioLines.push({
+          label: 'Fun fact:',
+          value: options.bio.funFact,
+        });
+      }
+      if (options?.bio?.focusAreas && options.bio.focusAreas.length > 0) {
+        bioLines.push({
+          label: 'Focus areas:',
+          value: options.bio.focusAreas.join(' · '),
+        });
+      }
+      if (bioLines.length === 0 && data.profile.bio) {
+        bioLines.push({
+          label: 'Bio:',
+          value: data.profile.bio,
+        });
+      }
+      if (bioLines.length === 0) {
+        bioLines.push({
+          label: 'Focus areas:',
+          value: 'Open-Source · Systems Architecture · Developer Tooling',
+        });
+      }
+
+      renderSectionHeading('About me');
+      const bioCardH = 28 + bioLines.length * 26;
+      const bioItemsSvg = bioLines
+        .map((item, idx) => {
+          const ly = 30 + idx * 26;
+          return `<text x="20" y="${ly}" class="canvas-bio-line"><tspan font-weight="700" fill="${theme.textPrimary}">${escapeXml(item.label)}</tspan> <tspan fill="${theme.textSecondary}">${escapeXml(truncateText(item.value, 72))}</tspan></text>`;
+        })
+        .join('\n  ');
+
+      elements.push(`<g transform="translate(${padX}, ${y})">
+  <rect x="1" y="1" width="798" height="${bioCardH - 2}" rx="${theme.borderRadius}" fill="${theme.cardBg}" stroke="${theme.border}" stroke-width="1.5" />
+  ${bioItemsSvg}
+</g>`);
+      y += bioCardH + 28;
+    }
+  }
+
+  const totalHeight = Math.max(180, y + 6);
+  const fullName = escapeXml(data.profile.name || data.profile.username);
+
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${canvasWidth}" height="${totalHeight}" viewBox="0 0 ${canvasWidth} ${totalHeight}" fill="none" role="img" aria-label="${fullName}'s GitHub Profile">
+  <defs>
+    <style>
+      .canvas-section-title { font: 700 20px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; fill: ${theme.textPrimary}; }
+      .canvas-tagline { font: 500 14px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; fill: ${theme.textSecondary}; }
+      .canvas-bio-line { font: 500 13.5px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+    </style>
+  </defs>
+
+  <!-- Master Profile Canvas Background -->
+  <rect x="1" y="1" width="${canvasWidth - 2}" height="${totalHeight - 2}" rx="18" fill="${theme.cardBgGradientEnd}" stroke="${theme.border}" stroke-width="1.5" />
+
+  ${elements.join('\n\n  ')}
+</svg>`;
+}
+
 

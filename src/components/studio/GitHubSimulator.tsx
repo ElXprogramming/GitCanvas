@@ -157,6 +157,35 @@ export default function GitHubSimulator({
         </div>
       </div>
 
+      {/* One-Line API Call Quick Bar */}
+      <div className="flex items-center justify-between gap-2 px-4 py-2 bg-[#0d1117]/90 border-b border-[#30363d] text-xs">
+        <div className="flex items-center gap-2 min-w-0 flex-1">
+          <span className="shrink-0 inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 font-semibold text-[11px]">
+            <Terminal className="w-3 h-3" />
+            1-Line API
+          </span>
+          <code className="truncate font-mono text-[11px] text-slate-300 bg-[#161b22] px-2 py-1 rounded border border-[#30363d] flex-1">
+            {markdown.trim()}
+          </code>
+        </div>
+        <button
+          onClick={handleCopy}
+          className="shrink-0 flex items-center gap-1 px-2.5 py-1 text-[11px] font-medium rounded-md bg-cyan-500/15 hover:bg-cyan-500/25 text-cyan-300 border border-cyan-500/30 transition-colors"
+        >
+          {copied ? (
+            <>
+              <Check className="w-3 h-3 text-emerald-400" />
+              <span>Copied 1-Line MD</span>
+            </>
+          ) : (
+            <>
+              <Copy className="w-3 h-3" />
+              <span>Copy 1-Line API</span>
+            </>
+          )}
+        </button>
+      </div>
+
       {/* Simulator Content Area */}
       <div className="flex-1 overflow-y-auto p-4 sm:p-8 min-h-[600px] max-h-[calc(100vh-170px)]">
         {viewMode === 'preview' ? (
@@ -171,10 +200,13 @@ export default function GitHubSimulator({
         ) : (
           <div className="font-mono text-xs sm:text-sm text-slate-200 bg-[#0d1117] rounded-xl overflow-x-auto">
             <div className="flex text-slate-600 border-b border-[#30363d] pb-2 mb-3 text-[11px] justify-between">
-              <span>Markdown Source ({lineCount} lines)</span>
+              <span>
+                Markdown Source ({lineCount}{' '}
+                {lineCount === 1 ? 'line — Single API Call' : 'lines'})
+              </span>
               <span>UTF-8</span>
             </div>
-            <pre className="p-0 m-0 bg-transparent overflow-x-auto whitespace-pre-wrap leading-relaxed text-slate-300">
+            <pre className="p-3 m-0 bg-[#161b22] rounded-lg border border-[#30363d] overflow-x-auto whitespace-pre-wrap break-all leading-relaxed text-cyan-300">
               {markdown}
             </pre>
           </div>

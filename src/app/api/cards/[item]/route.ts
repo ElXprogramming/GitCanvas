@@ -14,6 +14,7 @@ import {
   fetchLongestStreakItem,
   fetchActiveDaysItem,
   fetchContributionsItem,
+  fetchFullCanvasData,
 } from '@/lib/github-stats';
 import {
   designProfileCard,
@@ -24,6 +25,7 @@ import {
   designOverallBox,
   designStreakBox,
   designContributionsBox,
+  designFullCanvasCard,
 } from '@/designs/card-designs';
 
 export const dynamic = 'force-dynamic';
@@ -71,6 +73,104 @@ export async function GET(
     let svg = '';
 
     switch (item) {
+      case 'canvas':
+      case 'full':
+      case 'all': {
+        const customName = searchParams.get('name')?.trim() || null;
+        const tagline = searchParams.get('tagline')?.trim() || null;
+
+        const reposParam = searchParams.get('repos');
+        const customRepos = reposParam
+          ? reposParam
+              .split(',')
+              .map((r) => r.trim())
+              .filter(Boolean)
+          : undefined;
+
+        const sectionsParam = searchParams.get('sections');
+        const sections =
+          sectionsParam === 'none'
+            ? []
+            : sectionsParam
+              ? sectionsParam
+                  .split(',')
+                  .map((s) => s.trim())
+                  .filter(Boolean)
+              : undefined;
+
+        const socialsParam = searchParams.get('socials');
+        const socials =
+          socialsParam === 'none'
+            ? []
+            : socialsParam
+              ? socialsParam
+                  .split(',')
+                  .map((entry) => {
+                    const [rawType, ...labelParts] = entry.split(':');
+                    const type = (rawType || 'website').trim();
+                    const label =
+                      labelParts.join(':').trim() ||
+                      (type.toLowerCase() === 'linkedin'
+                        ? 'LinkedIn'
+                        : type.toLowerCase() === 'website'
+                          ? 'Portfolio'
+                          : type);
+                    return { type, label };
+                  })
+                  .filter((s) => s.type.length > 0)
+              : undefined;
+
+        const hideRowsParam = searchParams.get('hide_rows');
+        const hideRows = hideRowsParam
+          ? hideRowsParam
+              .split(',')
+              .map((r) => r.trim())
+              .filter(Boolean)
+          : undefined;
+
+        const bioWork = searchParams.get('bio_work')?.trim();
+        const bioLearn = searchParams.get('bio_learn')?.trim();
+        const bioAsk = searchParams.get('bio_ask')?.trim();
+        const bioFact = searchParams.get('bio_fact')?.trim();
+        const bioFocusParam = searchParams.get('bio_focus')?.trim();
+        const bioFocus = bioFocusParam
+          ? bioFocusParam
+              .split(',')
+              .map((f) => f.trim())
+              .filter(Boolean)
+          : undefined;
+
+        const hideProfile =
+          searchParams.get('hide_profile') === '1' ||
+          searchParams.get('hide_profile') === 'true';
+
+        const fullData = await fetchFullCanvasData(username, {
+          repos: customRepos,
+          customName,
+          token: userToken,
+        });
+
+        svg = designFullCanvasCard(fullData, {
+          theme,
+          customName,
+          tagline,
+          hideProfile,
+          socials,
+          sections,
+          hideRows,
+          bio:
+            bioWork || bioLearn || bioAsk || bioFact || bioFocus
+              ? {
+                  workingOn: bioWork,
+                  learning: bioLearn,
+                  askMeAbout: bioAsk,
+                  funFact: bioFact,
+                  focusAreas: bioFocus,
+                }
+              : undefined,
+        });
+        break;
+      }
       case 'profile': {
         const data = await fetchProfileItem(username, userToken, true);
         const customName = searchParams.get('name')?.trim();

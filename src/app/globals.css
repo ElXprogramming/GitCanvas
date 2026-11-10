@@ -210,4 +210,12 @@ body {
   display: block;
 }
 
+.github-readme-body p > img:only-child {
+  width: 100%;
+  max-width: 840px;
+  height: auto;
+  margin: 0 auto;
+  display: block;
+}
+
 
