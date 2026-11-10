@@ -312,3 +312,73 @@ test('designFullCanvasCard renders complete unified SVG with single font import'
   const importMatches = svg.match(/@import\s+url/g);
   assert.equal(importMatches ? importMatches.length : 0, 1);
 });
+
+test('cards are slightly transparent with 0.8 opacity so floating hats can be seen through them', () => {
+  // 1. Graded stat box has stop-opacity="0.8"
+  const statBoxSvg = designGradedStatBox({
+    item: 'commits',
+    username: 'octocat',
+    label: 'commits',
+    value: 500,
+    grade: 'S',
+  });
+  assert.ok(statBoxSvg.includes('stop-opacity="0.8"'), 'Stat box gradient stops should have 0.8 opacity');
+
+  // 2. Pinned project card has stop-opacity="0.8"
+  const projSvg = designPinnedProjectCard({
+    name: 'test-repo',
+    description: 'A test project',
+    url: 'https://github.com/octocat/test-repo',
+    homepageUrl: null,
+    stars: 10,
+    forks: 2,
+    language: 'TypeScript',
+    languageColor: '#3178c6',
+  });
+  assert.ok(projSvg.includes('stop-opacity="0.8"'), 'Pinned project gradient stops should have 0.8 opacity');
+
+  // 3. Languages bar card has fill-opacity="0.8"
+  const langSvg = designLanguagesBarCard({
+    item: 'languages',
+    username: 'octocat',
+    languages: [{ name: 'TypeScript', bytes: 1000, percentage: 100, color: '#3178c6' }],
+    totalBytes: 1000,
+    totalLanguagesCount: 1,
+  });
+  assert.ok(langSvg.includes('fill-opacity="0.8"'), 'Languages bar card should have fill-opacity="0.8"');
+
+  // 4. Overall box, Streak box, and Contributions box have stop-opacity="0.8"
+  const overallSvg = designOverallBox({
+    item: 'overall',
+    username: 'octocat',
+    label: 'overall',
+    grade: 'A',
+    score: 85,
+    breakdown: { commits: 'S', prs: 'A', issues: 'A', stars: 'S', repos: 'B', polyglot: 'A' },
+  });
+  assert.ok(overallSvg.includes('stop-opacity="0.8"'), 'Overall box should have stop-opacity="0.8"');
+
+  const streakSvg = designStreakBox({
+    item: 'streak',
+    username: 'octocat',
+    label: 'streak',
+    value: 10,
+    unit: 'days',
+    formatted: '10 days',
+  });
+  assert.ok(streakSvg.includes('stop-opacity="0.8"'), 'Streak box should have stop-opacity="0.8"');
+
+  const contribSvg = designContributionsBox({
+    item: 'contributions',
+    username: 'octocat',
+    label: 'contributions last year',
+    totalCommits: 100,
+    rightLabel: '100 contributions',
+    weeks: [],
+  });
+  assert.ok(contribSvg.includes('stop-opacity="0.8"'), 'Contributions box should have stop-opacity="0.8"');
+
+  // 5. Social item card has fill-opacity="0.8"
+  const socialSvg = designSocialItemCard('email', 'Email');
+  assert.ok(socialSvg.includes('fill-opacity="0.8"'), 'Social item card should have fill-opacity="0.8"');
+});

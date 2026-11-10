@@ -318,11 +318,11 @@ export function renderFloatingBackgroundHats(
     const hat3Y_3 = 80;
     const hat3Y_4 = Math.floor(height * 0.38);
 
-    const windTrail1 = `<path d="M 20 80 Q 240 170 460 70 T 820 130" stroke="rgba(253, 224, 71, 0.22)" stroke-width="1.6" stroke-linecap="round" fill="none" stroke-dasharray="12 10" class="wind-gust" />`;
-    const windTrail2 = `<path d="M 40 ${Math.floor(height * 0.42)} Q 300 ${Math.floor(height * 0.34)} 540 ${Math.floor(height * 0.46)} T 800 ${Math.floor(height * 0.40)}" stroke="rgba(245, 158, 11, 0.18)" stroke-width="1.5" stroke-linecap="round" fill="none" stroke-dasharray="14 10" class="wind-gust" />`;
-    const windTrail3 = `<path d="M 50 ${Math.floor(height * 0.78)} Q 320 ${Math.floor(height * 0.86)} 560 ${Math.floor(height * 0.74)} T 810 ${Math.floor(height * 0.82)}" stroke="rgba(253, 224, 71, 0.16)" stroke-width="1.4" stroke-linecap="round" fill="none" stroke-dasharray="12 8" class="wind-gust" />`;
+    const windTrail1 = `<path d="M 20 80 Q 240 170 460 70 T 820 130" stroke="rgba(253, 224, 71, 0.28)" stroke-width="1.6" stroke-linecap="round" fill="none" stroke-dasharray="12 10" class="wind-gust" />`;
+    const windTrail2 = `<path d="M 40 ${Math.floor(height * 0.42)} Q 300 ${Math.floor(height * 0.34)} 540 ${Math.floor(height * 0.46)} T 800 ${Math.floor(height * 0.40)}" stroke="rgba(245, 158, 11, 0.24)" stroke-width="1.5" stroke-linecap="round" fill="none" stroke-dasharray="14 10" class="wind-gust" />`;
+    const windTrail3 = `<path d="M 50 ${Math.floor(height * 0.78)} Q 320 ${Math.floor(height * 0.86)} 560 ${Math.floor(height * 0.74)} T 810 ${Math.floor(height * 0.82)}" stroke="rgba(253, 224, 71, 0.22)" stroke-width="1.4" stroke-linecap="round" fill="none" stroke-dasharray="12 8" class="wind-gust" />`;
 
-    return `\n  <!-- Master Profile Canvas Floating Straw Hats (Roaming Full Space) -->\n  <g class="canvas-floating-hats" role="img" aria-label="Floating Straw Hats Roaming All Over Space">\n    ${windTrail1}\n    ${windTrail2}\n    ${windTrail3}\n    <g class="wind-hat-roam-canvas-1" transform="translate(50, 50)" opacity="0.95">\n      <animateTransform attributeName="transform" type="translate" values="50,50; 380,160; 730,80; 540,${hat1Y_mid}; 160,${hat1Y_low}; 420,${hat1Y_ret}; 50,50" dur="22s" repeatCount="indefinite" />\n      <g transform="rotate(-8 ${hat1W / 2} ${hat1H / 2})">\n        <animateTransform attributeName="transform" type="rotate" values="-8 ${hat1W / 2} ${hat1H / 2}; 14 ${hat1W / 2} ${hat1H / 2}; -12 ${hat1W / 2} ${hat1H / 2}; 16 ${hat1W / 2} ${hat1H / 2}; -15 ${hat1W / 2} ${hat1H / 2}; 8 ${hat1W / 2} ${hat1H / 2}; -8 ${hat1W / 2} ${hat1H / 2}" dur="22s" repeatCount="indefinite" additive="sum" />\n        ${renderHatFrames(hat1W, hat1H)}\n      </g>\n    </g>\n    <g class="wind-hat-roam-canvas-2" transform="translate(700, ${hat2Y_0})" opacity="0.75">\n      <animateTransform attributeName="transform" type="translate" values="700,${hat2Y_0}; 360,${hat2Y_1}; 80,${hat2Y_2}; 280,${hat2Y_3}; 660,${hat2Y_4}; 700,${hat2Y_0}" dur="26s" repeatCount="indefinite" />\n      <g transform="rotate(10 ${hat2W / 2} ${hat2H / 2})">\n        <animateTransform attributeName="transform" type="rotate" values="10 ${hat2W / 2} ${hat2H / 2}; -12 ${hat2W / 2} ${hat2H / 2}; 14 ${hat2W / 2} ${hat2H / 2}; -10 ${hat2W / 2} ${hat2H / 2}; 12 ${hat2W / 2} ${hat2H / 2}; 10 ${hat2W / 2} ${hat2H / 2}" dur="26s" repeatCount="indefinite" additive="sum" />\n        ${renderHatFrames(hat2W, hat2H)}\n      </g>\n    </g>\n    <g class="wind-hat-roam-canvas-3" transform="translate(120, ${hat3Y_0})" opacity="0.55">\n      <animateTransform attributeName="transform" type="translate" values="120,${hat3Y_0}; 460,${hat3Y_1}; 740,${hat3Y_2}; 340,${hat3Y_3}; 60,${hat3Y_4}; 120,${hat3Y_0}" dur="30s" repeatCount="indefinite" />\n      <g transform="rotate(-16 ${hat3W / 2} ${hat3H / 2})">\n        <animateTransform attributeName="transform" type="rotate" values="-16 ${hat3W / 2} ${hat3H / 2}; 18 ${hat3W / 2} ${hat3H / 2}; -14 ${hat3W / 2} ${hat3H / 2}; 12 ${hat3W / 2} ${hat3H / 2}; -10 ${hat3W / 2} ${hat3H / 2}; -16 ${hat3W / 2} ${hat3H / 2}" dur="30s" repeatCount="indefinite" additive="sum" />\n        ${renderHatFrames(hat3W, hat3H)}\n      </g>\n    </g>\n  </g>`;
+    return `\n  <!-- Master Profile Canvas Floating Straw Hats (Roaming Full Space) -->\n  <g class="canvas-floating-hats" role="img" aria-label="Floating Straw Hats Roaming All Over Space">\n    ${windTrail1}\n    ${windTrail2}\n    ${windTrail3}\n    <g class="wind-hat-roam-canvas-1" transform="translate(50, 50)" opacity="0.95">\n      <animateTransform attributeName="transform" type="translate" values="50,50; 380,160; 730,80; 540,${hat1Y_mid}; 160,${hat1Y_low}; 420,${hat1Y_ret}; 50,50" dur="22s" repeatCount="indefinite" />\n      <g transform="rotate(-8 ${hat1W / 2} ${hat1H / 2})">\n        <animateTransform attributeName="transform" type="rotate" values="-8 ${hat1W / 2} ${hat1H / 2}; 14 ${hat1W / 2} ${hat1H / 2}; -12 ${hat1W / 2} ${hat1H / 2}; 16 ${hat1W / 2} ${hat1H / 2}; -15 ${hat1W / 2} ${hat1H / 2}; 8 ${hat1W / 2} ${hat1H / 2}; -8 ${hat1W / 2} ${hat1H / 2}" dur="22s" repeatCount="indefinite" additive="sum" />\n        ${renderHatFrames(hat1W, hat1H)}\n      </g>\n    </g>\n    <g class="wind-hat-roam-canvas-2" transform="translate(700, ${hat2Y_0})" opacity="0.85">\n      <animateTransform attributeName="transform" type="translate" values="700,${hat2Y_0}; 360,${hat2Y_1}; 80,${hat2Y_2}; 280,${hat2Y_3}; 660,${hat2Y_4}; 700,${hat2Y_0}" dur="26s" repeatCount="indefinite" />\n      <g transform="rotate(10 ${hat2W / 2} ${hat2H / 2})">\n        <animateTransform attributeName="transform" type="rotate" values="10 ${hat2W / 2} ${hat2H / 2}; -12 ${hat2W / 2} ${hat2H / 2}; 14 ${hat2W / 2} ${hat2H / 2}; -10 ${hat2W / 2} ${hat2H / 2}; 12 ${hat2W / 2} ${hat2H / 2}; 10 ${hat2W / 2} ${hat2H / 2}" dur="26s" repeatCount="indefinite" additive="sum" />\n        ${renderHatFrames(hat2W, hat2H)}\n      </g>\n    </g>\n    <g class="wind-hat-roam-canvas-3" transform="translate(120, ${hat3Y_0})" opacity="0.75">\n      <animateTransform attributeName="transform" type="translate" values="120,${hat3Y_0}; 460,${hat3Y_1}; 740,${hat3Y_2}; 340,${hat3Y_3}; 60,${hat3Y_4}; 120,${hat3Y_0}" dur="30s" repeatCount="indefinite" />\n      <g transform="rotate(-16 ${hat3W / 2} ${hat3H / 2})">\n        <animateTransform attributeName="transform" type="rotate" values="-16 ${hat3W / 2} ${hat3H / 2}; 18 ${hat3W / 2} ${hat3H / 2}; -14 ${hat3W / 2} ${hat3H / 2}; 12 ${hat3W / 2} ${hat3H / 2}; -10 ${hat3W / 2} ${hat3H / 2}; -16 ${hat3W / 2} ${hat3H / 2}" dur="30s" repeatCount="indefinite" additive="sum" />\n        ${renderHatFrames(hat3W, hat3H)}\n      </g>\n    </g>\n  </g>`;
   }
 
   // Single card floating hat roaming all over the card space
@@ -432,7 +432,7 @@ export function designProfileCard(
   </defs>
 
   <!-- PFP Frame -->
-  <rect x="8" y="8" width="80" height="80" rx="14" fill="${theme.cardBg}" stroke="${theme.border}" stroke-width="2" />
+  <rect x="8" y="8" width="80" height="80" rx="14" fill="${theme.cardBg}" fill-opacity="0.8" stroke="${theme.border}" stroke-width="2" />
   ${
     avatarHref
       ? `<image href="${escapeXml(avatarHref)}" x="8" y="8" width="80" height="80" clip-path="url(#pfpClip)" preserveAspectRatio="xMidYMid slice" />`
@@ -493,7 +493,7 @@ export function designSocialItemCard(
   const rx = Math.min(theme.borderRadius, 10);
 
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" fill="none" role="img" aria-label="${safeLabel}">
-  <rect width="${width}" height="${height}" rx="${rx}" fill="${theme.cardBg}" stroke="none" />
+  <rect width="${width}" height="${height}" rx="${rx}" fill="${theme.cardBg}" fill-opacity="0.8" stroke="none" />
   <g transform="translate(${iconX}, ${iconY}) scale(${scale})">
     ${iconSvg}
   </g>
@@ -529,8 +529,8 @@ export function designPinnedProjectCard(
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" fill="none" role="img" aria-label="Pinned Project: ${name}">
   <defs>
     <linearGradient id="projGrad_${safeId}" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="${theme.cardBg}" />
-      <stop offset="100%" stop-color="${theme.cardBgGradientEnd}" />
+      <stop offset="0%" stop-color="${theme.cardBg}" stop-opacity="0.8" />
+      <stop offset="100%" stop-color="${theme.cardBgGradientEnd}" stop-opacity="0.8" />
     </linearGradient>
     <style>
       ${getSvgFontImport(font)}
@@ -653,10 +653,10 @@ export function designLanguagesBarCard(
     </clipPath>
   </defs>
 
-  <rect x="0" y="0" width="800" height="${cardHeight}" rx="${theme.borderRadius}" fill="${theme.cardBg}" />
+  <rect x="0" y="0" width="800" height="${cardHeight}" rx="${theme.borderRadius}" fill="${theme.cardBg}" fill-opacity="0.8" />
 
   <!-- Segmented Proportional Bar -->
-  <rect x="${barX}" y="${barY}" width="${barWidth}" height="${barHeight}" rx="4" fill="${theme.cardBg}" />
+  <rect x="${barX}" y="${barY}" width="${barWidth}" height="${barHeight}" rx="4" fill="${theme.cardBg}" fill-opacity="0.8" />
   <g clip-path="url(#langBarClip)">
     ${segments.join('\n    ')}
     ${dividers.join('\n    ')}
@@ -687,8 +687,8 @@ export function designGradedStatBox(
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" fill="none" role="img" aria-label="${label}: ${valStr} (Grade ${grade})">
   <defs>
     <linearGradient id="statGrad_${data.item}" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="${theme.cardBg}" />
-      <stop offset="100%" stop-color="${theme.cardBgGradientEnd}" />
+      <stop offset="0%" stop-color="${theme.cardBg}" stop-opacity="0.8" />
+      <stop offset="100%" stop-color="${theme.cardBgGradientEnd}" stop-opacity="0.8" />
     </linearGradient>
     <style>
       ${getSvgFontImport(font)}
@@ -741,8 +741,8 @@ export function designOverallBox(
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" fill="none" role="img" aria-label="overall grade: ${grade}">
   <defs>
     <linearGradient id="overallGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="${theme.cardBg}" />
-      <stop offset="100%" stop-color="${theme.cardBgGradientEnd}" />
+      <stop offset="0%" stop-color="${theme.cardBg}" stop-opacity="0.8" />
+      <stop offset="100%" stop-color="${theme.cardBgGradientEnd}" stop-opacity="0.8" />
     </linearGradient>
     <style>
       ${getSvgFontImport(font)}
@@ -782,8 +782,8 @@ export function designStreakBox(
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" fill="none" role="img" aria-label="${label}: ${formatted}">
   <defs>
     <linearGradient id="streakGrad_${data.item}" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="${theme.cardBg}" />
-      <stop offset="100%" stop-color="${theme.cardBgGradientEnd}" />
+      <stop offset="0%" stop-color="${theme.cardBg}" stop-opacity="0.8" />
+      <stop offset="100%" stop-color="${theme.cardBgGradientEnd}" stop-opacity="0.8" />
     </linearGradient>
     <style>
       ${getSvgFontImport(font)}
@@ -851,8 +851,8 @@ export function designContributionsBox(
   return `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="166" viewBox="0 0 800 166" fill="none" role="img" aria-label="contributions last year: ${rightLabel}">
   <defs>
     <linearGradient id="contribGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="${theme.cardBg}" />
-      <stop offset="100%" stop-color="${theme.cardBgGradientEnd}" />
+      <stop offset="0%" stop-color="${theme.cardBg}" stop-opacity="0.8" />
+      <stop offset="100%" stop-color="${theme.cardBgGradientEnd}" stop-opacity="0.8" />
     </linearGradient>
     <style>
       ${getSvgFontImport(font)}
@@ -1194,7 +1194,7 @@ export function designFullCanvasCard(
         .join('\n  ');
 
       elements.push(`<g transform="translate(${padX}, ${y})">
-  <rect width="800" height="${bioCardH}" rx="${theme.borderRadius}" fill="${theme.cardBg}" stroke="none" />
+  <rect width="800" height="${bioCardH}" rx="${theme.borderRadius}" fill="${theme.cardBg}" fill-opacity="0.8" stroke="none" />
   ${bioItemsSvg}
 </g>`);
       y += bioCardH + 28;
