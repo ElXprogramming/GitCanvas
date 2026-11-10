@@ -118,11 +118,13 @@ export function designSocialItemCard(
   type: string,
   label: string,
   themeId?: string | null,
-  fontId?: string | null
+  fontId?: string | null,
+  width = 68,
+  height = 44
 ): string {
   const theme = getDesignTheme(themeId);
   const font = getDesignFont(fontId);
-  const safeLabel = escapeXml(truncateText(label, 12));
+  const safeLabel = escapeXml(truncateText(label, 10));
   const norm = type.toLowerCase();
 
   let iconSvg = '';
@@ -142,12 +144,20 @@ export function designSocialItemCard(
     iconSvg = `<circle cx="12" cy="12" r="8" stroke="${theme.textPrimary}" stroke-width="1.8" fill="none"/><path d="M9 12l2 2 4-4" stroke="${theme.textPrimary}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>`;
   }
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="96" height="64" viewBox="0 0 96 64" fill="none" role="img" aria-label="${safeLabel}">
-  <rect x="1" y="1" width="94" height="62" rx="12" fill="${theme.cardBg}" stroke="${theme.border}" stroke-width="1.5" />
-  <g transform="translate(36, 10) scale(0.95)">
+  const scale = 0.68;
+  const iconSize = 24 * scale;
+  const iconX = ((width - iconSize) / 2).toFixed(1);
+  const iconY = 5.5;
+  const textY = height - 9;
+  const textX = (width / 2).toFixed(1);
+  const rx = Math.min(theme.borderRadius, 10);
+
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" fill="none" role="img" aria-label="${safeLabel}">
+  <rect width="${width}" height="${height}" rx="${rx}" fill="${theme.cardBg}" stroke="none" />
+  <g transform="translate(${iconX}, ${iconY}) scale(${scale})">
     ${iconSvg}
   </g>
-  <text x="48" y="50" text-anchor="middle" font-size="12" font-weight="600" fill="${theme.textSecondary}" font-family="${font.fontFamily}">${safeLabel}</text>
+  <text x="${textX}" y="${textY}" text-anchor="middle" font-size="10" font-weight="600" fill="${theme.textSecondary}" font-family="${font.fontFamily}">${safeLabel}</text>
 </svg>`;
 }
 
@@ -574,7 +584,7 @@ export function designFullCanvasCard(
   let y = 20;
 
   const showProfile = !options?.hideProfile;
-  const visibleSocials = (socials || []).slice(0, 4);
+  const visibleSocials = (socials || []).slice(0, 5);
 
   // 1. Header Row: Profile Card (Left) + Social Item Cards (Right)
   if (showProfile || visibleSocials.length > 0) {
@@ -590,21 +600,31 @@ export function designFullCanvasCard(
       );
     }
 
+    const socialW = 68;
+    const socialH = 44;
+    const socialGap = 8;
+
     if (visibleSocials.length > 0) {
-      const socialW = 96;
-      const socialH = 64;
-      const socialGap = 10;
       const totalSocialsW =
         visibleSocials.length * socialW +
         (visibleSocials.length - 1) * socialGap;
       const startX = padX + innerWidth - totalSocialsW;
-      const socialY = showProfile ? y + 16 : y + 4;
+      const socialY = showProfile
+        ? y + Math.round((96 - socialH) / 2)
+        : y + 4;
 
       visibleSocials.forEach((soc, idx) => {
         const sx = startX + idx * (socialW + socialGap);
         elements.push(
           embedSubSvg(
-            designSocialItemCard(soc.type, soc.label, themeId, fontId),
+            designSocialItemCard(
+              soc.type,
+              soc.label,
+              themeId,
+              fontId,
+              socialW,
+              socialH
+            ),
             sx,
             socialY,
             socialW,
@@ -614,7 +634,7 @@ export function designFullCanvasCard(
       });
     }
 
-    y += (showProfile ? 96 : 72) + 14;
+    y += (showProfile ? 96 : socialH + 12) + 14;
 
     // Optional Tagline
     if (showProfile && options?.tagline && options.tagline.trim().length > 0) {

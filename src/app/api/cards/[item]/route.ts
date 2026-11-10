@@ -48,7 +48,11 @@ export async function GET(
     if (item === 'social') {
       const type = searchParams.get('type') || 'website';
       const label = searchParams.get('label') || type;
-      const svg = designSocialItemCard(type, label, theme, font);
+      const widthParam = searchParams.get('width');
+      const heightParam = searchParams.get('height');
+      const width = widthParam ? parseInt(widthParam, 10) : undefined;
+      const height = heightParam ? parseInt(heightParam, 10) : undefined;
+      const svg = designSocialItemCard(type, label, theme, font, width, height);
       return new NextResponse(svg, {
         status: 200,
         headers: {

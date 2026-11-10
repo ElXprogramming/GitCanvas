@@ -87,10 +87,19 @@ test('designGradedStatBox renders metric with grade color', () => {
   assert.ok(svg.includes('>S<'));
 });
 
-test('designSocialItemCard renders social button SVG', () => {
+test('designSocialItemCard renders smaller, borderless social button SVG', () => {
   const svg = designSocialItemCard('twitter', 'octocat');
   assert.ok(svg.startsWith('<svg'));
   assert.ok(svg.includes('octocat'));
+  assert.ok(svg.includes('width="68"'));
+  assert.ok(svg.includes('height="44"'));
+  assert.ok(svg.includes('stroke="none"'));
+  assert.ok(!svg.includes('stroke-width="1.5"'));
+
+  const customSvg = designSocialItemCard('linkedin', 'LinkedIn', null, null, 80, 50);
+  assert.ok(customSvg.includes('width="80"'));
+  assert.ok(customSvg.includes('height="50"'));
+  assert.ok(customSvg.includes('stroke="none"'));
 });
 
 test('designPinnedProjectCard renders project card SVG', () => {
