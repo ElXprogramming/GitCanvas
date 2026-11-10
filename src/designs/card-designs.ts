@@ -200,7 +200,7 @@ export function designPinnedProjectCard(
     </style>
   </defs>
 
-  <rect x="1" y="1" width="${width - 2}" height="${height - 2}" rx="${theme.borderRadius}" fill="url(#projGrad_${safeId})" stroke="${theme.border}" stroke-width="1.5" />
+  <rect width="${width}" height="${height}" rx="${theme.borderRadius}" fill="url(#projGrad_${safeId})" stroke="none" />
 
   <!-- Repo Icon + Title -->
   <g transform="translate(14, 16)">

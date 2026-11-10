@@ -102,7 +102,7 @@ test('designSocialItemCard renders smaller, borderless social button SVG', () =>
   assert.ok(customSvg.includes('stroke="none"'));
 });
 
-test('designPinnedProjectCard renders project card SVG', () => {
+test('designPinnedProjectCard renders borderless project card SVG', () => {
   const svg = designPinnedProjectCard({
     name: 'awesome-repo',
     description: 'An awesome open source project',
@@ -115,6 +115,8 @@ test('designPinnedProjectCard renders project card SVG', () => {
   });
   assert.ok(svg.startsWith('<svg'));
   assert.ok(svg.includes('awesome-repo'));
+  assert.ok(svg.includes('stroke="none"'));
+  assert.ok(!svg.includes('stroke-width="1.5"'));
 });
 
 test('designLanguagesBarCard renders language distribution bar', () => {
