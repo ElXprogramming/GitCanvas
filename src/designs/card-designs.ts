@@ -146,25 +146,29 @@ export function designSocialItemCard(
 }
 
 // ==========================================================
-// 3. PINNED PROJECT CARD (For the 2x2 Pinned Projects Grid)
+// 3. PINNED PROJECT CARD (Compact 3-in-a-row Grid)
 // ==========================================================
 export function designPinnedProjectCard(
   project: PinnedProjectItem,
-  themeId?: string | null
+  themeId?: string | null,
+  width = 256,
+  height = 96
 ): string {
   const theme = getDesignTheme(themeId);
-  const name = escapeXml(truncateText(project.name, 26));
+  const name = escapeXml(truncateText(project.name, 22));
   const safeId = project.name.replace(/[^a-zA-Z0-9_-]/g, '_') || 'repo';
   const rawDesc = project.description || 'Open-source repository on GitHub.';
-  const [rawLine1, rawLine2] = wrapTextTwoLines(rawDesc, 46, 46);
+  const [rawLine1, rawLine2] = wrapTextTwoLines(rawDesc, 34, 34);
   const line1 = escapeXml(rawLine1);
   const line2 = escapeXml(rawLine2);
-  const lang = escapeXml(truncateText(project.language || 'Code', 16));
+  const lang = escapeXml(truncateText(project.language || 'Code', 10));
   const langColor = project.languageColor || theme.accent;
   const stars = formatCompactNumber(project.stars);
   const forks = formatCompactNumber(project.forks);
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="390" height="122" viewBox="0 0 390 122" fill="none" role="img" aria-label="Pinned Project: ${name}">
+  const descY1 = line2 ? 39 : 43;
+
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" fill="none" role="img" aria-label="Pinned Project: ${name}">
   <defs>
     <linearGradient id="projGrad_${safeId}" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="${theme.cardBg}" />
@@ -172,39 +176,39 @@ export function designPinnedProjectCard(
     </linearGradient>
     <style>
       ${FONT_IMPORT}
-      .proj-title { font: 700 16px ${FONT_FAMILY}; fill: ${theme.textPrimary}; }
-      .proj-desc { font: 400 12.5px ${FONT_FAMILY}; fill: ${theme.textSecondary}; }
-      .proj-meta { font: 600 12px ${FONT_FAMILY}; fill: ${theme.textSecondary}; }
+      .proj-title { font: 600 13px ${FONT_FAMILY}; fill: ${theme.textPrimary}; }
+      .proj-desc { font: 400 10.5px ${FONT_FAMILY}; fill: ${theme.textSecondary}; }
+      .proj-meta { font: 500 10px ${FONT_FAMILY}; fill: ${theme.textSecondary}; }
     </style>
   </defs>
 
-  <rect x="1" y="1" width="388" height="120" rx="${theme.borderRadius}" fill="url(#projGrad_${safeId})" stroke="${theme.border}" stroke-width="1.5" />
+  <rect x="1" y="1" width="${width - 2}" height="${height - 2}" rx="${theme.borderRadius}" fill="url(#projGrad_${safeId})" stroke="${theme.border}" stroke-width="1.5" />
 
   <!-- Repo Icon + Title -->
-  <g transform="translate(20, 22)">
-    <path d="M2 2.5A2.5 2.5 0 0 1 4.5 0h8.75a.75.75 0 0 1 .75.75v12.5a.75.75 0 0 1-.75.75h-2.5a.75.75 0 0 1 0-1.5h1.75v-2h-8a1 1 0 0 0-.714 1.7.75.75 0 1 1-1.072 1.05A2.495 2.495 0 0 1 2 11.5Zm10.5-1h-8a1 1 0 0 0-1 1v6.708A2.486 2.486 0 0 1 4.5 9h8ZM5 12.25a.25.25 0 0 1 .25-.25h3.5a.25.25 0 0 1 .25.25v3.25a.25.25 0 0 1-.4.2l-1.45-1.087a.249.249 0 0 0-.3 0L5.4 15.7a.25.25 0 0 1-.4-.2Z" fill="${theme.textSecondary}" transform="translate(0, -2)" />
-    <text x="24" y="11" class="proj-title">${name}</text>
+  <g transform="translate(14, 16)">
+    <path d="M2 2.5A2.5 2.5 0 0 1 4.5 0h8.75a.75.75 0 0 1 .75.75v12.5a.75.75 0 0 1-.75.75h-2.5a.75.75 0 0 1 0-1.5h1.75v-2h-8a1 1 0 0 0-.714 1.7.75.75 0 1 1-1.072 1.05A2.495 2.495 0 0 1 2 11.5Zm10.5-1h-8a1 1 0 0 0-1 1v6.708A2.486 2.486 0 0 1 4.5 9h8ZM5 12.25a.25.25 0 0 1 .25-.25h3.5a.25.25 0 0 1 .25.25v3.25a.25.25 0 0 1-.4.2l-1.45-1.087a.249.249 0 0 0-.3 0L5.4 15.7a.25.25 0 0 1-.4-.2Z" fill="${theme.textSecondary}" transform="scale(0.85) translate(0, -1)" />
+    <text x="18" y="10" class="proj-title">${name}</text>
   </g>
 
   <!-- Description -->
-  <text x="20" y="56" class="proj-desc">${line1}</text>
-  ${line2 ? `<text x="20" y="74" class="proj-desc">${line2}</text>` : ''}
+  <text x="14" y="${descY1}" class="proj-desc">${line1}</text>
+  ${line2 ? `<text x="14" y="53" class="proj-desc">${line2}</text>` : ''}
 
   <!-- Bottom Footer: Language + Stars + Forks -->
-  <g transform="translate(20, 98)">
-    <circle cx="6" cy="-4" r="5" fill="${langColor}" />
-    <text x="16" y="0" class="proj-meta">${lang}</text>
+  <g transform="translate(14, 78)">
+    <circle cx="4" cy="-3.5" r="3" fill="${langColor}" />
+    <text x="12" y="0" class="proj-meta">${lang}</text>
 
     <!-- Star Octicon + Count -->
-    <g transform="translate(150, -11)">
-      <path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.751.751 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Z" fill="${theme.textSecondary}" transform="scale(0.85)" />
-      <text x="18" y="11" class="proj-meta">${stars}</text>
+    <g transform="translate(112, -9)">
+      <path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.751.751 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Z" fill="${theme.textSecondary}" transform="scale(0.75)" />
+      <text x="15" y="9" class="proj-meta">${stars}</text>
     </g>
 
     <!-- Fork Octicon + Count -->
-    <g transform="translate(225, -11)">
-      <path d="M5 5.372v.878c0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75v-.878a2.25 2.25 0 1 1 1.5 0v.878a2.25 2.25 0 0 1-2.25 2.25h-1.5v2.128a2.251 2.251 0 1 1-1.5 0V8.5h-1.5A2.25 2.25 0 0 1 3.5 6.25v-.878a2.25 2.25 0 1 1 1.5 0ZM5 3.25a.75.75 0 1 0-1.5 0 .75.75 0 0 0 1.5 0Zm6.75.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm-3 8.75a.75.75 0 1 0-1.5 0 .75.75 0 0 0 1.5 0Z" fill="${theme.textSecondary}" transform="scale(0.85)" />
-      <text x="16" y="11" class="proj-meta">${forks}</text>
+    <g transform="translate(170, -9)">
+      <path d="M5 5.372v.878c0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75v-.878a2.25 2.25 0 1 1 1.5 0v.878a2.25 2.25 0 0 1-2.25 2.25h-1.5v2.128a2.251 2.251 0 1 1-1.5 0V8.5h-1.5A2.25 2.25 0 0 1 3.5 6.25v-.878a2.25 2.25 0 1 1 1.5 0ZM5 3.25a.75.75 0 1 0-1.5 0 .75.75 0 0 0 1.5 0Zm6.75.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm-3 8.75a.75.75 0 1 0-1.5 0 .75.75 0 0 0 1.5 0Z" fill="${theme.textSecondary}" transform="scale(0.75)" />
+      <text x="14" y="9" class="proj-meta">${forks}</text>
     </g>
   </g>
 </svg>`;
@@ -703,19 +707,19 @@ export function designFullCanvasCard(
       const projects = (data.projects || []).slice(0, 6);
       if (projects.length > 0) {
         renderSectionHeading('Pinned projects');
-        const cardW = 392;
-        const cardH = 122;
-        const colGap = 16; // 392 * 2 + 16 = 800px
+        const cardW = 256;
+        const cardH = 96;
+        const colGap = 16; // 256 * 3 + 16 * 2 = 800px
         const rowGap = 14;
 
         projects.forEach((proj, idx) => {
-          const col = idx % 2;
-          const row = Math.floor(idx / 2);
+          const col = idx % 3;
+          const row = Math.floor(idx / 3);
           const px = padX + col * (cardW + colGap);
           const py = y + row * (cardH + rowGap);
           elements.push(
             embedSubSvg(
-              designPinnedProjectCard(proj, themeId),
+              designPinnedProjectCard(proj, themeId, cardW, cardH),
               px,
               py,
               cardW,
@@ -724,7 +728,7 @@ export function designFullCanvasCard(
           );
         });
 
-        const numRows = Math.ceil(projects.length / 2);
+        const numRows = Math.ceil(projects.length / 3);
         y += numRows * cardH + (numRows - 1) * rowGap + 28;
       }
     } else if (sec === 'tech_stack') {

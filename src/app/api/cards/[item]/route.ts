@@ -187,6 +187,12 @@ export async function GET(
       case 'pinned': {
         const index = parseInt(searchParams.get('index') || '0', 10);
         const repoName = searchParams.get('repo')?.trim();
+        const customW = searchParams.get('w')
+          ? parseInt(searchParams.get('w')!, 10)
+          : undefined;
+        const customH = searchParams.get('h')
+          ? parseInt(searchParams.get('h')!, 10)
+          : undefined;
         const project = await fetchSingleProjectItem(
           username,
           index,
@@ -194,7 +200,7 @@ export async function GET(
           userToken,
           forceRefresh
         );
-        svg = designPinnedProjectCard(project, theme);
+        svg = designPinnedProjectCard(project, theme, customW, customH);
         break;
       }
       case 'languages': {
