@@ -9,7 +9,6 @@ import {
   RotateCw,
   Loader2,
 } from 'lucide-react';
-import { useToast } from '@/components/common/Toast';
 
 interface NavbarProps {
   currentUsername: string;
@@ -26,7 +25,6 @@ export default function Navbar({
 }: NavbarProps) {
   const [searchInput, setSearchInput] = useState('');
   const [copied, setCopied] = useState(false);
-  const { showToast } = useToast();
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();

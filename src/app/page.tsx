@@ -20,7 +20,7 @@ import StudioControls from '@/components/studio/StudioControls';
 import GitHubSimulator from '@/components/studio/GitHubSimulator';
 import BadgePickerModal from '@/components/studio/BadgePickerModal';
 import { useToast } from '@/components/common/Toast';
-import { Loader2, Sparkles, AlertCircle } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 
 export default function GitCanvasPage() {
   const { showToast } = useToast();
@@ -36,10 +36,8 @@ export default function GitCanvasPage() {
   );
 
   const [theme, setTheme] = useState<ThemeConfig>({
-    accentColor: 'cyan',
     cardTheme: 'default',
     cardFont: 'josefin_slab',
-    badgeStyle: 'for-the-badge',
   });
 
   const [isLoading, setIsLoading] = useState(true);

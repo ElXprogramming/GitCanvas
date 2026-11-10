@@ -89,8 +89,6 @@ Respond ONLY with valid JSON matching this schema:
 
     // Contextual intelligent synthesis engine
     const synthesis = generateContextualBio({
-      username,
-      name: name || username,
       archetypeId,
       dominantLanguages,
       tone,
@@ -109,15 +107,12 @@ Respond ONLY with valid JSON matching this schema:
 }
 
 function generateContextualBio({
-  name,
   archetypeId,
   dominantLanguages,
   tone,
   company,
   topProject,
 }: {
-  username: string;
-  name: string;
   archetypeId: ArchetypeId;
   dominantLanguages: string[];
   tone: BioTone;

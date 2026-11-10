@@ -19,14 +19,13 @@ test('analyzeArchetype identifies Frontend Architect', () => {
       forks_count: 5,
       language: 'TypeScript',
       fork: false,
-      updated_at: '2026-01-01',
     },
   ];
 
   const archetype = analyzeArchetype(languages, repos, 'Building UI/UX and web apps');
   assert.equal(archetype.id, 'frontend');
   assert.equal(archetype.label, 'Frontend Architect');
-  assert.ok(archetype.dominantLanguages.includes('TypeScript'));
+  assert.ok(archetype.dominantLanguages?.includes('TypeScript'));
 });
 
 test('analyzeArchetype identifies Backend Specialist', () => {
@@ -44,7 +43,6 @@ test('analyzeArchetype identifies Backend Specialist', () => {
       forks_count: 12,
       language: 'Go',
       fork: false,
-      updated_at: '2026-01-01',
     },
   ];
 
@@ -68,7 +66,6 @@ test('analyzeArchetype identifies AI & Data Specialist', () => {
       forks_count: 10,
       language: 'Python',
       fork: false,
-      updated_at: '2026-01-01',
     },
   ];
 
@@ -93,7 +90,6 @@ test('analyzeArchetype identifies DevOps & Cloud Engineer', () => {
       forks_count: 8,
       language: 'HCL',
       fork: false,
-      updated_at: '2026-01-01',
     },
   ];
 
@@ -118,7 +114,6 @@ test('analyzeArchetype identifies Fullstack when both frontend and backend are p
       forks_count: 10,
       language: 'TypeScript',
       fork: false,
-      updated_at: '2026-01-01',
     },
   ];
 

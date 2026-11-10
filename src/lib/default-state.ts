@@ -1,5 +1,4 @@
 import {
-  CanvasState,
   GitHubUserProfile,
   DeveloperArchetype,
   LanguageDistribution,
@@ -81,39 +80,20 @@ export function createDefaultBlocks(
       ? pinnedProjects.map((p) => ({
           name: p.name,
           description: p.description || 'Open-source repository on GitHub.',
-          stars: p.stars,
-          forks: p.forks,
-          language: p.language || 'TypeScript',
           url: p.url,
-          demoUrl: p.homepageUrl || undefined,
         }))
       : topRepos.map((r) => ({
           name: r.name,
           description:
             r.description || `High-performance ${r.language || 'software'} project.`,
-          stars: r.stargazers_count,
-          forks: r.forks_count,
-          language: r.language || 'TypeScript',
           url: r.html_url,
-          demoUrl: r.homepage || undefined,
         }));
 
   // Profile Header block defaults
   const heroSettings: HeroSettings = {
-    style: 'minimal',
     greeting: name,
     tagline:
       archetype?.tagline || 'Building software that makes a difference.',
-    capsuleType: 'wave',
-    capsuleColor: '0:06b6d4,100:3b82f6',
-    capsuleHeight: 180,
-    typingLines: [
-      `Hi, I'm ${name}!`,
-      archetype?.label || 'Software Engineer',
-      `Focused on ${topLangs.slice(0, 2).join(' & ') || 'Modern Engineering'}`,
-    ],
-    typingColor: '38bdf8',
-    asciiFont: 'standard',
     showWave: false,
   };
 
@@ -143,45 +123,32 @@ export function createDefaultBlocks(
     badgeStyle: 'for-the-badge',
     selectedBadges: matchedBadges.slice(0, 12),
     showCategoryHeaders: false,
-    align: 'left',
   };
 
   // GitHub Stats settings
   const githubStatsSettings: GitHubStatsSettings = {
     cardTheme: 'default',
     cardFont: 'josefin_slab',
-    cardProvider: 'standalone',
     showOverallStats: true,
     showTopLangs: true,
     showStreak: true,
-    showTrophies: true,
     showActivityGraph: true,
-    hideBorder: false,
-    layout: 'side-by-side',
-    statsIncludeAllCommits: true,
   };
 
   // Pinned projects settings
   const pinnedProjectsSettings: PinnedProjectsSettings = {
     useLivePinned: true,
     featuredProjects,
-    displayStyle: 'cards',
-    showStars: true,
-    showForks: true,
   };
 
   // Social links settings
   const socialSettings: SocialLinksSettings = {
-    badgeStyle: 'for-the-badge',
-    align: 'right',
     links: {
-      github: username,
       linkedin: '',
       twitter: profile?.twitter_username || '',
       portfolio: profile?.blog || '',
       discord: '',
       youtube: '',
-      substack: '',
       email: '',
     },
   };
@@ -230,22 +197,4 @@ export function createDefaultBlocks(
       settings: bioSettings,
     },
   ];
-}
-
-export function createInitialCanvasState(): CanvasState {
-  return {
-    profile: null,
-    archetype: null,
-    languages: [],
-    repositories: [],
-    blocks: [],
-    theme: {
-      accentColor: 'cyan',
-      cardTheme: 'default',
-      cardFont: 'josefin_slab',
-      badgeStyle: 'for-the-badge',
-      layoutTemplate: 'bento',
-    },
-    status: 'idle',
-  };
 }

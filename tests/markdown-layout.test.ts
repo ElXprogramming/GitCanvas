@@ -18,10 +18,8 @@ test('buildCanvasCardUrl constructs valid canvas URL with default settings', () 
     blog: null,
     twitter_username: null,
     public_repos: 10,
-    public_gists: 2,
     followers: 1000,
     following: 5,
-    created_at: '2020-01-01',
     html_url: 'https://github.com/octocat',
   };
 
@@ -53,10 +51,8 @@ test('generateMainReadmeLayout produces valid markdown image link', () => {
     blog: null,
     twitter_username: null,
     public_repos: 5,
-    public_gists: 0,
     followers: 10,
     following: 2,
-    created_at: '2022-01-01',
     html_url: 'https://github.com/testdev',
   };
 

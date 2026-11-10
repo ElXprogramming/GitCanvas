@@ -11,10 +11,8 @@ import {
   Code,
   Copy,
   Check,
-  ExternalLink,
   Terminal,
 } from 'lucide-react';
-import { useToast } from '@/components/common/Toast';
 
 interface GitHubSimulatorProps {
   markdown: string;
@@ -85,7 +83,6 @@ function GitHubSimulatorComponent({
 }: GitHubSimulatorProps) {
   const [viewMode, setViewMode] = useState<'preview' | 'code'>('preview');
   const [copied, setCopied] = useState(false);
-  const { showToast } = useToast();
 
   const handleCopy = () => {
     onCopyMarkdown();

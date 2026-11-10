@@ -87,6 +87,78 @@ test('designGradedStatBox renders metric with grade color', () => {
   assert.ok(svg.includes('>S<'));
 });
 
+test('designSocialItemCard renders social button SVG', () => {
+  const svg = designSocialItemCard('twitter', 'octocat');
+  assert.ok(svg.startsWith('<svg'));
+  assert.ok(svg.includes('octocat'));
+});
+
+test('designPinnedProjectCard renders project card SVG', () => {
+  const svg = designPinnedProjectCard({
+    name: 'awesome-repo',
+    description: 'An awesome open source project',
+    url: 'https://github.com/octocat/awesome-repo',
+    homepageUrl: null,
+    stars: 120,
+    forks: 15,
+    language: 'TypeScript',
+    languageColor: '#3178c6',
+  });
+  assert.ok(svg.startsWith('<svg'));
+  assert.ok(svg.includes('awesome-repo'));
+});
+
+test('designLanguagesBarCard renders language distribution bar', () => {
+  const svg = designLanguagesBarCard({
+    item: 'languages',
+    username: 'octocat',
+    languages: [
+      { name: 'TypeScript', bytes: 7000, percentage: 70, color: '#3178c6' },
+      { name: 'Rust', bytes: 3000, percentage: 30, color: '#dea584' },
+    ],
+    totalBytes: 10000,
+    totalLanguagesCount: 2,
+  });
+  assert.ok(svg.startsWith('<svg'));
+  assert.ok(svg.includes('TypeScript'));
+  assert.ok(svg.includes('Rust'));
+});
+
+test('designOverallBox, designStreakBox, and designContributionsBox render valid SVGs', () => {
+  const overallSvg = designOverallBox({
+    item: 'overall',
+    username: 'octocat',
+    label: 'overall',
+    grade: 'A',
+    score: 88,
+    breakdown: { commits: 'S', prs: 'A', issues: 'A', stars: 'S', repos: 'B', polyglot: 'A' },
+  });
+  assert.ok(overallSvg.startsWith('<svg'));
+  assert.ok(overallSvg.includes('>A<'));
+
+  const streakSvg = designStreakBox({
+    item: 'streak',
+    username: 'octocat',
+    label: 'streak',
+    value: 42,
+    unit: 'days',
+    formatted: '42 days',
+  });
+  assert.ok(streakSvg.startsWith('<svg'));
+  assert.ok(streakSvg.includes('42 days'));
+
+  const contribSvg = designContributionsBox({
+    item: 'contributions',
+    username: 'octocat',
+    label: 'contributions last year',
+    totalCommits: 365,
+    rightLabel: '365 contributions',
+    weeks: [],
+  });
+  assert.ok(contribSvg.startsWith('<svg'));
+  assert.ok(contribSvg.includes('365 contributions'));
+});
+
 test('getDesignTheme and getDesignFont resolve correctly with aliases', () => {
   const tDefault = getDesignTheme('default');
   assert.equal(tDefault.id, 'default');

@@ -72,10 +72,8 @@ export async function fetchUserProfile(
     blog: data.blog ?? null,
     twitter_username: data.twitter_username ?? null,
     public_repos: data.public_repos,
-    public_gists: data.public_gists,
     followers: data.followers,
     following: data.following,
-    created_at: data.created_at,
     html_url: data.html_url,
   };
 }
@@ -176,7 +174,6 @@ export function analyzeArchetype(
   repos: Repository[],
   userBio?: string | null
 ): DeveloperArchetype {
-  const langNames = languages.map((l) => l.name.toLowerCase());
   const bio = (userBio || '').toLowerCase();
   const repoDescriptions = repos
     .map((r) => `${r.name} ${r.description || ''} ${(r.topics || []).join(' ')}`)
@@ -272,7 +269,6 @@ export function analyzeArchetype(
         id: 'frontend',
         label: 'Frontend Architect',
         tagline: 'Designing intuitive, high-performance user interfaces and responsive web experiences.',
-        description: 'Specializes in modern component architecture, fluid animations, typography, and interactive client-side systems.',
         score: Math.min(Math.round(frontendScore), 98),
         dominantLanguages: topLanguages,
         recommendedTaglines: [
@@ -289,7 +285,6 @@ export function analyzeArchetype(
         id: 'backend',
         label: 'Backend / Systems Specialist',
         tagline: 'Engineering scalable APIs, resilient distributed systems, and rock-solid databases.',
-        description: 'Focuses on concurrency, systems-level efficiency, low-latency microservices, and database architecture.',
         score: Math.min(Math.round(backendScore), 98),
         dominantLanguages: topLanguages,
         recommendedTaglines: [
@@ -306,7 +301,6 @@ export function analyzeArchetype(
         id: 'ai_data',
         label: 'AI & Data Specialist',
         tagline: 'Building intelligent models, automated data pipelines, and machine learning solutions.',
-        description: 'Explores neural networks, NLP, LLM agents, statistical modeling, and data-driven insights.',
         score: Math.min(Math.round(aiDataScore), 98),
         dominantLanguages: topLanguages,
         recommendedTaglines: [
@@ -323,7 +317,6 @@ export function analyzeArchetype(
         id: 'devops',
         label: 'DevOps & Cloud Engineer',
         tagline: 'Automating infrastructure, streamlining CI/CD pipelines, and guaranteeing 99.99% uptime.',
-        description: 'Masters containers, Kubernetes orchestration, Infrastructure as Code, observability, and security hardening.',
         score: Math.min(Math.round(devopsScore), 98),
         dominantLanguages: topLanguages,
         recommendedTaglines: [
@@ -341,7 +334,6 @@ export function analyzeArchetype(
         id: 'fullstack',
         label: 'Full-Stack Generalist',
         tagline: 'Shipping end-to-end products from elegant frontends down to database schemas.',
-        description: 'Versatile problem-solver operating across the entire web stack, balancing UX polish with robust infrastructure.',
         score: Math.min(Math.round((frontendScore + backendScore) / 2) + 20, 98),
         dominantLanguages: topLanguages,
         recommendedTaglines: [

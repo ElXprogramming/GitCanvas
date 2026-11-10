@@ -69,10 +69,8 @@ export async function GET(req: NextRequest) {
         blog: profileData.blog,
         twitter_username: profileData.twitterUsername,
         public_repos: rawUser.repositories?.totalCount ?? profileData.followers,
-        public_gists: rawUser.gists?.totalCount ?? 0,
         followers: profileData.followers,
         following: profileData.following,
-        created_at: profileData.createdAt,
         html_url: profileData.htmlUrl,
       };
 
