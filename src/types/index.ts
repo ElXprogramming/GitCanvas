@@ -111,6 +111,7 @@ export interface TechStackSettings {
 
 export interface GitHubStatsSettings {
   cardTheme: string;
+  cardProvider?: 'standalone' | 'legacy';
   showOverallStats: boolean;
   showTopLangs: boolean;
   showStreak: boolean;

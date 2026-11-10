@@ -552,7 +552,7 @@ function GitHubStatsEditor({
 
   return (
     <div className="space-y-3">
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         <div>
           <label className="block text-slate-400 font-medium mb-1">Theme</label>
           <select
@@ -565,6 +565,18 @@ function GitHubStatsEditor({
                 {t.label}
               </option>
             ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-slate-400 font-medium mb-1">API Engine</label>
+          <select
+            value={settings.cardProvider || 'standalone'}
+            onChange={(e) => onChange({ cardProvider: e.target.value as any })}
+            className="w-full px-2 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-200"
+          >
+            <option value="standalone">⚡ Standalone (Direct GitHub)</option>
+            <option value="legacy">🌐 Legacy (github-readme-stats)</option>
           </select>
         </div>
 

@@ -13,6 +13,34 @@ import {
 } from '@/types';
 import { buildBadgeUrl } from './tech-catalog';
 
+export function getCardsBaseUrl(): string {
+  if (typeof window !== 'undefined' && window.location?.origin) {
+    return window.location.origin;
+  }
+  return process.env.NEXT_PUBLIC_APP_URL || process.env.NEXTAUTH_URL || 'https://gitcanvas.dev';
+}
+
+export function buildCardUrls(
+  username: string,
+  theme: string,
+  hideBorder: boolean,
+  provider: 'standalone' | 'legacy' = 'standalone'
+) {
+  if (provider === 'legacy') {
+    return {
+      statsUrl: `https://github-readme-stats.vercel.app/api?username=${username}&show_icons=true&theme=${theme}&hide_border=${hideBorder}&rank_icon=github&count_private=true`,
+      topLangsUrl: `https://github-readme-stats.vercel.app/api/top-langs/?username=${username}&layout=compact&theme=${theme}&hide_border=${hideBorder}&langs_count=8`,
+      streakUrl: `https://github-readme-streak-stats.herokuapp.com/?user=${username}&theme=${theme}&hide_border=${hideBorder}`,
+    };
+  }
+  const base = getCardsBaseUrl();
+  return {
+    statsUrl: `${base}/api/cards/stats?username=${username}&theme=${theme}&hide_border=${hideBorder}`,
+    topLangsUrl: `${base}/api/cards/languages?username=${username}&theme=${theme}&hide_border=${hideBorder}&langs_count=6`,
+    streakUrl: `${base}/api/cards/streak?username=${username}&theme=${theme}&hide_border=${hideBorder}`,
+  };
+}
+
 export function generateAsciiArt(name: string): string {
   const upper = (name || 'DEVELOPER').toUpperCase().slice(0, 12);
   return `\`\`\`text
@@ -173,8 +201,7 @@ function generateBentoMarkdown(
       case 'github_stats': {
         const s = block.settings as GitHubStatsSettings;
         const theme = s.cardTheme || 'catppuccin_mocha';
-        const statsUrl = `https://github-readme-stats.vercel.app/api?username=${username}&show_icons=true&theme=${theme}&hide_border=true&rank_icon=github&count_private=true`;
-        const topLangsUrl = `https://github-readme-stats.vercel.app/api/top-langs/?username=${username}&layout=compact&theme=${theme}&hide_border=true&langs_count=6`;
+        const { statsUrl, topLangsUrl } = buildCardUrls(username, theme, true, s.cardProvider);
 
         if (s.showOverallStats) {
           cells.push({
@@ -219,7 +246,7 @@ function generateBentoMarkdown(
         const s = block.settings as GitHubStatsSettings;
         const theme = s.cardTheme || 'catppuccin_mocha';
         if (s.showStreak) {
-          const streakUrl = `https://github-readme-streak-stats.herokuapp.com/?user=${username}&theme=${theme}&hide_border=true`;
+          const { streakUrl } = buildCardUrls(username, theme, true, s.cardProvider);
           cells.push({
             colSpan: s.showTrophies ? 1 : 2,
             content: `<h3>🔥 Contribution Streak</h3>\n\n<p align="center">\n  <img src="${streakUrl}" alt="${username}'s Streak" width="100%" />\n</p>`,
@@ -340,9 +367,10 @@ Focus:      ${bioBlock?.workingOn?.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') || 'H
 
   if (enabledIds.has('github_stats') && statsBlock) {
     const theme = statsBlock.cardTheme || 'tokyonight';
+    const { statsUrl, streakUrl } = buildCardUrls(username, theme, true, statsBlock.cardProvider);
     sections.push(`<p align="center">
-  <img src="https://github-readme-stats.vercel.app/api?username=${username}&show_icons=true&theme=${theme}&hide_border=true" height="165" alt="GitHub Stats" />
-  <img src="https://github-readme-streak-stats.herokuapp.com/?user=${username}&theme=${theme}&hide_border=true" height="165" alt="GitHub Streak" />
+  <img src="${statsUrl}" height="165" alt="GitHub Stats" />
+  <img src="${streakUrl}" height="165" alt="GitHub Streak" />
 </p>`);
   }
 
@@ -588,12 +616,10 @@ function generateTechStackSection(s: TechStackSettings): string {
 
 function generateGitHubStatsSection(s: GitHubStatsSettings, username: string): string {
   const theme = s.cardTheme || 'catppuccin_mocha';
-  const hideBorder = s.hideBorder ? 'true' : 'false';
+  const hideBorder = s.hideBorder ? true : false;
+  const { statsUrl, topLangsUrl } = buildCardUrls(username, theme, hideBorder, s.cardProvider);
 
   const parts: string[] = ['### 📊 &nbsp; GitHub Analytics\n'];
-
-  const statsUrl = `https://github-readme-stats.vercel.app/api?username=${username}&show_icons=true&theme=${theme}&hide_border=${hideBorder}&rank_icon=github&count_private=true`;
-  const topLangsUrl = `https://github-readme-stats.vercel.app/api/top-langs/?username=${username}&layout=compact&theme=${theme}&hide_border=${hideBorder}&langs_count=8`;
 
   if (s.layout === 'side-by-side') {
     parts.push(`<p align="center">
@@ -618,12 +644,12 @@ function generateGitHubStatsSection(s: GitHubStatsSettings, username: string): s
 
 function generateStreakTrophiesSection(s: GitHubStatsSettings, username: string): string {
   const theme = s.cardTheme || 'catppuccin_mocha';
-  const hideBorder = s.hideBorder ? 'true' : 'false';
+  const hideBorder = s.hideBorder ? true : false;
+  const { streakUrl } = buildCardUrls(username, theme, hideBorder, s.cardProvider);
 
   const parts: string[] = ['### 🔥 &nbsp; Streak & Milestones\n'];
 
   if (s.showStreak) {
-    const streakUrl = `https://github-readme-streak-stats.herokuapp.com/?user=${username}&theme=${theme}&hide_border=${hideBorder}`;
     parts.push(
       `<p align="center">\n  <a href="https://github.com/${username}"><img src="${streakUrl}" alt="${username}'s Streak" /></a>\n</p>\n`
     );
