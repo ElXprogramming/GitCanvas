@@ -1,49 +1,29 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useSession, signIn, signOut } from 'next-auth/react';
 import {
   Sparkles,
   Search,
-  UploadCloud,
   Copy,
-  Key,
-  LogOut,
-  User,
-  Loader2,
   Check,
   RotateCw,
+  Loader2,
 } from 'lucide-react';
-
-function GitHubIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" className={className}>
-      <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" />
-    </svg>
-  );
-}
 import { useToast } from '@/components/common/Toast';
 
 interface NavbarProps {
   currentUsername: string;
   onSearchUser: (username: string, forceRefresh?: boolean) => void;
   isLoading: boolean;
-  onOpenDeployModal: () => void;
-  onOpenTokenModal: () => void;
   onCopyMarkdown: () => void;
-  hasPersonalToken: boolean;
 }
 
 export default function Navbar({
   currentUsername,
   onSearchUser,
   isLoading,
-  onOpenDeployModal,
-  onOpenTokenModal,
   onCopyMarkdown,
-  hasPersonalToken,
 }: NavbarProps) {
-  const { data: session, status: authStatus } = useSession();
   const [searchInput, setSearchInput] = useState('');
   const [copied, setCopied] = useState(false);
   const { showToast } = useToast();
@@ -67,20 +47,6 @@ export default function Navbar({
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleSignInClick = async () => {
-    try {
-      const res = await fetch('/api/auth/providers');
-      if (res.ok) {
-        const providers = await res.json();
-        if (providers?.github) {
-          signIn('github');
-          return;
-        }
-      }
-    } catch (_) {}
-    onOpenTokenModal();
-  };
-
   return (
     <header className="sticky top-0 z-40 w-full border-b border-slate-800/80 bg-slate-950/80 backdrop-blur-md">
       <div className="flex flex-col lg:flex-row items-center justify-between gap-3 px-4 py-2.5 max-w-[1920px] mx-auto">
@@ -100,7 +66,7 @@ export default function Navbar({
                 </span>
               </div>
               <p className="text-[11px] text-slate-400 hidden sm:block">
-                GitHub Profile README Studio & Deployer
+                GitHub Profile README Studio
               </p>
             </div>
           </div>
@@ -162,96 +128,25 @@ export default function Navbar({
           </form>
         </div>
 
-        {/* Actions & Authentication */}
-        <div className="flex items-center gap-2 w-full lg:w-auto justify-end overflow-x-auto pb-1 lg:pb-0">
-          {/* Copy Button */}
+        {/* Actions */}
+        <div className="flex items-center gap-2 w-full lg:w-auto justify-end">
           <button
             onClick={handleCopyClick}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 hover:border-slate-700 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-xl bg-gradient-to-r from-cyan-500 via-indigo-500 to-violet-600 hover:from-cyan-400 hover:via-indigo-400 hover:to-violet-500 text-white shadow-lg shadow-cyan-500/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
             title="Copy generated markdown to clipboard"
           >
             {copied ? (
               <>
-                <Check className="w-3.5 h-3.5 text-emerald-400" />
-                <span className="text-emerald-400 font-semibold">Copied!</span>
+                <Check className="w-4 h-4 text-white" />
+                <span>Copied to Clipboard!</span>
               </>
             ) : (
               <>
-                <Copy className="w-3.5 h-3.5 text-slate-400" />
-                <span>Copy</span>
+                <Copy className="w-4 h-4 text-white" />
+                <span>Copy Code</span>
               </>
             )}
           </button>
-
-          {/* Deploy to GitHub Primary CTA */}
-          <button
-            onClick={onOpenDeployModal}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white shadow-md shadow-emerald-500/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
-            title="Deploy directly to github.com/<username>/<username>"
-          >
-            <UploadCloud className="w-4 h-4" />
-            <span>Deploy to GitHub</span>
-          </button>
-
-          <div className="h-4 w-px bg-slate-800 mx-1 hidden sm:block" />
-
-          {/* GitHub Auth / Token */}
-          {session?.user ? (
-            <div className="flex items-center gap-2 bg-slate-900/90 border border-slate-800 rounded-lg p-1 pr-2.5">
-              {session.user.image ? (
-                <img
-                  src={session.user.image}
-                  alt={session.user.name || 'User'}
-                  className="w-6 h-6 rounded-full border border-slate-700"
-                />
-              ) : (
-                <User className="w-4 h-4 text-slate-400" />
-              )}
-              <span className="text-xs text-slate-200 font-medium max-w-[90px] truncate">
-                {session.user.name || (session as any).user?.login || 'User'}
-              </span>
-              <button
-                onClick={() => signOut()}
-                className="text-slate-400 hover:text-rose-400 transition-colors ml-1"
-                title="Sign out"
-              >
-                <LogOut className="w-3.5 h-3.5" />
-              </button>
-            </div>
-          ) : (
-            <div className="flex items-center gap-1.5">
-              <button
-                onClick={handleSignInClick}
-                className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors ${
-                  hasPersonalToken
-                    ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30 hover:bg-emerald-500/20'
-                    : 'bg-slate-900 hover:bg-slate-800 text-slate-200 border-slate-700 hover:border-slate-600'
-                }`}
-                title={
-                  hasPersonalToken
-                    ? 'GitHub Personal Access Token Active'
-                    : 'Connect GitHub Account or Personal Access Token'
-                }
-              >
-                <GitHubIcon className="w-3.5 h-3.5 text-current" />
-                <span className="hidden sm:inline">
-                  {hasPersonalToken ? 'Token Active' : 'Sign In'}
-                </span>
-              </button>
-
-              <button
-                onClick={onOpenTokenModal}
-                className={`p-1.5 rounded-lg border transition-colors ${
-                  hasPersonalToken
-                    ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
-                    : 'bg-slate-900 hover:bg-slate-800 text-slate-400 border-slate-800 hover:text-slate-200'
-                }`}
-                title="Manage GitHub Token"
-              >
-                <Key className="w-4 h-4" />
-              </button>
-            </div>
-          )}
         </div>
       </div>
     </header>

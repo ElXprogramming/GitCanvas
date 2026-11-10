@@ -182,13 +182,4 @@ export interface CanvasState {
   errorMessage?: string;
 }
 
-export interface DeploymentDiff {
-  repoExists: boolean;
-  existingReadmeContent: string | null;
-  newReadmeContent: string;
-  repoName: string;
-  owner: string;
-  sha?: string;
-}
-
 export * from './stats';

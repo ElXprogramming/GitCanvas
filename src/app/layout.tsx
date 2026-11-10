@@ -12,9 +12,9 @@ const josefinSlab = localFont({
 });
 
 export const metadata: Metadata = {
-  title: 'GitCanvas — GitHub Profile README Studio & Deployer',
+  title: 'GitCanvas — GitHub Profile README Studio',
   description:
-    'Ingest GitHub public profile data, synthesize tailored developer archetypes, customize aesthetic modular README sections, and deploy directly to your GitHub profile repository.',
+    'Ingest GitHub public profile data, synthesize tailored developer archetypes, and customize aesthetic modular README sections.',
 };
 
 export default function RootLayout({

@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { useSession } from 'next-auth/react';
 import {
   GitHubUserProfile,
   DeveloperArchetype,
@@ -20,13 +19,10 @@ import ArchetypeBanner from '@/components/studio/ArchetypeBanner';
 import StudioControls from '@/components/studio/StudioControls';
 import GitHubSimulator from '@/components/studio/GitHubSimulator';
 import BadgePickerModal from '@/components/studio/BadgePickerModal';
-import DiffDeployModal from '@/components/studio/DiffDeployModal';
-import PersonalTokenModal from '@/components/studio/PersonalTokenModal';
 import { useToast } from '@/components/common/Toast';
 import { Loader2, Sparkles, AlertCircle } from 'lucide-react';
 
 export default function GitCanvasPage() {
-  const { data: session, status: authStatus } = useSession();
   const { showToast } = useToast();
 
   const [username, setUsername] = useState('ElXprogramming');
@@ -47,33 +43,9 @@ export default function GitCanvasPage() {
 
   const [isLoading, setIsLoading] = useState(true);
   const [isAiGenerating, setIsAiGenerating] = useState(false);
-  const [personalToken, setPersonalToken] = useState<string>('');
 
   // Modals state
-  const [isDeployModalOpen, setIsDeployModalOpen] = useState(false);
-  const [isTokenModalOpen, setIsTokenModalOpen] = useState(false);
   const [isBadgePickerOpen, setIsBadgePickerOpen] = useState(false);
-
-  // Load saved token from localStorage on mount
-  useEffect(() => {
-    try {
-      const savedToken = localStorage.getItem('gitcanvas_personal_token');
-      if (savedToken) {
-        setPersonalToken(savedToken);
-      }
-    } catch (_) {}
-  }, []);
-
-  const handleSaveToken = (token: string) => {
-    setPersonalToken(token);
-    try {
-      if (token) {
-        localStorage.setItem('gitcanvas_personal_token', token);
-      } else {
-        localStorage.removeItem('gitcanvas_personal_token');
-      }
-    } catch (_) {}
-  };
 
   // Fetch GitHub User Data
   const loadUserData = useCallback(
@@ -82,15 +54,10 @@ export default function GitCanvasPage() {
       setIsLoading(true);
 
       try {
-        const headers: Record<string, string> = {};
-        if (personalToken) {
-          headers['Authorization'] = `Bearer ${personalToken}`;
-        }
-
         const url = `/api/github/profile?username=${encodeURIComponent(userToLoad)}${
           forceRefresh ? '&refresh=true' : ''
         }`;
-        const res = await fetch(url, { headers });
+        const res = await fetch(url);
 
         const data = await res.json();
         if (!res.ok) {
@@ -125,20 +92,15 @@ export default function GitCanvasPage() {
         setIsLoading(false);
       }
     },
-    [personalToken, showToast]
+    [showToast]
   );
 
-  // Auto-load session user if authenticated, or load default demo profile
+  // Auto-load default demo profile
   useEffect(() => {
-    if (authStatus === 'authenticated' && session?.user) {
-      const sessionUser =
-        (session as any).user?.login ||
-        (session.user.name ? session.user.name.split(' ')[0] : 'ElXprogramming');
-      loadUserData(sessionUser);
-    } else if (authStatus === 'unauthenticated' && !profile) {
+    if (!profile) {
       loadUserData('ElXprogramming');
     }
-  }, [authStatus, session, loadUserData, profile]);
+  }, [loadUserData, profile]);
 
   // Generate markdown from blocks & selected theme
   const generatedMarkdown = useMemo(() => {
@@ -299,15 +261,12 @@ export default function GitCanvasPage() {
         currentUsername={username}
         onSearchUser={loadUserData}
         isLoading={isLoading}
-        onOpenDeployModal={() => setIsDeployModalOpen(true)}
-        onOpenTokenModal={() => setIsTokenModalOpen(true)}
         onCopyMarkdown={handleCopyMarkdown}
-        hasPersonalToken={!!personalToken}
       />
 
       {/* Main Studio Workspace */}
       <main className="flex-1 max-w-[1920px] w-full mx-auto p-4 lg:p-6">
-        {(isLoading || authStatus === 'loading') && !profile ? (
+        {isLoading && !profile ? (
           <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3 text-slate-400">
             <Loader2 className="w-8 h-8 animate-spin text-cyan-400" />
             <p className="text-sm font-medium">Ingesting GitHub Portfolio Data & Synthesizing Archetype...</p>
@@ -358,26 +317,6 @@ export default function GitCanvasPage() {
         onToggleBadge={handleToggleBadge}
         onAddCustomBadge={handleAddCustomBadge}
         badgeStyle={techStackBlock?.settings?.badgeStyle || 'for-the-badge'}
-      />
-
-      <DiffDeployModal
-        isOpen={isDeployModalOpen}
-        onClose={() => setIsDeployModalOpen(false)}
-        markdown={generatedMarkdown}
-        username={username}
-        personalToken={personalToken}
-        isOAuthAuthenticated={authStatus === 'authenticated'}
-        onOpenTokenModal={() => {
-          setIsDeployModalOpen(false);
-          setIsTokenModalOpen(true);
-        }}
-      />
-
-      <PersonalTokenModal
-        isOpen={isTokenModalOpen}
-        onClose={() => setIsTokenModalOpen(false)}
-        token={personalToken}
-        onSaveToken={handleSaveToken}
       />
     </div>
   );
