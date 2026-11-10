@@ -14,7 +14,7 @@ export function getCardsBaseUrl(): string {
   return (
     process.env.NEXT_PUBLIC_APP_URL ||
     process.env.NEXTAUTH_URL ||
-    'https://gitcanvas.dev'
+    'https://githubstatreadme.vercel.app'
   );
 }
 

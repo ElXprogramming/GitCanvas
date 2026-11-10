@@ -5,6 +5,7 @@
 [![Next.js](https://img.shields.io/badge/Next.js-14.2-black?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+[![Live Studio](https://img.shields.io/badge/Live_Studio-githubstatreadme.vercel.app-06b6d4?style=for-the-badge&logo=vercel&logoColor=white)](https://githubstatreadme.vercel.app)
 [![Tests](https://img.shields.io/badge/Tests-48%20Passing-10b981?style=for-the-badge&logo=node.js&logoColor=white)](https://github.com/ElXprogramming/GitCanvas)
 [![License](https://img.shields.io/badge/License-MIT-8b5cf6?style=for-the-badge)](LICENSE)
 
@@ -21,7 +22,11 @@
   <a href="#-tech-stack"><strong>🛠️ Tech Stack</strong></a>
 </p>
 
-<img src="public/assets/bento-grid-preview.jpg" alt="GitCanvas Studio & Dynamic SVG README Preview" width="100%" />
+<p align="center">
+  <a href="https://githubstatreadme.vercel.app" target="_blank" title="Launch GitCanvas Studio Live Deployment">
+    <img src="public/assets/studio-preview.png" alt="GitCanvas Studio — Real-time Dynamic SVG README Studio" width="100%" />
+  </a>
+</p>
 
 </div>
 
@@ -32,20 +37,30 @@
 Add a complete, live-updating profile dashboard to your GitHub Profile README with a single line of Markdown:
 
 ```markdown
-![GitHub Profile](https://gitcanvas.dev/api/card?username=ElXprogramming&theme=onepiece_gatling&font=josefin_slab)
+![GitHub Profile](https://githubstatreadme.vercel.app/api/card?username=ElXprogramming&theme=onepiece_gatling&font=josefin_slab)
 ```
+
+<div align="center">
+  <br />
+  <p><b>✨ Live Dynamic Composite Card Output (Luffy Gatling Theme & Josefin Slab Typography)</b></p>
+  <a href="https://githubstatreadme.vercel.app/api/card?username=ElXprogramming&theme=onepiece_gatling&font=josefin_slab" target="_blank" title="View Live SVG Card Render">
+    <img src="public/assets/card-preview.png" alt="GitCanvas Dynamic Composite Card — Real Live Output from Production" width="85%" />
+  </a>
+  <p><sub><i>Live output generated directly from production deployment • Real-time GraphQL metrics & animated One Piece pixel art</i></sub></p>
+  <br />
+</div>
 
 Or embed standalone modular cards anywhere in your markdown:
 
 ```markdown
 <!-- Graded Streak Stats -->
-![Streak](https://gitcanvas.dev/api/cards/streak?username=ElXprogramming&theme=tokyonight)
+![Streak](https://githubstatreadme.vercel.app/api/cards/streak?username=ElXprogramming&theme=tokyonight)
 
 <!-- Language Distribution Bar -->
-![Languages](https://gitcanvas.dev/api/cards/languages?username=ElXprogramming&theme=catppuccin_mocha)
+![Languages](https://githubstatreadme.vercel.app/api/cards/languages?username=ElXprogramming&theme=catppuccin_mocha)
 
 <!-- Pinned Project Card -->
-![Pinned Project](https://gitcanvas.dev/api/cards/pinned?username=ElXprogramming&index=0&theme=dracula)
+![Pinned Project](https://githubstatreadme.vercel.app/api/cards/pinned?username=ElXprogramming&index=0&theme=dracula)
 ```
 
 ---
@@ -124,13 +139,15 @@ Or embed standalone modular cards anywhere in your markdown:
 
 GitCanvas provides high-performance SVG generation endpoints that can be embedded into any GitHub README or web page.
 
+**Live Production Base URL:** `https://githubstatreadme.vercel.app`
+
 ### 1. Unified Canvas Card Endpoint
 
 Renders the full composite profile card containing all dashboard modules.
 
 ```http
-GET /api/card?username={username}&theme={theme}&font={font}
-GET /api/cards/canvas?username={username}&theme={theme}&font={font}
+GET https://githubstatreadme.vercel.app/api/card?username={username}&theme={theme}&font={font}
+GET https://githubstatreadme.vercel.app/api/cards/canvas?username={username}&theme={theme}&font={font}
 ```
 
 #### Query Parameters
@@ -160,24 +177,24 @@ GET /api/cards/canvas?username={username}&theme={theme}&font={font}
 Embed individual card widgets anywhere in your README:
 
 ```http
-GET /api/cards/{item}?username={username}&theme={theme}&font={font}
+GET https://githubstatreadme.vercel.app/api/cards/{item}?username={username}&theme={theme}&font={font}
 ```
 
-| Route Item | Output Description | Sample URL |
+| Route Item | Output Description | Live Sample URL |
 |:---|:---|:---|
-| `profile` | Profile banner with avatar, stats, bio, and company | `/api/cards/profile?username=ElXprogramming&theme=onepiece_gatling` |
-| `pinned` *(or `project`)* | Pinned repository card (`index=0`, `repo=repo-name`) | `/api/cards/pinned?username=ElXprogramming&index=0&theme=tokyonight` |
-| `languages` | Compact byte-weighted language distribution bar | `/api/cards/languages?username=ElXprogramming&theme=catppuccin_mocha` |
-| `overall` | Graded overall engineer score with letter tier (S+, S, A, B, C) | `/api/cards/overall?username=ElXprogramming&theme=dracula` |
-| `streak` | Current streak, longest streak, and active days summary | `/api/cards/streak?username=ElXprogramming&theme=onepiece_gatling` |
-| `contributions` | Year-round contribution calendar matrix heatmap | `/api/cards/contributions?username=ElXprogramming&theme=nord` |
-| `commits` | Total commits box with performance tier badge | `/api/cards/commits?username=ElXprogramming&theme=radical` |
-| `prs` | Total pull requests submitted with grading | `/api/cards/prs?username=ElXprogramming&theme=tokyonight` |
-| `issues` | Total closed & open issues box | `/api/cards/issues?username=ElXprogramming&theme=sunset` |
-| `stars` | Total stars earned across repositories | `/api/cards/stars?username=ElXprogramming&theme=catppuccin_mocha` |
-| `repos` | Total public repositories count & grade | `/api/cards/repos?username=ElXprogramming&theme=github_dark` |
-| `polyglot` | Polyglot score based on language diversity | `/api/cards/polyglot?username=ElXprogramming&theme=dracula` |
-| `social` | Minimal borderless social link (`type=linkedin`, `type=website`) | `/api/cards/social?type=github&label=GitHub&theme=tokyonight` |
+| `profile` | Profile banner with avatar, stats, bio, and company | [`/api/cards/profile?username=ElXprogramming&theme=onepiece_gatling`](https://githubstatreadme.vercel.app/api/cards/profile?username=ElXprogramming&theme=onepiece_gatling) |
+| `pinned` *(or `project`)* | Pinned repository card (`index=0`, `repo=repo-name`) | [`/api/cards/pinned?username=ElXprogramming&index=0&theme=tokyonight`](https://githubstatreadme.vercel.app/api/cards/pinned?username=ElXprogramming&index=0&theme=tokyonight) |
+| `languages` | Compact byte-weighted language distribution bar | [`/api/cards/languages?username=ElXprogramming&theme=catppuccin_mocha`](https://githubstatreadme.vercel.app/api/cards/languages?username=ElXprogramming&theme=catppuccin_mocha) |
+| `overall` | Graded overall engineer score with letter tier (S+, S, A, B, C) | [`/api/cards/overall?username=ElXprogramming&theme=dracula`](https://githubstatreadme.vercel.app/api/cards/overall?username=ElXprogramming&theme=dracula) |
+| `streak` | Current streak, longest streak, and active days summary | [`/api/cards/streak?username=ElXprogramming&theme=onepiece_gatling`](https://githubstatreadme.vercel.app/api/cards/streak?username=ElXprogramming&theme=onepiece_gatling) |
+| `contributions` | Year-round contribution calendar matrix heatmap | [`/api/cards/contributions?username=ElXprogramming&theme=nord`](https://githubstatreadme.vercel.app/api/cards/contributions?username=ElXprogramming&theme=nord) |
+| `commits` | Total commits box with performance tier badge | [`/api/cards/commits?username=ElXprogramming&theme=radical`](https://githubstatreadme.vercel.app/api/cards/commits?username=ElXprogramming&theme=radical) |
+| `prs` | Total pull requests submitted with grading | [`/api/cards/prs?username=ElXprogramming&theme=tokyonight`](https://githubstatreadme.vercel.app/api/cards/prs?username=ElXprogramming&theme=tokyonight) |
+| `issues` | Total closed & open issues box | [`/api/cards/issues?username=ElXprogramming&theme=sunset`](https://githubstatreadme.vercel.app/api/cards/issues?username=ElXprogramming&theme=sunset) |
+| `stars` | Total stars earned across repositories | [`/api/cards/stars?username=ElXprogramming&theme=catppuccin_mocha`](https://githubstatreadme.vercel.app/api/cards/stars?username=ElXprogramming&theme=catppuccin_mocha) |
+| `repos` | Total public repositories count & grade | [`/api/cards/repos?username=ElXprogramming&theme=github_dark`](https://githubstatreadme.vercel.app/api/cards/repos?username=ElXprogramming&theme=github_dark) |
+| `polyglot` | Polyglot score based on language diversity | [`/api/cards/polyglot?username=ElXprogramming&theme=dracula`](https://githubstatreadme.vercel.app/api/cards/polyglot?username=ElXprogramming&theme=dracula) |
+| `social` | Minimal borderless social link (`type=github`, `type=linkedin`) | [`/api/cards/social?type=github&label=GitHub&theme=tokyonight`](https://githubstatreadme.vercel.app/api/cards/social?type=github&label=GitHub&theme=tokyonight) |
 
 ---
 
