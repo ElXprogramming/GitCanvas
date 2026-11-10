@@ -77,7 +77,9 @@ test('One Piece themes are configured with mascots and custom palettes', () => {
 
   const gatlingTheme = getDesignTheme('onepiece_gatling');
   assert.equal(gatlingTheme.id, 'onepiece_gatling');
-  assert.equal(gatlingTheme.border, 'transparent');
+  assert.equal(gatlingTheme.border, '#f59e0b');
+  assert.equal(gatlingTheme.textSecondary, '#facc15');
+  assert.equal(gatlingTheme.borderRadius, 12);
   assert.equal(gatlingTheme.mascot?.isAnimated, true);
   assert.equal(gatlingTheme.mascot?.frames?.length, 4);
   assert.ok(gatlingTheme.mascot?.gifBase64?.startsWith('data:image/gif;base64,'));
@@ -331,7 +333,18 @@ test('onepiece_gatling theme renders floating flapping straw hat in background w
       createdAt: '2020-01-01',
       htmlUrl: 'https://github.com/luffy',
     },
-    projects: [],
+    projects: [
+      {
+        name: 'thousand-sunny',
+        description: 'Pirate ship of the Straw Hat Pirates',
+        url: 'https://github.com/luffy/thousand-sunny',
+        homepageUrl: null,
+        stars: 560,
+        forks: 100,
+        language: 'TypeScript',
+        languageColor: '#3178c6',
+      },
+    ],
     languages: {
       item: 'languages',
       username: 'luffy',
@@ -400,6 +413,8 @@ test('onepiece_gatling theme renders floating flapping straw hat in background w
   assert.ok(canvasSvg.includes('@keyframes windRoamCanvas2'), 'Canvas CSS should include windRoamCanvas2');
   assert.ok(canvasSvg.includes('@keyframes windRoamCanvas3'), 'Canvas CSS should include windRoamCanvas3');
   assert.ok(canvasSvg.includes('@keyframes windGustSweep'), 'Canvas CSS should include windGustSweep');
+  assert.ok(canvasSvg.includes('stroke="#f59e0b" stroke-width="1.5"'), 'Canvas should render golden outer border and divider line');
+  assert.ok(canvasSvg.includes('<line x1="20" y1='), 'Canvas should render divider line between nickname and pinned projects');
 });
 
 test('NORMAL_THEMES, SHOWCASE_THEMES, and ON_HOLD_THEMES are correctly categorized', () => {

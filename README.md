@@ -204,7 +204,7 @@ GET https://githubstatreadme.vercel.app/api/cards/{item}?username={username}&the
 
 | Theme ID | Name | Category | Aesthetic Description |
 |:---|:---|:---|:---|
-| `onepiece_gatling` | **Luffy Gatling** | ⭐ Showcase | Deep navy background, borderless cards, animated Luffy Gatling GIF, background wind effect & flapping straw hats |
+| `onepiece_gatling` | **Luffy Gatling** | ⭐ Showcase | Deep navy & vibrant Straw Hat gold, animated Luffy Gatling GIF, roaming straw hats & golden wind trails |
 | `wano_zoro` | **Wano Zoro** | ⭐ Showcase | Deep emerald & bamboo green, comedic Cross-Card Wanderer Zoro (animated SMIL SVG), falling Wano cherry blossoms (sakura) & flying slashes |
 | `tokyonight` | **Tokyo Night** | Modern Dev | Deep navy/slate tones with vibrant cyan, pastel purple, and soft pink accents |
 | `catppuccin_mocha` | **Catppuccin Mocha** | Modern Dev | Soothing pastel palette with mauve, lavender, peach, and mint green highlights |
