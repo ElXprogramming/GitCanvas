@@ -33,7 +33,9 @@ export default function GitCanvasPage() {
   const [archetype, setArchetype] = useState<DeveloperArchetype | null>(null);
   const [languages, setLanguages] = useState<LanguageDistribution[]>([]);
   const [repositories, setRepositories] = useState<Repository[]>([]);
-  const [blocks, setBlocks] = useState<ReadmeBlockConfig[]>([]);
+  const [blocks, setBlocks] = useState<ReadmeBlockConfig[]>(() =>
+    createDefaultBlocks(null, null, [], [])
+  );
 
   const [theme, setTheme] = useState<ThemeConfig>({
     accentColor: 'cyan',
@@ -41,7 +43,7 @@ export default function GitCanvasPage() {
     badgeStyle: 'for-the-badge',
   });
 
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [isAiGenerating, setIsAiGenerating] = useState(false);
   const [personalToken, setPersonalToken] = useState<string>('');
 
@@ -136,8 +138,14 @@ export default function GitCanvasPage() {
 
   // Generate markdown from blocks & selected theme
   const generatedMarkdown = useMemo(() => {
-    return generateMarkdown(blocks, profile, archetype, theme.cardTheme || 'default');
-  }, [blocks, profile, archetype, theme.cardTheme]);
+    return generateMarkdown(
+      blocks,
+      profile,
+      archetype,
+      theme.cardTheme || 'default',
+      username
+    );
+  }, [blocks, profile, archetype, theme.cardTheme, username]);
 
   // AI Bio Regeneration
   const handleRegenerateAiBio = async (tone: BioTone) => {
@@ -167,12 +175,13 @@ export default function GitCanvasPage() {
         throw new Error(aiData.error || 'Failed to synthesize AI bio');
       }
 
-      // Update Bio block settings
+      // Update Bio block settings and enable it so user sees the synthesized bio
       setBlocks((prev) =>
         prev.map((block) => {
           if (block.id === 'bio') {
             return {
               ...block,
+              enabled: true,
               settings: {
                 ...block.settings,
                 tone,
@@ -242,7 +251,11 @@ export default function GitCanvasPage() {
             : [...current, badge];
           return {
             ...block,
-            settings: { ...block.settings, selectedBadges: updated },
+            settings: {
+              ...block.settings,
+              showCategoryHeaders: true,
+              selectedBadges: updated,
+            },
           };
         }
         return block;
@@ -260,6 +273,7 @@ export default function GitCanvasPage() {
             ...block,
             settings: {
               ...block.settings,
+              showCategoryHeaders: true,
               selectedBadges: [...current, badge],
             },
           };
@@ -298,7 +312,7 @@ export default function GitCanvasPage() {
 
       {/* Main Studio Workspace */}
       <main className="flex-1 max-w-[1920px] w-full mx-auto p-4 lg:p-6">
-        {isLoading && !profile ? (
+        {(isLoading || authStatus === 'loading') && !profile ? (
           <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3 text-slate-400">
             <Loader2 className="w-8 h-8 animate-spin text-cyan-400" />
             <p className="text-sm font-medium">Ingesting GitHub Portfolio Data & Synthesizing Archetype...</p>

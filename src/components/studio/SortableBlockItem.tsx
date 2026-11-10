@@ -12,13 +12,11 @@ import {
   PinnedProjectsSettings,
   SocialLinksSettings,
   BioTone,
-  CapsuleType,
   BadgeStyle,
-  BannerStyle,
   Repository,
   DeveloperArchetype,
-  TechBadgeItem,
 } from '@/types';
+import { DESIGN_THEMES } from '@/designs/themes';
 import {
   GripVertical,
   ChevronDown,
@@ -28,9 +26,7 @@ import {
   Sparkles,
   Plus,
   Trash2,
-  ExternalLink,
   Loader2,
-  Code2,
 } from 'lucide-react';
 
 interface SortableBlockItemProps {
@@ -120,7 +116,11 @@ export default function SortableBlockItem({
             }`}
             title={block.enabled ? 'Disable block' : 'Enable block'}
           >
-            {block.enabled ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+            {block.enabled ? (
+              <Eye className="w-4 h-4" />
+            ) : (
+              <EyeOff className="w-4 h-4" />
+            )}
           </button>
 
           {/* Expand / Collapse toggle */}
@@ -129,7 +129,11 @@ export default function SortableBlockItem({
             className="p-1.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-colors"
             title="Configure settings"
           >
-            {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+            {isExpanded ? (
+              <ChevronUp className="w-4 h-4" />
+            ) : (
+              <ChevronDown className="w-4 h-4" />
+            )}
           </button>
         </div>
       </div>
@@ -137,7 +141,7 @@ export default function SortableBlockItem({
       {/* Block Settings Accordion */}
       {isExpanded && (
         <div className="p-4 border-t border-slate-800/80 bg-slate-950/40 space-y-4 text-xs">
-          {/* 1. HERO BLOCK EDITOR */}
+          {/* 1. PROFILE HEADER EDITOR */}
           {block.id === 'hero' && (
             <HeroEditor
               settings={block.settings as HeroSettings}
@@ -156,7 +160,7 @@ export default function SortableBlockItem({
             />
           )}
 
-          {/* 3. TECH STACK BLOCK EDITOR */}
+          {/* 3. LANGUAGES & TECH STACK EDITOR */}
           {block.id === 'tech_stack' && (
             <TechStackEditor
               settings={block.settings as TechStackSettings}
@@ -173,7 +177,7 @@ export default function SortableBlockItem({
             />
           )}
 
-          {/* 5. STREAK & TROPHIES BLOCK EDITOR */}
+          {/* 5. STREAK & CONTRIBUTIONS EDITOR */}
           {block.id === 'streak_trophies' && (
             <StreakTrophiesEditor
               settings={block.settings as GitHubStatsSettings}
@@ -214,118 +218,57 @@ function HeroEditor({
   onChange: (s: Partial<HeroSettings>) => void;
   archetype: DeveloperArchetype | null;
 }) {
-  const bannerStyles: { id: BannerStyle; label: string }[] = [
-    { id: 'capsule', label: 'Capsule Render (SVG)' },
-    { id: 'typing', label: 'Typing SVG Effect' },
-    { id: 'ascii', label: 'ASCII Banner' },
-    { id: 'minimal', label: 'Minimalist Clean' },
-  ];
-
-  const capsuleTypes: CapsuleType[] = ['wave', 'slice', 'rect', 'soft', 'cylinder', 'rounded'];
-
   return (
     <div className="space-y-3">
       <div>
-        <label className="block text-slate-400 font-medium mb-1">Banner Style</label>
-        <div className="grid grid-cols-2 gap-1.5">
-          {bannerStyles.map((style) => (
-            <button
-              key={style.id}
-              onClick={() => onChange({ style: style.id })}
-              className={`p-2 rounded-lg border text-left transition-colors ${
-                settings.style === style.id
-                  ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/50'
-                  : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-slate-200'
-              }`}
-            >
-              {style.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div>
-        <label className="block text-slate-400 font-medium mb-1">Greeting Text</label>
+        <label className="block text-slate-400 font-medium mb-1">
+          Display Name on Profile Card
+        </label>
         <input
           type="text"
           value={settings.greeting}
           onChange={(e) => onChange({ greeting: e.target.value })}
+          placeholder="Your display name..."
           className="w-full px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500"
         />
       </div>
 
-      <div>
-        <label className="block text-slate-400 font-medium mb-1">Tagline</label>
-        <input
-          type="text"
-          value={settings.tagline}
-          onChange={(e) => onChange({ tagline: e.target.value })}
-          className="w-full px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500"
-        />
-        {archetype?.recommendedTaglines && (
-          <div className="flex flex-wrap gap-1 mt-1.5">
-            <span className="text-[10px] text-slate-500">Suggestions:</span>
-            {archetype.recommendedTaglines.map((rec, i) => (
-              <button
-                key={i}
-                onClick={() => onChange({ tagline: rec })}
-                className="text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 hover:text-cyan-300 truncate max-w-xs"
-              >
-                {rec}
-              </button>
-            ))}
+      <div className="pt-1 border-t border-slate-800/80 space-y-2">
+        <label className="flex items-center gap-1.5 cursor-pointer text-slate-300">
+          <input
+            type="checkbox"
+            checked={!!settings.showWave}
+            onChange={(e) => onChange({ showWave: e.target.checked })}
+            className="rounded bg-slate-900 border-slate-800 text-cyan-500"
+          />
+          <span>Show subtitle tagline below header</span>
+        </label>
+
+        {settings.showWave && (
+          <div>
+            <input
+              type="text"
+              value={settings.tagline}
+              onChange={(e) => onChange({ tagline: e.target.value })}
+              className="w-full px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500"
+            />
+            {archetype?.recommendedTaglines && (
+              <div className="flex flex-wrap gap-1 mt-1.5">
+                <span className="text-[10px] text-slate-500">Suggestions:</span>
+                {archetype.recommendedTaglines.map((rec, i) => (
+                  <button
+                    key={i}
+                    onClick={() => onChange({ tagline: rec })}
+                    className="text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 hover:text-cyan-300 truncate max-w-xs"
+                  >
+                    {rec}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </div>
-
-      {settings.style === 'capsule' && (
-        <div className="grid grid-cols-2 gap-2 pt-1 border-t border-slate-800">
-          <div>
-            <label className="block text-slate-400 font-medium mb-1">Capsule Shape</label>
-            <select
-              value={settings.capsuleType}
-              onChange={(e) => onChange({ capsuleType: e.target.value as CapsuleType })}
-              className="w-full px-2 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-200"
-            >
-              {capsuleTypes.map((t) => (
-                <option key={t} value={t}>
-                  {t}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label className="block text-slate-400 font-medium mb-1">Height (px)</label>
-            <input
-              type="number"
-              min="100"
-              max="300"
-              value={settings.capsuleHeight}
-              onChange={(e) => onChange({ capsuleHeight: parseInt(e.target.value) || 180 })}
-              className="w-full px-2 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-200"
-            />
-          </div>
-        </div>
-      )}
-
-      {settings.style === 'typing' && (
-        <div className="space-y-2 pt-1 border-t border-slate-800">
-          <label className="block text-slate-400 font-medium">
-            Typing Lines (one per line)
-          </label>
-          <textarea
-            rows={3}
-            value={settings.typingLines.join('\n')}
-            onChange={(e) =>
-              onChange({
-                typingLines: e.target.value.split('\n').filter((l) => l.trim() !== ''),
-              })
-            }
-            placeholder="Line 1&#10;Line 2&#10;Line 3"
-            className="w-full px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-100 font-mono text-xs focus:outline-none focus:border-cyan-500"
-          />
-        </div>
-      )}
     </div>
   );
 }
@@ -354,7 +297,9 @@ function BioEditor({
       <div className="p-3 rounded-xl bg-gradient-to-r from-cyan-950/40 via-indigo-950/40 to-violet-950/40 border border-cyan-800/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <Sparkles className="w-4 h-4 text-cyan-400 animate-pulse" />
-          <span className="font-semibold text-slate-200 text-xs">AI Bio Tone Styling:</span>
+          <span className="font-semibold text-slate-200 text-xs">
+            AI Bio Tone Styling:
+          </span>
           <select
             value={settings.tone}
             onChange={(e) => onChange({ tone: e.target.value as BioTone })}
@@ -389,7 +334,9 @@ function BioEditor({
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
         <div>
-          <label className="block text-slate-400 font-medium mb-1">🔭 Working on</label>
+          <label className="block text-slate-400 font-medium mb-1">
+            🔭 Working on
+          </label>
           <input
             type="text"
             value={settings.workingOn}
@@ -398,7 +345,9 @@ function BioEditor({
           />
         </div>
         <div>
-          <label className="block text-slate-400 font-medium mb-1">🌱 Currently learning</label>
+          <label className="block text-slate-400 font-medium mb-1">
+            🌱 Currently learning
+          </label>
           <input
             type="text"
             value={settings.learning}
@@ -407,7 +356,9 @@ function BioEditor({
           />
         </div>
         <div>
-          <label className="block text-slate-400 font-medium mb-1">💬 Ask me about</label>
+          <label className="block text-slate-400 font-medium mb-1">
+            💬 Ask me about
+          </label>
           <input
             type="text"
             value={settings.askMeAbout}
@@ -416,7 +367,9 @@ function BioEditor({
           />
         </div>
         <div>
-          <label className="block text-slate-400 font-medium mb-1">📫 How to reach me</label>
+          <label className="block text-slate-400 font-medium mb-1">
+            📫 How to reach me
+          </label>
           <input
             type="text"
             value={settings.reachMe}
@@ -425,7 +378,9 @@ function BioEditor({
           />
         </div>
         <div>
-          <label className="block text-slate-400 font-medium mb-1">💼 Open for</label>
+          <label className="block text-slate-400 font-medium mb-1">
+            💼 Open for
+          </label>
           <input
             type="text"
             value={settings.openFor}
@@ -434,7 +389,9 @@ function BioEditor({
           />
         </div>
         <div>
-          <label className="block text-slate-400 font-medium mb-1">⚡ Fun fact</label>
+          <label className="block text-slate-400 font-medium mb-1">
+            ⚡ Fun fact
+          </label>
           <input
             type="text"
             value={settings.funFact}
@@ -456,7 +413,12 @@ function TechStackEditor({
   onChange: (s: Partial<TechStackSettings>) => void;
   onOpenBadgePicker: () => void;
 }) {
-  const styles: BadgeStyle[] = ['for-the-badge', 'flat', 'flat-square', 'plastic'];
+  const styles: BadgeStyle[] = [
+    'for-the-badge',
+    'flat',
+    'flat-square',
+    'plastic',
+  ];
 
   const removeBadge = (id: string) => {
     onChange({
@@ -467,67 +429,77 @@ function TechStackEditor({
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
-          <label className="text-slate-400 font-medium">Badge Style:</label>
-          <select
-            value={settings.badgeStyle}
-            onChange={(e) => onChange({ badgeStyle: e.target.value as BadgeStyle })}
-            className="px-2 py-1 rounded-lg bg-slate-900 border border-slate-800 text-slate-200"
-          >
-            {styles.map((st) => (
-              <option key={st} value={st}>
-                {st}
-              </option>
-            ))}
-          </select>
-        </div>
-
         <label className="flex items-center gap-1.5 cursor-pointer text-slate-300">
           <input
             type="checkbox"
             checked={settings.showCategoryHeaders}
-            onChange={(e) => onChange({ showCategoryHeaders: e.target.checked })}
+            onChange={(e) =>
+              onChange({ showCategoryHeaders: e.target.checked })
+            }
             className="rounded bg-slate-900 border-slate-800 text-cyan-500"
           />
-          <span>Group by categories</span>
+          <span>Also display Tech Stack Badges below Languages bar</span>
         </label>
+
+        {settings.showCategoryHeaders && (
+          <div className="flex items-center gap-2">
+            <label className="text-slate-400 font-medium">Badge Style:</label>
+            <select
+              value={settings.badgeStyle}
+              onChange={(e) =>
+                onChange({ badgeStyle: e.target.value as BadgeStyle })
+              }
+              className="px-2 py-1 rounded-lg bg-slate-900 border border-slate-800 text-slate-200"
+            >
+              {styles.map((st) => (
+                <option key={st} value={st}>
+                  {st}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
       </div>
 
-      <div>
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-slate-400 font-medium">
-            Selected Technologies ({settings.selectedBadges.length})
-          </span>
-          <button
-            onClick={onOpenBadgePicker}
-            className="flex items-center gap-1 px-2.5 py-1 text-xs font-semibold rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white transition-colors"
-          >
-            <Plus className="w-3.5 h-3.5" />
-            <span>Add / Search Badges</span>
-          </button>
-        </div>
+      {settings.showCategoryHeaders && (
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-slate-400 font-medium">
+              Selected Technologies ({settings.selectedBadges.length})
+            </span>
+            <button
+              onClick={onOpenBadgePicker}
+              className="flex items-center gap-1 px-2.5 py-1 text-xs font-semibold rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white transition-colors"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>Add / Search Badges</span>
+            </button>
+          </div>
 
-        <div className="flex flex-wrap gap-1.5 p-2 rounded-xl bg-slate-900/60 border border-slate-800 min-h-[50px]">
-          {settings.selectedBadges.length === 0 ? (
-            <span className="text-slate-500 italic p-1">No badges added yet.</span>
-          ) : (
-            settings.selectedBadges.map((badge) => (
-              <span
-                key={badge.id}
-                className="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg bg-slate-800 border border-slate-700 text-slate-200 text-xs"
-              >
-                <span>{badge.name}</span>
-                <button
-                  onClick={() => removeBadge(badge.id)}
-                  className="text-slate-400 hover:text-rose-400 ml-0.5"
-                >
-                  &times;
-                </button>
+          <div className="flex flex-wrap gap-1.5 p-2 rounded-xl bg-slate-900/60 border border-slate-800 min-h-[50px]">
+            {settings.selectedBadges.length === 0 ? (
+              <span className="text-slate-500 italic p-1">
+                No badges added yet.
               </span>
-            ))
-          )}
+            ) : (
+              settings.selectedBadges.map((badge) => (
+                <span
+                  key={badge.id}
+                  className="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg bg-slate-800 border border-slate-700 text-slate-200 text-xs"
+                >
+                  <span>{badge.name}</span>
+                  <button
+                    onClick={() => removeBadge(badge.id)}
+                    className="text-slate-400 hover:text-rose-400 ml-0.5"
+                  >
+                    &times;
+                  </button>
+                </span>
+              ))
+            )}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
@@ -539,89 +511,46 @@ function GitHubStatsEditor({
   settings: GitHubStatsSettings;
   onChange: (s: Partial<GitHubStatsSettings>) => void;
 }) {
-  const themes = [
-    { id: 'catppuccin_mocha', label: 'Catppuccin Mocha' },
-    { id: 'tokyonight', label: 'Tokyo Night' },
-    { id: 'nord', label: 'Nord' },
-    { id: 'dracula', label: 'Dracula' },
-    { id: 'radical', label: 'Radical' },
-    { id: 'onedark', label: 'One Dark' },
-    { id: 'gruvbox', label: 'Gruvbox' },
-    { id: 'dark', label: 'GitHub Dark' },
-  ];
+  const themes = Object.values(DESIGN_THEMES);
 
   return (
     <div className="space-y-3">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-        <div>
-          <label className="block text-slate-400 font-medium mb-1">Theme</label>
-          <select
-            value={settings.cardTheme}
-            onChange={(e) => onChange({ cardTheme: e.target.value })}
-            className="w-full px-2 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-200"
-          >
-            {themes.map((t) => (
-              <option key={t.id} value={t.id}>
-                {t.label}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <label className="block text-slate-400 font-medium mb-1">API Engine</label>
-          <select
-            value={settings.cardProvider || 'standalone'}
-            onChange={(e) => onChange({ cardProvider: e.target.value as any })}
-            className="w-full px-2 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-200"
-          >
-            <option value="standalone">⚡ Standalone (Direct GitHub)</option>
-            <option value="legacy">🌐 Legacy (github-readme-stats)</option>
-          </select>
-        </div>
-
-        <div>
-          <label className="block text-slate-400 font-medium mb-1">Layout</label>
-          <select
-            value={settings.layout}
-            onChange={(e) => onChange({ layout: e.target.value as any })}
-            className="w-full px-2 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-200"
-          >
-            <option value="side-by-side">Side-by-Side Cards</option>
-            <option value="stacked">Stacked Cards</option>
-          </select>
-        </div>
+      <div>
+        <label className="block text-slate-400 font-medium mb-1">
+          Card Theme
+        </label>
+        <select
+          value={settings.cardTheme || 'default'}
+          onChange={(e) => onChange({ cardTheme: e.target.value })}
+          className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-200"
+        >
+          {themes.map((t) => (
+            <option key={t.id} value={t.id}>
+              {t.label}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div className="flex flex-wrap gap-4 pt-1">
         <label className="flex items-center gap-1.5 cursor-pointer text-slate-300">
           <input
             type="checkbox"
-            checked={settings.showOverallStats}
+            checked={settings.showOverallStats !== false}
             onChange={(e) => onChange({ showOverallStats: e.target.checked })}
             className="rounded bg-slate-900 border-slate-800 text-cyan-500"
           />
-          <span>Show Stats Card</span>
+          <span>Row 1: Commits, PRs, Issues & Stars</span>
         </label>
 
         <label className="flex items-center gap-1.5 cursor-pointer text-slate-300">
           <input
             type="checkbox"
-            checked={settings.showTopLangs}
+            checked={settings.showTopLangs !== false}
             onChange={(e) => onChange({ showTopLangs: e.target.checked })}
             className="rounded bg-slate-900 border-slate-800 text-cyan-500"
           />
-          <span>Show Top Languages Card</span>
-        </label>
-
-        <label className="flex items-center gap-1.5 cursor-pointer text-slate-300">
-          <input
-            type="checkbox"
-            checked={settings.hideBorder}
-            onChange={(e) => onChange({ hideBorder: e.target.checked })}
-            className="rounded bg-slate-900 border-slate-800 text-cyan-500"
-          />
-          <span>Borderless Cards</span>
+          <span>Row 2: Repos, Polyglot & Overall Grade</span>
         </label>
       </div>
     </div>
@@ -638,27 +567,30 @@ function StreakTrophiesEditor({
   return (
     <div className="space-y-3">
       <p className="text-slate-400 text-xs">
-        Highlight your continuous contribution streaks and earned GitHub milestones.
+        Toggle your continuous contribution streak metrics and 53-week commit
+        heatmap.
       </p>
       <div className="flex flex-wrap gap-4">
         <label className="flex items-center gap-1.5 cursor-pointer text-slate-300">
           <input
             type="checkbox"
-            checked={settings.showStreak}
+            checked={settings.showStreak !== false}
             onChange={(e) => onChange({ showStreak: e.target.checked })}
             className="rounded bg-slate-900 border-slate-800 text-cyan-500"
           />
-          <span>Contribution Streak Stats</span>
+          <span>Row 3: Streak, Longest Streak & Active Days</span>
         </label>
 
         <label className="flex items-center gap-1.5 cursor-pointer text-slate-300">
           <input
             type="checkbox"
-            checked={settings.showTrophies}
-            onChange={(e) => onChange({ showTrophies: e.target.checked })}
+            checked={settings.showActivityGraph !== false}
+            onChange={(e) =>
+              onChange({ showActivityGraph: e.target.checked })
+            }
             className="rounded bg-slate-900 border-slate-800 text-cyan-500"
           />
-          <span>GitHub Trophies Badge</span>
+          <span>Row 4: Contributions Last Year Heatmap</span>
         </label>
       </div>
     </div>
@@ -699,36 +631,10 @@ function PinnedProjectsEditor({
 
   return (
     <div className="space-y-3">
-      <div className="flex items-center gap-3">
-        <label className="text-slate-400 font-medium">Layout Style:</label>
-        <div className="flex gap-1.5">
-          <button
-            onClick={() => onChange({ displayStyle: 'table' })}
-            className={`px-2.5 py-1 rounded-lg border text-xs ${
-              settings.displayStyle === 'table'
-                ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/50'
-                : 'bg-slate-900 border-slate-800 text-slate-400'
-            }`}
-          >
-            Markdown Table
-          </button>
-          <button
-            onClick={() => onChange({ displayStyle: 'cards' })}
-            className={`px-2.5 py-1 rounded-lg border text-xs ${
-              settings.displayStyle === 'cards'
-                ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/50'
-                : 'bg-slate-900 border-slate-800 text-slate-400'
-            }`}
-          >
-            Project Cards
-          </button>
-        </div>
-      </div>
-
       {/* Featured list */}
       <div className="space-y-2">
         <span className="text-slate-400 font-medium">
-          Featured Projects ({settings.featuredProjects.length})
+          Pinned Repositories ({settings.featuredProjects.length})
         </span>
 
         {settings.featuredProjects.map((p, i) => (
@@ -737,12 +643,17 @@ function PinnedProjectsEditor({
             className="flex items-center justify-between p-2 rounded-lg bg-slate-900 border border-slate-800"
           >
             <div className="overflow-hidden">
-              <span className="font-semibold text-slate-200 block truncate">{p.name}</span>
-              <span className="text-[11px] text-slate-400 block truncate">{p.description}</span>
+              <span className="font-semibold text-slate-200 block truncate">
+                {p.name}
+              </span>
+              <span className="text-[11px] text-slate-400 block truncate">
+                {p.description}
+              </span>
             </div>
             <button
               onClick={() => removeProject(i)}
               className="text-slate-500 hover:text-rose-400 p-1 shrink-0 ml-2"
+              title="Remove repository"
             >
               <Trash2 className="w-3.5 h-3.5" />
             </button>
@@ -754,12 +665,12 @@ function PinnedProjectsEditor({
       {userRepos.length > 0 && (
         <div className="pt-2 border-t border-slate-800">
           <span className="text-slate-400 text-[11px] block mb-1.5">
-            Add from your top repositories:
+            Add from repositories:
           </span>
           <div className="flex flex-wrap gap-1 max-h-32 overflow-y-auto">
             {userRepos
               .filter((r) => !currentNames.has(r.name))
-              .slice(0, 10)
+              .slice(0, 12)
               .map((repo) => (
                 <button
                   key={repo.name}
@@ -768,7 +679,9 @@ function PinnedProjectsEditor({
                 >
                   <Plus className="w-3 h-3" />
                   <span>{repo.name}</span>
-                  <span className="text-slate-500">⭐{repo.stargazers_count}</span>
+                  <span className="text-slate-500">
+                    ★{repo.stargazers_count}
+                  </span>
                 </button>
               ))}
           </div>
@@ -792,13 +705,16 @@ function SocialConnectEditor({
   };
 
   const fields = [
-    { key: 'linkedin', label: 'LinkedIn', placeholder: 'e.g. username or url' },
-    { key: 'twitter', label: 'Twitter / X', placeholder: 'e.g. handle or url' },
-    { key: 'discord', label: 'Discord Invite', placeholder: 'e.g. invite-code' },
-    { key: 'portfolio', label: 'Website / Portfolio', placeholder: 'e.g. myportfolio.dev' },
-    { key: 'youtube', label: 'YouTube', placeholder: 'e.g. @channel' },
-    { key: 'substack', label: 'Substack', placeholder: 'e.g. newsletter' },
     { key: 'email', label: 'Email', placeholder: 'e.g. contact@domain.com' },
+    { key: 'linkedin', label: 'LinkedIn', placeholder: 'e.g. username or url' },
+    {
+      key: 'portfolio',
+      label: 'Website / Portfolio',
+      placeholder: 'e.g. myportfolio.dev',
+    },
+    { key: 'twitter', label: 'Twitter / X', placeholder: 'e.g. @handle or url' },
+    { key: 'discord', label: 'Discord Invite', placeholder: 'e.g. invite-code' },
+    { key: 'youtube', label: 'YouTube', placeholder: 'e.g. @channel' },
   ];
 
   return (
@@ -806,7 +722,9 @@ function SocialConnectEditor({
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
         {fields.map((f) => (
           <div key={f.key}>
-            <label className="block text-slate-400 font-medium mb-1">{f.label}</label>
+            <label className="block text-slate-400 font-medium mb-1">
+              {f.label}
+            </label>
             <input
               type="text"
               value={(settings.links as any)[f.key] || ''}

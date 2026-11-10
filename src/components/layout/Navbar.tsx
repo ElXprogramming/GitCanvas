@@ -69,6 +69,20 @@ export default function Navbar({
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const handleSignInClick = async () => {
+    try {
+      const res = await fetch('/api/auth/providers');
+      if (res.ok) {
+        const providers = await res.json();
+        if (providers?.github) {
+          signIn('github');
+          return;
+        }
+      }
+    } catch (_) {}
+    onOpenTokenModal();
+  };
+
   return (
     <header className="sticky top-0 z-40 w-full border-b border-slate-800/80 bg-slate-950/80 backdrop-blur-md">
       <div className="flex flex-col lg:flex-row items-center justify-between gap-3 px-4 py-2.5 max-w-[1920px] mx-auto">
@@ -208,12 +222,22 @@ export default function Navbar({
           ) : (
             <div className="flex items-center gap-1.5">
               <button
-                onClick={() => signIn('github')}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 hover:border-slate-600 transition-colors"
-                title="Sign in with GitHub OAuth"
+                onClick={handleSignInClick}
+                className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors ${
+                  hasPersonalToken
+                    ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30 hover:bg-emerald-500/20'
+                    : 'bg-slate-900 hover:bg-slate-800 text-slate-200 border-slate-700 hover:border-slate-600'
+                }`}
+                title={
+                  hasPersonalToken
+                    ? 'GitHub Personal Access Token Active'
+                    : 'Connect GitHub Account or Personal Access Token'
+                }
               >
-                <GitHubIcon className="w-3.5 h-3.5 text-white" />
-                <span className="hidden sm:inline">Sign In</span>
+                <GitHubIcon className="w-3.5 h-3.5 text-current" />
+                <span className="hidden sm:inline">
+                  {hasPersonalToken ? 'Token Active' : 'Sign In'}
+                </span>
               </button>
 
               <button

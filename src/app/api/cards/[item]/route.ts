@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import {
   fetchProfileItem,
-  fetchPinnedProjectsItem,
+  fetchSingleProjectItem,
   fetchLanguagesItem,
   fetchCommitsItem,
   fetchPRsItem,
@@ -73,23 +73,21 @@ export async function GET(
     switch (item) {
       case 'profile': {
         const data = await fetchProfileItem(username, userToken, true);
-        svg = designProfileCard(data, theme);
+        const customName = searchParams.get('name')?.trim();
+        const profileToRender = customName ? { ...data, name: customName } : data;
+        svg = designProfileCard(profileToRender, theme);
         break;
       }
       case 'project':
       case 'pinned': {
         const index = parseInt(searchParams.get('index') || '0', 10);
-        const data = await fetchPinnedProjectsItem(username, userToken);
-        const project = data.projects[index] || {
-          name: `Project ${index + 1}`,
-          description: 'No repository in this slot yet.',
-          url: `https://github.com/${username}`,
-          homepageUrl: null,
-          stars: 0,
-          forks: 0,
-          language: 'Code',
-          languageColor: '#8b949e',
-        };
+        const repoName = searchParams.get('repo')?.trim();
+        const project = await fetchSingleProjectItem(
+          username,
+          index,
+          repoName,
+          userToken
+        );
         svg = designPinnedProjectCard(project, theme);
         break;
       }

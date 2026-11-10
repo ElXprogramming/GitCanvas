@@ -34,6 +34,35 @@ function truncateText(text: string, maxLength: number): string {
   return text.slice(0, maxLength - 1).trimEnd() + '…';
 }
 
+function wrapTextTwoLines(
+  rawText: string,
+  maxLine1 = 46,
+  maxLine2 = 46
+): [string, string] {
+  const clean = rawText.trim().replace(/\s+/g, ' ');
+  if (clean.length <= maxLine1) {
+    return [clean, ''];
+  }
+
+  // Find last space at or before maxLine1 so we never split a word in half
+  const slice1 = clean.slice(0, maxLine1 + 1);
+  const lastSpace = slice1.lastIndexOf(' ');
+
+  let line1 = '';
+  let remainder = '';
+
+  if (lastSpace > 16) {
+    line1 = clean.slice(0, lastSpace).trimEnd();
+    remainder = clean.slice(lastSpace + 1).trimStart();
+  } else {
+    line1 = clean.slice(0, maxLine1).trimEnd();
+    remainder = clean.slice(maxLine1).trimStart();
+  }
+
+  const line2 = remainder ? truncateText(remainder, maxLine2) : '';
+  return [line1, line2];
+}
+
 // ==========================================================
 // 1. PROFILE HEADER CARD (PFP + Name + @nickname)
 // ==========================================================
@@ -73,7 +102,7 @@ export function designProfileCard(
 }
 
 // ==========================================================
-// 2. SOCIAL HEADER ITEM CARD (Email Icon, LinkedIn, Portfolio + red dots)
+// 2. SOCIAL HEADER ITEM CARD (Email, LinkedIn, Portfolio, etc.)
 // ==========================================================
 export function designSocialItemCard(
   type: string,
@@ -81,7 +110,7 @@ export function designSocialItemCard(
   themeId?: string | null
 ): string {
   const theme = getDesignTheme(themeId);
-  const safeLabel = escapeXml(label);
+  const safeLabel = escapeXml(truncateText(label, 12));
   const norm = type.toLowerCase();
 
   let iconSvg = '';
@@ -91,8 +120,14 @@ export function designSocialItemCard(
     iconSvg = `<path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2z" stroke="${theme.textPrimary}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/><circle cx="4" cy="4" r="2" fill="${theme.textPrimary}"/>`;
   } else if (norm === 'portfolio' || norm === 'website') {
     iconSvg = `<circle cx="12" cy="12" r="9" stroke="${theme.textPrimary}" stroke-width="1.8" fill="none"/><path d="M3.6 9h16.8M3.6 15h16.8M12 3a14.5 14.5 0 0 0 0 18 14.5 14.5 0 0 0 0-18z" stroke="${theme.textPrimary}" stroke-width="1.6" fill="none"/>`;
+  } else if (norm === 'twitter' || norm === 'x') {
+    iconSvg = `<path d="M4 4l6.5 8L4 20h2l5.5-6.8L16 20h4l-6.8-8.5L19.5 4h-2l-5 6.2L8 4H4z" stroke="${theme.textPrimary}" stroke-width="1.6" stroke-linejoin="round" fill="none"/>`;
+  } else if (norm === 'youtube') {
+    iconSvg = `<rect x="2" y="5" width="20" height="14" rx="4" stroke="${theme.textPrimary}" stroke-width="1.8" fill="none"/><polygon points="10,9 16,12 10,15" fill="${theme.textPrimary}"/>`;
+  } else if (norm === 'discord') {
+    iconSvg = `<path d="M8 8a10 10 0 0 1 8 0M6 16c2 1.5 10 1.5 12 0M5.5 7.5C4.2 10 3.8 13.5 4.5 16.5c1.5 1.2 3 1.8 4 2l.8-1.6m9.2-9.4c1.3 2.5 1.7 6 1 9-1.5 1.2-3 1.8-4 2l-.8-1.6" stroke="${theme.textPrimary}" stroke-width="1.6" stroke-linecap="round" fill="none"/><circle cx="9.5" cy="12.5" r="1.2" fill="${theme.textPrimary}"/><circle cx="14.5" cy="12.5" r="1.2" fill="${theme.textPrimary}"/>`;
   } else {
-    iconSvg = `<circle cx="12" cy="12" r="8" stroke="${theme.textPrimary}" stroke-width="1.8" fill="none"/>`;
+    iconSvg = `<circle cx="12" cy="12" r="8" stroke="${theme.textPrimary}" stroke-width="1.8" fill="none"/><path d="M9 12l2 2 4-4" stroke="${theme.textPrimary}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>`;
   }
 
   return `<svg xmlns="http://www.w3.org/2000/svg" width="96" height="64" viewBox="0 0 96 64" fill="none" role="img" aria-label="${safeLabel}">
@@ -114,12 +149,10 @@ export function designPinnedProjectCard(
   const theme = getDesignTheme(themeId);
   const name = escapeXml(truncateText(project.name, 26));
   const rawDesc = project.description || 'Open-source repository on GitHub.';
-  const line1 = escapeXml(truncateText(rawDesc, 48));
-  const line2 =
-    rawDesc.length > 48
-      ? escapeXml(truncateText(rawDesc.slice(48).trim(), 46))
-      : '';
-  const lang = escapeXml(project.language || 'Code');
+  const [rawLine1, rawLine2] = wrapTextTwoLines(rawDesc, 46, 46);
+  const line1 = escapeXml(rawLine1);
+  const line2 = escapeXml(rawLine2);
+  const lang = escapeXml(truncateText(project.language || 'Code', 16));
   const langColor = project.languageColor || theme.accent;
   const stars = formatCompactNumber(project.stars);
   const forks = formatCompactNumber(project.forks);
@@ -154,8 +187,17 @@ export function designPinnedProjectCard(
     <circle cx="6" cy="-4" r="5" fill="${langColor}" />
     <text x="16" y="0" class="proj-meta">${lang}</text>
 
-    <text x="135" y="0" class="proj-meta">★ ${stars}</text>
-    <text x="205" y="0" class="proj-meta">⑂ ${forks}</text>
+    <!-- Star Octicon + Count -->
+    <g transform="translate(150, -11)">
+      <path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.751.751 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Z" fill="${theme.textSecondary}" transform="scale(0.85)" />
+      <text x="18" y="11" class="proj-meta">${stars}</text>
+    </g>
+
+    <!-- Fork Octicon + Count -->
+    <g transform="translate(225, -11)">
+      <path d="M5 5.372v.878c0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75v-.878a2.25 2.25 0 1 1 1.5 0v.878a2.25 2.25 0 0 1-2.25 2.25h-1.5v2.128a2.251 2.251 0 1 1-1.5 0V8.5h-1.5A2.25 2.25 0 0 1 3.5 6.25v-.878a2.25 2.25 0 1 1 1.5 0ZM5 3.25a.75.75 0 1 0-1.5 0 .75.75 0 0 0 1.5 0Zm6.75.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm-3 8.75a.75.75 0 1 0-1.5 0 .75.75 0 0 0 1.5 0Z" fill="${theme.textSecondary}" transform="scale(0.85)" />
+      <text x="16" y="11" class="proj-meta">${forks}</text>
+    </g>
   </g>
 </svg>`;
 }
@@ -176,16 +218,36 @@ export function designLanguagesBarCard(
   const barWidth = 760;
   const barHeight = 24;
 
+  // Compute normalized widths so every language is visible (min 8px) and total sum === barWidth (760px)
+  const minSegWidth = langs.length > 1 ? 8 : barWidth;
+  const rawWidths = langs.map((lang) =>
+    Math.max(minSegWidth, (lang.bytes / totalBytes) * barWidth)
+  );
+  const rawSum = rawWidths.reduce((a, b) => a + b, 0) || 1;
+  const normalizedWidths = rawWidths.map((w) =>
+    Math.max(minSegWidth, Math.round((w / rawSum) * barWidth))
+  );
+
+  // Adjust largest segment so exact sum equals barWidth (760px)
+  if (normalizedWidths.length > 0) {
+    const currentSum = normalizedWidths.reduce((a, b) => a + b, 0);
+    const diff = barWidth - currentSum;
+    let maxIdx = 0;
+    for (let i = 1; i < normalizedWidths.length; i++) {
+      if (normalizedWidths[i] > normalizedWidths[maxIdx]) maxIdx = i;
+    }
+    normalizedWidths[maxIdx] = Math.max(minSegWidth, normalizedWidths[maxIdx] + diff);
+  }
+
   let currentX = barX;
   const segments: string[] = [];
   const dividers: string[] = [];
 
   langs.forEach((lang, idx) => {
-    const rawW = (lang.bytes / totalBytes) * barWidth;
     const w =
       idx === langs.length - 1
         ? Math.max(4, barX + barWidth - currentX)
-        : Math.max(8, Math.round(rawW));
+        : normalizedWidths[idx];
 
     segments.push(
       `<rect x="${currentX}" y="${barY}" width="${w}" height="${barHeight}" fill="${lang.color || theme.accent}" />`
@@ -193,7 +255,7 @@ export function designLanguagesBarCard(
 
     if (idx > 0 && currentX > barX && currentX < barX + barWidth) {
       dividers.push(
-        `<line x1="${currentX}" y1="${barY}" x2="${currentX}" y2="${barY + barHeight}" stroke="${theme.cardBg}" stroke-width="2.5" />`
+        `<line x1="${currentX}" y1="${barY}" x2="${currentX}" y2="${barY + barHeight}" stroke="${theme.cardBg}" stroke-width="2" />`
       );
     }
     currentX += w;
@@ -350,13 +412,17 @@ export function designContributionsBox(
 ): string {
   const theme = getDesignTheme(themeId);
   const rightLabel = escapeXml(data.rightLabel);
-  const weeks = (data.weeks || []).slice(-52);
+  const weeks = (data.weeks || []).slice(-53);
 
-  // Render 52 weeks x 7 days heatmap cells inside a bordered inner container
+  // Align heatmap grid flush with left label (x=22) and right label (x=778 => total width 756)
   const gridStartX = 22;
   const gridStartY = 48;
+  const targetGridWidth = 756;
+  const numWeeks = Math.max(weeks.length, 52);
   const cellSize = 11;
-  const cellGap = 3.2;
+  const stepX =
+    numWeeks > 1 ? (targetGridWidth - cellSize) / (numWeeks - 1) : 14.2;
+  const stepY = 14.2;
 
   const cells: string[] = [];
 
@@ -371,8 +437,8 @@ export function designContributionsBox(
       else if (count >= 1) level = 1;
 
       const color = theme.heatmapLevels[level];
-      const x = (gridStartX + wIdx * (cellSize + cellGap)).toFixed(1);
-      const y = (gridStartY + dIdx * (cellSize + cellGap)).toFixed(1);
+      const x = (gridStartX + wIdx * stepX).toFixed(1);
+      const y = (gridStartY + dIdx * stepY).toFixed(1);
 
       cells.push(
         `<rect x="${x}" y="${y}" width="${cellSize}" height="${cellSize}" rx="2.5" fill="${color}" />`
@@ -380,7 +446,7 @@ export function designContributionsBox(
     });
   });
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="162" viewBox="0 0 800 162" fill="none" role="img" aria-label="contributions last year: ${rightLabel}">
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="166" viewBox="0 0 800 166" fill="none" role="img" aria-label="contributions last year: ${rightLabel}">
   <defs>
     <linearGradient id="contribGrad" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="${theme.cardBg}" />
@@ -392,7 +458,7 @@ export function designContributionsBox(
     </style>
   </defs>
 
-  <rect x="1" y="1" width="798" height="160" rx="${theme.borderRadius}" fill="url(#contribGrad)" stroke="${theme.border}" stroke-width="1.5" />
+  <rect x="1" y="1" width="798" height="164" rx="${theme.borderRadius}" fill="url(#contribGrad)" stroke="${theme.border}" stroke-width="1.5" />
 
   <!-- Top Left & Top Right Labels -->
   <text x="22" y="29" class="c-title">contributions last year</text>
@@ -402,3 +468,4 @@ export function designContributionsBox(
   ${cells.join('\n  ')}
 </svg>`;
 }
+

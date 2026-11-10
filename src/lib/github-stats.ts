@@ -407,6 +407,59 @@ export async function fetchPinnedProjectsItem(
   };
 }
 
+export async function fetchSingleProjectItem(
+  username: string,
+  index = 0,
+  repoName?: string | null,
+  token?: string
+): Promise<PinnedProjectItem> {
+  const user = await fetchUserRawGraphQL(username, token);
+  const pinnedNodes: any[] = user.pinnedItems?.nodes || [];
+  const allRepoNodes: any[] = user.repositories?.nodes || [];
+
+  if (repoName) {
+    const match =
+      allRepoNodes.find(
+        (r) => r?.name?.toLowerCase() === repoName.toLowerCase()
+      ) ||
+      pinnedNodes.find(
+        (r) => r?.name?.toLowerCase() === repoName.toLowerCase()
+      );
+    if (match) {
+      const langName = match.primaryLanguage?.name || null;
+      const langColor =
+        match.primaryLanguage?.color ||
+        (langName ? GITHUB_LANG_COLORS[langName] : null) ||
+        '#8b949e';
+      return {
+        name: match.name,
+        description: match.description ?? null,
+        url: match.url,
+        homepageUrl: match.homepageUrl || null,
+        stars: match.stargazerCount ?? 0,
+        forks: match.forkCount ?? 0,
+        language: langName,
+        languageColor: langColor,
+      };
+    }
+  }
+
+  const pinnedData = await fetchPinnedProjectsItem(username, token);
+  return (
+    pinnedData.projects[index] || {
+      name: repoName || `Project ${index + 1}`,
+      description: 'Open-source repository on GitHub.',
+      url: `https://github.com/${username}`,
+      homepageUrl: null,
+      stars: 0,
+      forks: 0,
+      language: 'Code',
+      languageColor: '#8b949e',
+    }
+  );
+}
+
+
 /**
  * ITEM 3: Languages Breakdown (Directly from GitHub repo language edges)
  */

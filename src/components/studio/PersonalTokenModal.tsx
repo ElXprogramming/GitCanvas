@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Key, X, Check, ExternalLink, ShieldCheck, Trash2 } from 'lucide-react';
 import { useToast } from '@/components/common/Toast';
 
@@ -19,6 +19,10 @@ export default function PersonalTokenModal({
 }: PersonalTokenModalProps) {
   const [inputVal, setInputVal] = useState(token);
   const { showToast } = useToast();
+
+  useEffect(() => {
+    setInputVal(token);
+  }, [token, isOpen]);
 
   if (!isOpen) return null;
 

@@ -186,13 +186,28 @@ body {
   margin: 3px;
 }
 
+.github-readme-body img[height="82"] {
+  height: 82px;
+  width: auto;
+}
+
+.github-readme-body img[height="54"] {
+  height: 54px;
+  width: auto;
+}
+
 .github-readme-body img[align="left"] {
   float: left;
   margin-right: 16px;
+}
+
+.github-readme-body div[align="right"] {
+  padding-top: 12px;
 }
 
 .github-readme-body br[clear="both"] {
   clear: both;
   display: block;
 }
+
 

@@ -18,7 +18,8 @@ export function generateMarkdown(
   blocks: ReadmeBlockConfig[],
   profile: GitHubUserProfile | null,
   _archetype?: DeveloperArchetype | null,
-  cardTheme = 'default'
+  cardTheme = 'default',
+  fallbackUsername = 'torvalds'
 ): string {
-  return generateMainReadmeLayout(blocks, profile, cardTheme);
+  return generateMainReadmeLayout(blocks, profile, cardTheme, fallbackUsername);
 }

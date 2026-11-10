@@ -22,19 +22,18 @@ export function createDefaultBlocks(
   languages: LanguageDistribution[],
   repos: Repository[]
 ): ReadmeBlockConfig[] {
-  const username = profile?.login || 'octocat';
+  const username = profile?.login || 'torvalds';
   const name = profile?.name || username;
   const topLangs = languages.slice(0, 5).map((l) => l.name);
 
   // Auto-detect tech badges from user's languages and repos
   const matchedBadges: TechBadgeItem[] = [];
   const langLower = new Set(languages.map((l) => l.name.toLowerCase()));
-  const allRepoTokens = repos
-    .flatMap((r) => [
-      r.name.toLowerCase(),
-      (r.description || '').toLowerCase(),
-      ...(r.topics || []).map((t) => t.toLowerCase()),
-    ]);
+  const allRepoTokens = repos.flatMap((r) => [
+    r.name.toLowerCase(),
+    (r.description || '').toLowerCase(),
+    ...(r.topics || []).map((t) => t.toLowerCase()),
+  ]);
   const repoTokenSet = new Set(allRepoTokens);
 
   for (const item of TECH_CATALOG) {
@@ -52,7 +51,15 @@ export function createDefaultBlocks(
 
   // Ensure at least 4-6 high quality badges are populated
   if (matchedBadges.length < 4) {
-    const defaults = ['typescript', 'react', 'nextjs', 'nodejs', 'postgresql', 'docker', 'git'];
+    const defaults = [
+      'typescript',
+      'react',
+      'nextjs',
+      'nodejs',
+      'postgresql',
+      'docker',
+      'git',
+    ];
     for (const d of defaults) {
       const found = TECH_CATALOG.find((t) => t.id === d);
       if (found && !matchedBadges.some((b) => b.id === found.id)) {
@@ -69,7 +76,8 @@ export function createDefaultBlocks(
 
   const featuredProjects: FeaturedProject[] = topRepos.map((r) => ({
     name: r.name,
-    description: r.description || `High-performance ${r.language || 'software'} project.`,
+    description:
+      r.description || `High-performance ${r.language || 'software'} project.`,
     stars: r.stargazers_count,
     forks: r.forks_count,
     language: r.language || 'TypeScript',
@@ -77,46 +85,52 @@ export function createDefaultBlocks(
     demoUrl: r.homepage || undefined,
   }));
 
-  // Hero block defaults
+  // Profile Header block defaults
   const heroSettings: HeroSettings = {
-    style: 'capsule',
-    greeting: `Hi there, I'm ${name} 👋`,
-    tagline: archetype?.tagline || 'Building software that makes a difference.',
+    style: 'minimal',
+    greeting: name,
+    tagline:
+      archetype?.tagline || 'Building software that makes a difference.',
     capsuleType: 'wave',
-    capsuleColor: archetype?.id === 'frontend' ? '0:06b6d4,100:3b82f6' :
-                  archetype?.id === 'backend' ? '0:8b5cf6,100:6366f1' :
-                  archetype?.id === 'ai_data' ? '0:f43f5e,100:fb7185' :
-                  archetype?.id === 'devops' ? '0:10b981,100:059669' :
-                  '0:f59e0b,100:ef4444',
+    capsuleColor: '0:06b6d4,100:3b82f6',
     capsuleHeight: 180,
     typingLines: [
       `Hi, I'm ${name}!`,
       archetype?.label || 'Software Engineer',
       `Focused on ${topLangs.slice(0, 2).join(' & ') || 'Modern Engineering'}`,
-      'Welcome to my GitHub profile!',
     ],
     typingColor: '38bdf8',
     asciiFont: 'standard',
-    showWave: true,
+    showWave: false,
   };
 
   // Bio block defaults
   const bioSettings: BioSettings = {
-    workingOn: featuredProjects[0] ? `[${featuredProjects[0].name}](${featuredProjects[0].url})` : 'Exciting open-source tools',
-    learning: topLangs.length > 0 ? `Next-gen patterns in ${topLangs[0]}` : 'Distributed systems & modern architecture',
-    askMeAbout: topLangs.slice(0, 3).join(', ') || 'System design, APIs, and modern web',
-    reachMe: profile?.blog || (profile?.twitter_username ? `@${profile.twitter_username}` : 'GitHub Discussions or LinkedIn'),
+    workingOn: featuredProjects[0]
+      ? `[${featuredProjects[0].name}](${featuredProjects[0].url})`
+      : 'Exciting open-source tools',
+    learning:
+      topLangs.length > 0
+        ? `Next-gen patterns in ${topLangs[0]}`
+        : 'Distributed systems & modern architecture',
+    askMeAbout:
+      topLangs.slice(0, 3).join(', ') || 'System design, APIs, and modern web',
+    reachMe:
+      profile?.blog ||
+      (profile?.twitter_username
+        ? `@${profile.twitter_username}`
+        : 'GitHub Discussions or LinkedIn'),
     openFor: 'Collaborations on open source projects & tech discussions',
     funFact: 'I turn caffeine into clean, tested, and reliable code ☕',
     tone: 'professional',
   };
 
-  // Tech stack settings
+  // Languages & Tech stack settings
   const techStackSettings: TechStackSettings = {
     badgeStyle: 'for-the-badge',
-    selectedBadges: matchedBadges.slice(0, 16),
-    showCategoryHeaders: true,
-    align: 'center',
+    selectedBadges: matchedBadges.slice(0, 12),
+    showCategoryHeaders: false,
+    align: 'left',
   };
 
   // GitHub Stats settings
@@ -128,7 +142,7 @@ export function createDefaultBlocks(
     showStreak: true,
     showTrophies: true,
     showActivityGraph: true,
-    hideBorder: true,
+    hideBorder: false,
     layout: 'side-by-side',
     statsIncludeAllCommits: true,
   };
@@ -136,7 +150,7 @@ export function createDefaultBlocks(
   // Pinned projects settings
   const pinnedProjectsSettings: PinnedProjectsSettings = {
     featuredProjects,
-    displayStyle: 'table',
+    displayStyle: 'cards',
     showStars: true,
     showForks: true,
   };
@@ -144,7 +158,7 @@ export function createDefaultBlocks(
   // Social links settings
   const socialSettings: SocialLinksSettings = {
     badgeStyle: 'for-the-badge',
-    align: 'center',
+    align: 'right',
     links: {
       github: username,
       linkedin: '',
@@ -158,13 +172,48 @@ export function createDefaultBlocks(
   };
 
   return [
-    { id: 'hero', title: 'Header & Hero Banner', enabled: true, settings: heroSettings },
-    { id: 'bio', title: 'About Me & Bio', enabled: true, settings: bioSettings },
-    { id: 'tech_stack', title: 'Tech Stack & Badges', enabled: true, settings: techStackSettings },
-    { id: 'github_stats', title: 'GitHub Analytics & Cards', enabled: true, settings: githubStatsSettings },
-    { id: 'streak_trophies', title: 'Streaks & Trophies', enabled: true, settings: githubStatsSettings },
-    { id: 'pinned_projects', title: 'Featured Projects', enabled: true, settings: pinnedProjectsSettings },
-    { id: 'social_connect', title: 'Social & Connect Links', enabled: true, settings: socialSettings },
+    {
+      id: 'hero',
+      title: 'Profile Header Card',
+      enabled: true,
+      settings: heroSettings,
+    },
+    {
+      id: 'social_connect',
+      title: 'Social Header Links',
+      enabled: true,
+      settings: socialSettings,
+    },
+    {
+      id: 'pinned_projects',
+      title: 'Pinned Projects (2x2)',
+      enabled: true,
+      settings: pinnedProjectsSettings,
+    },
+    {
+      id: 'tech_stack',
+      title: 'Languages & Tech Stack',
+      enabled: true,
+      settings: techStackSettings,
+    },
+    {
+      id: 'github_stats',
+      title: 'GitHub Graded Stats',
+      enabled: true,
+      settings: { ...githubStatsSettings },
+    },
+    {
+      id: 'streak_trophies',
+      title: 'Streaks & Contributions',
+      enabled: true,
+      settings: { ...githubStatsSettings },
+    },
+    {
+      id: 'bio',
+      title: 'About Me & AI Bio',
+      enabled: false,
+      settings: bioSettings,
+    },
   ];
 }
 
@@ -177,7 +226,7 @@ export function createInitialCanvasState(): CanvasState {
     blocks: [],
     theme: {
       accentColor: 'cyan',
-      cardTheme: 'catppuccin_mocha',
+      cardTheme: 'default',
       badgeStyle: 'for-the-badge',
       layoutTemplate: 'bento',
     },

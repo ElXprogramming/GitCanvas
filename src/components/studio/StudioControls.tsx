@@ -75,6 +75,13 @@ export default function StudioControls({
   };
 
   const updateSingleBlock = (updated: ReadmeBlockConfig) => {
+    if (
+      updated.id === 'github_stats' &&
+      updated.settings?.cardTheme &&
+      updated.settings.cardTheme !== theme.cardTheme
+    ) {
+      onUpdateTheme({ cardTheme: updated.settings.cardTheme });
+    }
     onUpdateBlocks(blocks.map((b) => (b.id === updated.id ? updated : b)));
   };
 
@@ -93,12 +100,12 @@ export default function StudioControls({
 
   return (
     <div className="flex flex-col gap-4">
-      {/* Theme Selector (Driven directly by src/designs/themes.ts) */}
+      {/* Theme Selector */}
       <div className="p-3.5 rounded-xl border border-slate-800 bg-slate-900/60 backdrop-blur-sm space-y-2.5">
         <div className="flex items-center justify-between">
           <span className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
             <Palette className="w-3.5 h-3.5 text-cyan-400" />
-            Card Theme (`src/designs/themes.ts`)
+            Card Theme
           </span>
           <button
             onClick={onResetDefaults}
