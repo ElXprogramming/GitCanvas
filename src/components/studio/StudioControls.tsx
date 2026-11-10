@@ -151,6 +151,11 @@ export default function StudioControls({
     currentThemeId === 'onepiece_gatling' ||
     currentThemeId === 'gatling' ||
     currentThemeId === 'luffy_gatling';
+  const isZoroSelected =
+    currentThemeId === 'wano_zoro' ||
+    currentThemeId === 'zoro' ||
+    currentThemeId === 'lost_zoro' ||
+    currentThemeId === 'santoryu';
   const fontList = Object.values(DESIGN_FONTS);
 
   return (
@@ -172,73 +177,138 @@ export default function StudioControls({
           </button>
         </div>
 
-        {/* 1. Premier Showcase: Luffy Gatling (Animated) */}
-        <div className="space-y-1.5">
+        {/* 1. Premier Showcase: One Piece Animated Themes */}
+        <div className="space-y-2">
           <div className="flex items-center justify-between text-[11px] font-semibold text-amber-300/90 uppercase tracking-wider">
             <span className="flex items-center gap-1.5">
               <Sparkles className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
               One Piece Showcase
             </span>
             <span className="text-[10px] text-amber-400/80 font-mono bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/30">
-              Animated GIF &amp; SVG
+              Animated Themes ({SHOWCASE_THEMES.length})
             </span>
           </div>
 
-          <button
-            type="button"
-            onClick={() => {
-              handleSelectCardTheme('onepiece_gatling');
-              setIsNormalDropdownOpen(false);
-            }}
-            className={`w-full flex items-center justify-between p-3 rounded-xl border text-left transition-all ${
-              isGatlingSelected
-                ? 'border-amber-500/90 bg-gradient-to-r from-amber-950/40 via-red-950/30 to-slate-900 text-white shadow-lg shadow-amber-500/10 ring-1 ring-amber-500/40'
-                : 'border-slate-800 bg-slate-950/50 text-slate-300 hover:border-amber-500/50 hover:bg-slate-900/60'
-            }`}
-          >
-            <div className="flex items-center gap-3 min-w-0">
-              <div className="relative w-11 h-11 shrink-0 rounded-lg overflow-hidden bg-slate-900/90 border border-amber-500/40 flex items-center justify-center p-1 shadow-inner">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={
-                    ONE_PIECE_MASCOTS.luffy_gatling.gifBase64 ||
-                    ONE_PIECE_MASCOTS.luffy_gatling.avatarBase64
-                  }
-                  alt="Luffy Gatling"
-                  className="w-full h-full object-contain [image-rendering:pixelated]"
-                />
-                <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping" />
-                <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-amber-400" />
-              </div>
-              <div className="flex flex-col min-w-0">
-                <div className="flex items-center gap-1.5 flex-wrap">
-                  <span className="text-xs sm:text-sm font-bold text-white tracking-wide">
-                    Luffy Gatling
-                  </span>
-                  <span className="px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/40 flex items-center gap-1">
-                    <Sparkles className="w-2.5 h-2.5 text-amber-400" />
-                    Animated
+          <div className="flex flex-col gap-2">
+            {/* Luffy Gatling Card */}
+            <button
+              type="button"
+              onClick={() => {
+                handleSelectCardTheme('onepiece_gatling');
+                setIsNormalDropdownOpen(false);
+              }}
+              className={`w-full flex items-center justify-between p-3 rounded-xl border text-left transition-all ${
+                isGatlingSelected
+                  ? 'border-amber-500/90 bg-gradient-to-r from-amber-950/40 via-red-950/30 to-slate-900 text-white shadow-lg shadow-amber-500/10 ring-1 ring-amber-500/40'
+                  : 'border-slate-800 bg-slate-950/50 text-slate-300 hover:border-amber-500/50 hover:bg-slate-900/60'
+              }`}
+            >
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="relative w-11 h-11 shrink-0 rounded-lg overflow-hidden bg-slate-900/90 border border-amber-500/40 flex items-center justify-center p-1 shadow-inner">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={
+                      ONE_PIECE_MASCOTS.luffy_gatling.gifBase64 ||
+                      ONE_PIECE_MASCOTS.luffy_gatling.avatarBase64
+                    }
+                    alt="Luffy Gatling"
+                    className="w-full h-full object-contain [image-rendering:pixelated]"
+                  />
+                  {isGatlingSelected && (
+                    <>
+                      <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping" />
+                      <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-amber-400" />
+                    </>
+                  )}
+                </div>
+                <div className="flex flex-col min-w-0">
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span className="text-xs sm:text-sm font-bold text-white tracking-wide">
+                      Luffy Gatling
+                    </span>
+                    <span className="px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/40 flex items-center gap-1">
+                      <Sparkles className="w-2.5 h-2.5 text-amber-400" />
+                      Animated
+                    </span>
+                  </div>
+                  <span className="text-[11px] text-slate-400 truncate">
+                    Gomu Gomu no Gatling Punch &amp; Roaming Straw Hats
                   </span>
                 </div>
-                <span className="text-[11px] text-slate-400 truncate">
-                  Gomu Gomu no Gatling Punch (Animated)
-                </span>
               </div>
-            </div>
 
-            <div className="flex items-center gap-1.5 shrink-0 ml-2">
-              {isGatlingSelected ? (
-                <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-400 bg-emerald-950/60 border border-emerald-800/40 px-2 py-0.5 rounded-full flex items-center gap-1">
-                  <Check className="w-3 h-3" />
-                  Active
-                </span>
-              ) : (
-                <span className="text-[11px] text-slate-400 hover:text-white px-2 py-0.5 rounded-md bg-slate-800/60 border border-slate-700/60">
-                  Select
-                </span>
-              )}
-            </div>
-          </button>
+              <div className="flex items-center gap-1.5 shrink-0 ml-2">
+                {isGatlingSelected ? (
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-400 bg-emerald-950/60 border border-emerald-800/40 px-2 py-0.5 rounded-full flex items-center gap-1">
+                    <Check className="w-3 h-3" />
+                    Active
+                  </span>
+                ) : (
+                  <span className="text-[11px] text-slate-400 hover:text-white px-2 py-0.5 rounded-md bg-slate-800/60 border border-slate-700/60">
+                    Select
+                  </span>
+                )}
+              </div>
+            </button>
+
+            {/* Wano Zoro Card */}
+            <button
+              type="button"
+              onClick={() => {
+                handleSelectCardTheme('wano_zoro');
+                setIsNormalDropdownOpen(false);
+              }}
+              className={`w-full flex items-center justify-between p-3 rounded-xl border text-left transition-all ${
+                isZoroSelected
+                  ? 'border-emerald-500/90 bg-gradient-to-r from-emerald-950/40 via-green-950/30 to-slate-900 text-white shadow-lg shadow-emerald-500/10 ring-1 ring-emerald-500/40'
+                  : 'border-slate-800 bg-slate-950/50 text-slate-300 hover:border-emerald-500/50 hover:bg-slate-900/60'
+              }`}
+            >
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="relative w-11 h-11 shrink-0 rounded-lg overflow-hidden bg-slate-900/90 border border-emerald-500/40 flex items-center justify-center p-1 shadow-inner">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={ONE_PIECE_MASCOTS.zoro.avatarBase64}
+                    alt="Wano Zoro"
+                    className="w-full h-full object-contain [image-rendering:pixelated]"
+                  />
+                  {isZoroSelected && (
+                    <>
+                      <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping" />
+                      <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400" />
+                    </>
+                  )}
+                </div>
+                <div className="flex flex-col min-w-0">
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span className="text-xs sm:text-sm font-bold text-white tracking-wide">
+                      Wano Zoro
+                    </span>
+                    <span className="px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 flex items-center gap-1">
+                      <Sparkles className="w-2.5 h-2.5 text-emerald-400" />
+                      Animated
+                    </span>
+                  </div>
+                  <span className="text-[11px] text-slate-400 truncate">
+                    Lost Wanderer · Falling Wano Sakura &amp; Bamboo
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-1.5 shrink-0 ml-2">
+                {isZoroSelected ? (
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-400 bg-emerald-950/60 border border-emerald-800/40 px-2 py-0.5 rounded-full flex items-center gap-1">
+                    <Check className="w-3 h-3" />
+                    Active
+                  </span>
+                ) : (
+                  <span className="text-[11px] text-slate-400 hover:text-white px-2 py-0.5 rounded-md bg-slate-800/60 border border-slate-700/60">
+                    Select
+                  </span>
+                )}
+              </div>
+            </button>
+          </div>
         </div>
 
         {/* 2. Normal Colored Themes (Packed in a Dropdown Button) */}
@@ -354,7 +424,7 @@ export default function StudioControls({
           >
             <span className="flex items-center gap-1.5">
               <Clock className="w-3 h-3 text-slate-500" />
-              <span>Other One Piece Themes (11 on hold — pending animation)</span>
+              <span>Other One Piece Themes ({ON_HOLD_THEMES.length} on hold — pending animation)</span>
             </span>
             <ChevronDown
               className={`w-3.5 h-3.5 transition-transform duration-150 ${

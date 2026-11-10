@@ -155,7 +155,7 @@ GET https://githubstatreadme.vercel.app/api/cards/canvas?username={username}&the
 | Parameter | Type | Default | Description |
 |:---|:---|:---|:---|
 | `username` *(or `user`)* | `string` | **Required** | GitHub username to fetch stats and portfolio data for. |
-| `theme` | `string` | `default` | Color theme (`onepiece_gatling`, `tokyonight`, `catppuccin_mocha`, `dracula`, `nord`, `github_dark`, `radical`, `sunset`). |
+| `theme` | `string` | `default` | Color theme (`onepiece_gatling`, `wano_zoro`, `tokyonight`, `catppuccin_mocha`, `dracula`, `nord`, `github_dark`, `radical`, `sunset`). |
 | `font` | `string` | `josefin_slab` | Font family (`josefin_slab`, `inter`, `fira_code`, `roboto`, `open_sans`, `lato`, `plus_jakarta_sans`, `dm_sans`, `lexend`, `merriweather`, `lora`). |
 | `name` | `string` | Profile name | Custom display name override on the header card. |
 | `tagline` | `string` | Archetype label | Custom subtitle / tagline text. |
@@ -205,6 +205,7 @@ GET https://githubstatreadme.vercel.app/api/cards/{item}?username={username}&the
 | Theme ID | Name | Category | Aesthetic Description |
 |:---|:---|:---|:---|
 | `onepiece_gatling` | **Luffy Gatling** | ⭐ Showcase | Deep navy background, borderless cards, animated Luffy Gatling GIF, background wind effect & flapping straw hats |
+| `wano_zoro` | **Wano Zoro** | ⭐ Showcase | Deep emerald & bamboo green, comedic Cross-Card Wanderer Zoro (animated SMIL SVG), falling Wano cherry blossoms (sakura) & flying slashes |
 | `tokyonight` | **Tokyo Night** | Modern Dev | Deep navy/slate tones with vibrant cyan, pastel purple, and soft pink accents |
 | `catppuccin_mocha` | **Catppuccin Mocha** | Modern Dev | Soothing pastel palette with mauve, lavender, peach, and mint green highlights |
 | `dracula` | **Dracula** | Modern Dev | Classic dark vampire palette with gothic purple, neon pink, and bright cyan |

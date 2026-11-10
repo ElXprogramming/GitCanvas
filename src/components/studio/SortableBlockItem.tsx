@@ -564,7 +564,7 @@ function GitHubStatsEditor({
           onChange={(e) => onChange({ cardTheme: e.target.value })}
           className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-200"
         >
-          <optgroup label="Showcase Theme (Animated)">
+          <optgroup label="Showcase Themes (Animated)">
             {SHOWCASE_THEMES.map((t) => (
               <option key={t.id} value={t.id}>
                 {t.label}
