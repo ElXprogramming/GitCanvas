@@ -1,4 +1,9 @@
 import { StatGrade } from '@/types/stats';
+import {
+  ONE_PIECE_MASCOTS,
+  OnePieceMascot,
+  getOnePieceMascot,
+} from './onepiece-stickers';
 
 export interface DesignTheme {
   id: string;
@@ -12,6 +17,7 @@ export interface DesignTheme {
   accent: string;
   gradeColors: Record<StatGrade, { text: string; bg: string; border: string }>;
   heatmapLevels: [string, string, string, string, string]; // 0 (empty) to 4 (most active)
+  mascot?: OnePieceMascot;
 }
 
 const DEFAULT_GRADE_COLORS: Record<
@@ -138,7 +144,7 @@ export const DESIGN_THEMES: Record<string, DesignTheme> = {
   },
   straw_hat: {
     id: 'straw_hat',
-    label: 'Straw Hat (Mugiwara)',
+    label: 'Straw Hat Luffy (Pixel Art)',
     cardBg: '#0b132b',
     cardBgGradientEnd: '#070c1d',
     border: '#d97706',
@@ -154,6 +160,7 @@ export const DESIGN_THEMES: Record<string, DesignTheme> = {
       D: { text: '#94a3b8', bg: 'rgba(148, 163, 184, 0.12)', border: '#64748b' },
     },
     heatmapLevels: ['#162038', '#1e3a8a', '#d97706', '#f59e0b', '#ef4444'],
+    mascot: ONE_PIECE_MASCOTS.luffy,
   },
   gear_5_nika: {
     id: 'gear_5_nika',
@@ -173,13 +180,14 @@ export const DESIGN_THEMES: Record<string, DesignTheme> = {
       D: { text: '#94a3b8', bg: 'rgba(148, 163, 184, 0.12)', border: '#64748b' },
     },
     heatmapLevels: ['#1e1f30', '#6366f1', '#a855f7', '#fbbf24', '#fef08a'],
+    mascot: ONE_PIECE_MASCOTS.luffy,
   },
   wano_zoro: {
     id: 'wano_zoro',
-    label: 'Wano Ronin (Zoro)',
+    label: 'Wano Zoro (Pixel Art)',
     cardBg: '#071811',
     cardBgGradientEnd: '#030c08',
-    border: '#7c3aed',
+    border: '#10b981',
     borderRadius: 12,
     textPrimary: '#f0fdf4',
     textSecondary: '#4ade80',
@@ -192,6 +200,127 @@ export const DESIGN_THEMES: Record<string, DesignTheme> = {
       D: { text: '#94a3b8', bg: 'rgba(148, 163, 184, 0.12)', border: '#64748b' },
     },
     heatmapLevels: ['#0f291e', '#065f46', '#059669', '#10b981', '#a855f7'],
+    mascot: ONE_PIECE_MASCOTS.zoro,
+  },
+  onepiece_chopper: {
+    id: 'onepiece_chopper',
+    label: 'Chopper (Pixel Art)',
+    cardBg: '#131124',
+    cardBgGradientEnd: '#090812',
+    border: '#ff6b8b',
+    borderRadius: 14,
+    textPrimary: '#fff5f7',
+    textSecondary: '#f472b6',
+    accent: '#38bdf8',
+    gradeColors: {
+      S: { text: '#ff6b8b', bg: 'rgba(255, 107, 139, 0.18)', border: '#ff6b8b' },
+      A: { text: '#38bdf8', bg: 'rgba(56, 189, 248, 0.18)', border: '#38bdf8' },
+      B: { text: '#f59e0b', bg: 'rgba(245, 158, 11, 0.18)', border: '#f59e0b' },
+      C: { text: '#a855f7', bg: 'rgba(168, 85, 247, 0.18)', border: '#a855f7' },
+      D: { text: '#94a3b8', bg: 'rgba(148, 163, 184, 0.12)', border: '#64748b' },
+    },
+    heatmapLevels: ['#1e1430', '#500724', '#9d174d', '#f43f5e', '#38bdf8'],
+    mascot: ONE_PIECE_MASCOTS.chopper,
+  },
+  onepiece_ace: {
+    id: 'onepiece_ace',
+    label: 'Fire Fist Ace (Pixel Art)',
+    cardBg: '#180e0a',
+    cardBgGradientEnd: '#0c0604',
+    border: '#f97316',
+    borderRadius: 14,
+    textPrimary: '#fff7ed',
+    textSecondary: '#fdba74',
+    accent: '#ef4444',
+    gradeColors: {
+      S: { text: '#ef4444', bg: 'rgba(239, 68, 68, 0.2)', border: '#ef4444' },
+      A: { text: '#f97316', bg: 'rgba(249, 115, 22, 0.2)', border: '#f97316' },
+      B: { text: '#fbbf24', bg: 'rgba(251, 191, 36, 0.2)', border: '#fbbf24' },
+      C: { text: '#ea580c', bg: 'rgba(234, 88, 12, 0.2)', border: '#ea580c' },
+      D: { text: '#78716c', bg: 'rgba(120, 113, 108, 0.14)', border: '#57534e' },
+    },
+    heatmapLevels: ['#291811', '#5c1d06', '#9a3412', '#ea580c', '#fde047'],
+    mascot: ONE_PIECE_MASCOTS.ace,
+  },
+  onepiece_law: {
+    id: 'onepiece_law',
+    label: 'Trafalgar Law (Pixel Art)',
+    cardBg: '#0d131f',
+    cardBgGradientEnd: '#060910',
+    border: '#eab308',
+    borderRadius: 14,
+    textPrimary: '#fefce8',
+    textSecondary: '#fde047',
+    accent: '#06b6d4',
+    gradeColors: {
+      S: { text: '#facc15', bg: 'rgba(250, 204, 21, 0.18)', border: '#facc15' },
+      A: { text: '#06b6d4', bg: 'rgba(6, 182, 212, 0.18)', border: '#06b6d4' },
+      B: { text: '#818cf8', bg: 'rgba(129, 140, 248, 0.18)', border: '#818cf8' },
+      C: { text: '#f97316', bg: 'rgba(249, 115, 22, 0.18)', border: '#f97316' },
+      D: { text: '#64748b', bg: 'rgba(100, 116, 139, 0.14)', border: '#475569' },
+    },
+    heatmapLevels: ['#182030', '#164e63', '#0891b2', '#eab308', '#fef08a'],
+    mascot: ONE_PIECE_MASCOTS.law,
+  },
+  onepiece_sanji: {
+    id: 'onepiece_sanji',
+    label: 'Black Leg Sanji (Pixel Art)',
+    cardBg: '#091528',
+    cardBgGradientEnd: '#040b17',
+    border: '#0284c7',
+    borderRadius: 14,
+    textPrimary: '#f0f9ff',
+    textSecondary: '#7dd3fc',
+    accent: '#f43f5e',
+    gradeColors: {
+      S: { text: '#f43f5e', bg: 'rgba(244, 63, 94, 0.2)', border: '#f43f5e' },
+      A: { text: '#38bdf8', bg: 'rgba(56, 189, 248, 0.2)', border: '#38bdf8' },
+      B: { text: '#facc15', bg: 'rgba(250, 204, 21, 0.2)', border: '#facc15' },
+      C: { text: '#fb923c', bg: 'rgba(251, 146, 60, 0.2)', border: '#fb923c' },
+      D: { text: '#64748b', bg: 'rgba(100, 116, 139, 0.14)', border: '#475569' },
+    },
+    heatmapLevels: ['#102240', '#0369a1', '#0284c7', '#38bdf8', '#fb7185'],
+    mascot: ONE_PIECE_MASCOTS.sanji,
+  },
+  onepiece_brook: {
+    id: 'onepiece_brook',
+    label: 'Soul King Brook (Pixel Art)',
+    cardBg: '#0c0a17',
+    cardBgGradientEnd: '#06050d',
+    border: '#a855f7',
+    borderRadius: 14,
+    textPrimary: '#faf5ff',
+    textSecondary: '#d8b4fe',
+    accent: '#34d399',
+    gradeColors: {
+      S: { text: '#34d399', bg: 'rgba(52, 211, 153, 0.2)', border: '#34d399' },
+      A: { text: '#c084fc', bg: 'rgba(192, 132, 252, 0.2)', border: '#c084fc' },
+      B: { text: '#38bdf8', bg: 'rgba(56, 189, 248, 0.2)', border: '#38bdf8' },
+      C: { text: '#f472b6', bg: 'rgba(244, 114, 182, 0.2)', border: '#f472b6' },
+      D: { text: '#6b7280', bg: 'rgba(107, 114, 128, 0.14)', border: '#4b5563' },
+    },
+    heatmapLevels: ['#1c1430', '#581c87', '#7e22ce', '#34d399', '#a7f3d0'],
+    mascot: ONE_PIECE_MASCOTS.brook,
+  },
+  onepiece_nami: {
+    id: 'onepiece_nami',
+    label: 'Cat Burglar Nami (Pixel Art)',
+    cardBg: '#081c24',
+    cardBgGradientEnd: '#040e12',
+    border: '#f97316',
+    borderRadius: 14,
+    textPrimary: '#f0fdfa',
+    textSecondary: '#fdba74',
+    accent: '#06b6d4',
+    gradeColors: {
+      S: { text: '#f97316', bg: 'rgba(249, 115, 22, 0.2)', border: '#f97316' },
+      A: { text: '#06b6d4', bg: 'rgba(6, 182, 212, 0.2)', border: '#06b6d4' },
+      B: { text: '#fbbf24', bg: 'rgba(251, 191, 36, 0.2)', border: '#fbbf24' },
+      C: { text: '#38bdf8', bg: 'rgba(56, 189, 248, 0.2)', border: '#38bdf8' },
+      D: { text: '#64748b', bg: 'rgba(100, 116, 139, 0.14)', border: '#475569' },
+    },
+    heatmapLevels: ['#132b35', '#0e7490', '#06b6d4', '#f97316', '#fde047'],
+    mascot: ONE_PIECE_MASCOTS.nami,
   },
   bounty_poster: {
     id: 'bounty_poster',
@@ -211,15 +340,61 @@ export const DESIGN_THEMES: Record<string, DesignTheme> = {
       D: { text: '#78716c', bg: 'rgba(120, 113, 108, 0.14)', border: '#57534e' },
     },
     heatmapLevels: ['#291e17', '#451a03', '#78350f', '#b45309', '#f59e0b'],
+    mascot: ONE_PIECE_MASCOTS.chopper_giant,
   },
 };
 
-export function getDesignTheme(themeId?: string | null): DesignTheme {
+export function getDesignTheme(
+  themeId?: string | null,
+  mascotId?: string | null
+): DesignTheme {
   const key = (themeId || 'default').toLowerCase().trim();
-  if (key === 'dark') return DESIGN_THEMES.github_dark;
-  if (key === 'onepiece' || key === 'one_piece' || key === 'luffy') return DESIGN_THEMES.straw_hat;
-  if (key === 'nika' || key === 'gear5' || key === 'gear_5') return DESIGN_THEMES.gear_5_nika;
-  if (key === 'zoro') return DESIGN_THEMES.wano_zoro;
-  if (key === 'bounty') return DESIGN_THEMES.bounty_poster;
-  return DESIGN_THEMES[key] || DESIGN_THEMES.default;
+  let baseTheme: DesignTheme;
+
+  if (key === 'dark') {
+    baseTheme = DESIGN_THEMES.github_dark;
+  } else if (
+    key === 'chopper' ||
+    key === 'tony_tony_chopper' ||
+    key === 'cotton_candy'
+  ) {
+    baseTheme = DESIGN_THEMES.onepiece_chopper;
+  } else if (
+    key === 'onepiece' ||
+    key === 'one_piece' ||
+    key === 'luffy' ||
+    key === 'strawhat' ||
+    key === 'straw_hat' ||
+    key === 'mugiwara'
+  ) {
+    baseTheme = DESIGN_THEMES.straw_hat;
+  } else if (key === 'nika' || key === 'gear5' || key === 'gear_5') {
+    baseTheme = DESIGN_THEMES.gear_5_nika;
+  } else if (key === 'zoro' || key === 'santoryu' || key === 'wano') {
+    baseTheme = DESIGN_THEMES.wano_zoro;
+  } else if (key === 'ace' || key === 'fire_fist' || key === 'portgas') {
+    baseTheme = DESIGN_THEMES.onepiece_ace;
+  } else if (key === 'law' || key === 'heart_pirates' || key === 'trafalgar') {
+    baseTheme = DESIGN_THEMES.onepiece_law;
+  } else if (key === 'sanji' || key === 'all_blue' || key === 'black_leg') {
+    baseTheme = DESIGN_THEMES.onepiece_sanji;
+  } else if (key === 'brook' || key === 'soul_king') {
+    baseTheme = DESIGN_THEMES.onepiece_brook;
+  } else if (key === 'nami' || key === 'cat_burglar') {
+    baseTheme = DESIGN_THEMES.onepiece_nami;
+  } else if (key === 'bounty') {
+    baseTheme = DESIGN_THEMES.bounty_poster;
+  } else {
+    baseTheme = DESIGN_THEMES[key] || DESIGN_THEMES.default;
+  }
+
+  // If a specific mascot override is requested
+  if (mascotId) {
+    const override = getOnePieceMascot(mascotId);
+    if (override) {
+      return { ...baseTheme, mascot: override };
+    }
+  }
+
+  return baseTheme;
 }

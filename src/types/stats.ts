@@ -149,6 +149,7 @@ export interface FullCanvasRenderOptions {
   socials?: Array<{ type: string; label: string }>;
   sections?: string[];
   hideRows?: string[];
+  mascot?: string | null;
   bio?: {
     workingOn?: string;
     learning?: string;

@@ -143,10 +143,19 @@ export default function StudioControls({
                     : 'border-slate-800 bg-slate-950/50 text-slate-300 hover:border-slate-700'
                 }`}
               >
-                <span
-                  className="w-3.5 h-3.5 rounded-full shrink-0 border border-white/20"
-                  style={{ backgroundColor: t.cardBg }}
-                />
+                {t.mascot ? (
+                  /* eslint-disable-next-line @next/next/no-img-element */
+                  <img
+                    src={t.mascot.avatarBase64}
+                    alt={t.mascot.name}
+                    className="w-4 h-4 object-contain shrink-0 rounded-sm [image-rendering:pixelated]"
+                  />
+                ) : (
+                  <span
+                    className="w-3.5 h-3.5 rounded-full shrink-0 border border-white/20"
+                    style={{ backgroundColor: t.cardBg }}
+                  />
+                )}
                 <span className="text-xs font-medium truncate">{t.label}</span>
               </button>
             );

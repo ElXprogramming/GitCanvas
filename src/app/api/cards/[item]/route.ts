@@ -40,6 +40,10 @@ export async function GET(
     const { searchParams } = new URL(req.url);
     const theme = searchParams.get('theme') || 'default';
     const font = searchParams.get('font')?.trim() || undefined;
+    const mascot =
+      searchParams.get('mascot')?.trim() ||
+      searchParams.get('character')?.trim() ||
+      undefined;
     const forceRefresh =
       searchParams.get('refresh') === 'true' ||
       searchParams.get('cache') === 'false';
@@ -185,6 +189,7 @@ export async function GET(
           socials,
           sections,
           hideRows,
+          mascot,
           bio:
             bioWork || bioLearn || bioAsk || bioFact || bioFocus
               ? {
@@ -218,6 +223,7 @@ export async function GET(
           companyText: company,
           showBio,
           bioText,
+          mascot,
         });
         break;
       }
@@ -279,7 +285,7 @@ export async function GET(
       }
       case 'overall': {
         const data = await fetchOverallItem(username, userToken, forceRefresh);
-        svg = designOverallBox(data, theme, 258, 104, font);
+        svg = designOverallBox(data, theme, 258, 104, font, mascot);
         break;
       }
       case 'streak': {

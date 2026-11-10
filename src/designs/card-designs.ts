@@ -81,6 +81,7 @@ export interface ProfileCardRenderOptions {
   bioText?: string | null;
   width?: number;
   height?: number;
+  mascot?: string | null;
 }
 
 export function designProfileCard(
@@ -89,12 +90,14 @@ export function designProfileCard(
   fontId?: string | null,
   options?: ProfileCardRenderOptions
 ): string {
-  const theme = getDesignTheme(themeId);
+  const theme = getDesignTheme(themeId, options?.mascot);
   const font = getDesignFont(fontId);
   const width = options?.width || (options?.showBio || options?.showCompany ? 800 : 420);
   const height = options?.height || 96;
+  const mascot = theme.mascot;
+  const maxNameLength = mascot && width <= 460 ? 18 : 26;
   const name = escapeXml(
-    truncateText(options?.customName || profile.name || profile.username, 26)
+    truncateText(options?.customName || profile.name || profile.username, maxNameLength)
   );
   const nickname = escapeXml(`@${profile.username}`);
   const avatarHref = profile.avatarBase64 || profile.avatarUrl;
@@ -117,6 +120,10 @@ export function designProfileCard(
   const nickY = hasExtra ? 50 : 72;
   const nickSize = hasExtra ? 15 : 18;
   const bioY = 74;
+
+  const mascotBadge = mascot
+    ? `\n  <!-- Theme Character Mascot -->\n  <g class="p-mascot" role="img" aria-label="${escapeXml(mascot.name)}">\n    <rect x="${width - 86}" y="8" width="76" height="80" rx="14" fill="${theme.cardBg}" stroke="${theme.border}" stroke-width="1.5" />\n    <image href="${mascot.avatarBase64}" x="${width - 82}" y="12" width="68" height="72" preserveAspectRatio="xMidYMid meet" style="image-rendering: pixelated; image-rendering: crisp-edges;" />\n  </g>`
+    : '';
 
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" fill="none" role="img" aria-label="${name} (${nickname})">
   <defs>
@@ -147,7 +154,7 @@ export function designProfileCard(
       ? `<tspan fill="${theme.textSecondary}" font-weight="400">  ·  </tspan><tspan fill="${theme.textPrimary}" font-weight="600">${company}</tspan>`
       : ''
   }</text>
-  ${bio ? `<text x="104" y="${bioY}" class="p-bio" fill="${theme.textSecondary}">${bio}</text>` : ''}
+  ${bio ? `<text x="104" y="${bioY}" class="p-bio" fill="${theme.textSecondary}">${bio}</text>` : ''}${mascotBadge}
 </svg>`;
 }
 
@@ -422,12 +429,15 @@ export function designOverallBox(
   themeId?: string | null,
   width = 258,
   height = 104,
-  fontId?: string | null
+  fontId?: string | null,
+  mascotId?: string | null
 ): string {
-  const theme = getDesignTheme(themeId);
+  const theme = getDesignTheme(themeId, mascotId);
   const font = getDesignFont(fontId);
   const grade = data.grade;
   const gColor = theme.gradeColors[grade] || theme.gradeColors.C;
+  const mascot = theme.mascot;
+  const contentX = mascot ? (width - 48) / 2 : width / 2;
 
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" fill="none" role="img" aria-label="overall grade: ${grade}">
   <defs>
@@ -444,8 +454,15 @@ export function designOverallBox(
 
   <rect width="${width}" height="${height}" rx="${theme.borderRadius}" fill="url(#overallGrad)" stroke="none" />
 
-  <text x="${width / 2}" y="28" text-anchor="middle" class="ov-label" fill="${theme.textSecondary}">overall</text>
-  <text x="${width / 2}" y="${height - 18}" text-anchor="middle" class="ov-grade" fill="${gColor.text}">${grade}</text>
+  <text x="${contentX}" y="28" text-anchor="middle" class="ov-label" fill="${theme.textSecondary}">overall</text>
+  <text x="${contentX}" y="${height - 18}" text-anchor="middle" class="ov-grade" fill="${gColor.text}">${grade}</text>
+  ${
+    mascot
+      ? `<g class="ov-mascot" role="img" aria-label="${escapeXml(mascot.name)}">
+    <image href="${mascot.avatarBase64}" x="${width - 66}" y="22" width="52" height="60" preserveAspectRatio="xMidYMid meet" style="image-rendering: pixelated; image-rendering: crisp-edges;" />
+  </g>`
+      : ''
+  }
 </svg>`;
 }
 
@@ -597,7 +614,7 @@ export function designFullCanvasCard(
   options?: FullCanvasRenderOptions
 ): string {
   const themeId = options?.theme;
-  const theme = getDesignTheme(themeId);
+  const theme = getDesignTheme(themeId, options?.mascot);
   const fontId = options?.font;
   const font = getDesignFont(fontId);
   const canvasWidth = 840;
@@ -626,6 +643,7 @@ export function designFullCanvasCard(
           companyText: options?.customCompany,
           showBio: options?.showBio,
           bioText: options?.customBio,
+          mascot: options?.mascot,
           width: innerWidth,
           height: 96,
         }),
@@ -712,7 +730,7 @@ export function designFullCanvasCard(
         );
         elements.push(
           embedSubSvg(
-            designOverallBox(data.overall, themeId, boxW, boxH, fontId),
+            designOverallBox(data.overall, themeId, boxW, boxH, fontId, options?.mascot),
             padX + 2 * (boxW + gap),
             y,
             boxW,
