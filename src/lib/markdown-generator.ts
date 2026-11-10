@@ -271,7 +271,7 @@ function generateBentoMarkdown(
           const demoLink = p.demoUrl ? ` &nbsp;•&nbsp; <a href="${p.demoUrl}">🌐 Live Demo</a>` : '';
           cells.push({
             colSpan: 1,
-            content: `<h3>🚀 Featured Open Source Repository</h3>\n\n<h4>Octocat <a href="${p.url}">${p.name}</a></h4>\n<p>${p.description || 'High-performance open-source repository.'}</p>\n<p><code>${p.language || 'TypeScript'}</code> &nbsp; ⭐ <b>${p.stars}</b> Stars &nbsp; 🍴 <b>${p.forks}</b> Forks${demoLink}</p>`,
+            content: `<h3>🚀 Featured Open Source Repository</h3>\n\n<h4>📌 <a href="${p.url}">${p.name}</a></h4>\n<p>${p.description || 'High-performance open-source repository.'}</p>\n<p><code>${p.language || 'TypeScript'}</code> &nbsp; ⭐ <b>${p.stars}</b> Stars &nbsp; 🍴 <b>${p.forks}</b> Forks${demoLink}</p>`,
           });
         }
         break;
