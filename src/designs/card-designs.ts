@@ -10,7 +10,7 @@ import {
   FullCanvasRenderOptions,
 } from '@/types/stats';
 import { getDesignTheme } from './themes';
-import { getDesignFont } from './fonts';
+import { getDesignFont, getSvgFontImport } from './fonts';
 
 function escapeXml(unsafe: string | null | undefined): string {
   if (!unsafe) return '';
@@ -86,7 +86,7 @@ export function designProfileCard(
       <rect x="8" y="8" width="80" height="80" rx="14" />
     </clipPath>
     <style>
-      ${font.svgImportUrl}
+      ${getSvgFontImport(font)}
       .name { font: 800 26px ${font.fontFamily}; fill: ${theme.textPrimary}; }
       .nick { font: 600 18px ${font.fontFamily}; fill: ${theme.textSecondary}; }
     </style>
@@ -102,8 +102,8 @@ export function designProfileCard(
   <rect x="8" y="8" width="80" height="80" rx="14" fill="none" stroke="${theme.border}" stroke-width="2" />
 
   <!-- Name & @nickname -->
-  <text x="104" y="44" class="name">${name}</text>
-  <text x="104" y="72" class="nick">${nickname}</text>
+  <text x="104" y="44" class="name" fill="${theme.textPrimary}">${name}</text>
+  <text x="104" y="72" class="nick" fill="${theme.textSecondary}">${nickname}</text>
 </svg>`;
 }
 
@@ -179,7 +179,7 @@ export function designPinnedProjectCard(
       <stop offset="100%" stop-color="${theme.cardBgGradientEnd}" />
     </linearGradient>
     <style>
-      ${font.svgImportUrl}
+      ${getSvgFontImport(font)}
       .proj-title { font: 600 13px ${font.fontFamily}; fill: ${theme.textPrimary}; }
       .proj-desc { font: 400 10.5px ${font.fontFamily}; fill: ${theme.textSecondary}; }
       .proj-meta { font: 500 10px ${font.fontFamily}; fill: ${theme.textSecondary}; }
@@ -191,28 +191,28 @@ export function designPinnedProjectCard(
   <!-- Repo Icon + Title -->
   <g transform="translate(14, 16)">
     <path d="M2 2.5A2.5 2.5 0 0 1 4.5 0h8.75a.75.75 0 0 1 .75.75v12.5a.75.75 0 0 1-.75.75h-2.5a.75.75 0 0 1 0-1.5h1.75v-2h-8a1 1 0 0 0-.714 1.7.75.75 0 1 1-1.072 1.05A2.495 2.495 0 0 1 2 11.5Zm10.5-1h-8a1 1 0 0 0-1 1v6.708A2.486 2.486 0 0 1 4.5 9h8ZM5 12.25a.25.25 0 0 1 .25-.25h3.5a.25.25 0 0 1 .25.25v3.25a.25.25 0 0 1-.4.2l-1.45-1.087a.249.249 0 0 0-.3 0L5.4 15.7a.25.25 0 0 1-.4-.2Z" fill="${theme.textSecondary}" transform="scale(0.85) translate(0, -1)" />
-    <text x="18" y="10" class="proj-title">${name}</text>
+    <text x="18" y="10" class="proj-title" fill="${theme.textPrimary}">${name}</text>
   </g>
 
   <!-- Description -->
-  <text x="14" y="${descY1}" class="proj-desc">${line1}</text>
-  ${line2 ? `<text x="14" y="53" class="proj-desc">${line2}</text>` : ''}
+  <text x="14" y="${descY1}" class="proj-desc" fill="${theme.textSecondary}">${line1}</text>
+  ${line2 ? `<text x="14" y="53" class="proj-desc" fill="${theme.textSecondary}">${line2}</text>` : ''}
 
   <!-- Bottom Footer: Language + Stars + Forks -->
   <g transform="translate(14, 78)">
     <circle cx="4" cy="-3.5" r="3" fill="${langColor}" />
-    <text x="12" y="0" class="proj-meta">${lang}</text>
+    <text x="12" y="0" class="proj-meta" fill="${theme.textSecondary}">${lang}</text>
 
     <!-- Star Octicon + Count -->
     <g transform="translate(112, -9)">
       <path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.751.751 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Z" fill="${theme.textSecondary}" transform="scale(0.75)" />
-      <text x="15" y="9" class="proj-meta">${stars}</text>
+      <text x="15" y="9" class="proj-meta" fill="${theme.textSecondary}">${stars}</text>
     </g>
 
     <!-- Fork Octicon + Count -->
     <g transform="translate(170, -9)">
       <path d="M5 5.372v.878c0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75v-.878a2.25 2.25 0 1 1 1.5 0v.878a2.25 2.25 0 0 1-2.25 2.25h-1.5v2.128a2.251 2.251 0 1 1-1.5 0V8.5h-1.5A2.25 2.25 0 0 1 3.5 6.25v-.878a2.25 2.25 0 1 1 1.5 0ZM5 3.25a.75.75 0 1 0-1.5 0 .75.75 0 0 0 1.5 0Zm6.75.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm-3 8.75a.75.75 0 1 0-1.5 0 .75.75 0 0 0 1.5 0Z" fill="${theme.textSecondary}" transform="scale(0.75)" />
-      <text x="14" y="9" class="proj-meta">${forks}</text>
+      <text x="14" y="9" class="proj-meta" fill="${theme.textSecondary}">${forks}</text>
     </g>
   </g>
 </svg>`;
@@ -337,7 +337,7 @@ export function designGradedStatBox(
       <stop offset="100%" stop-color="${theme.cardBgGradientEnd}" />
     </linearGradient>
     <style>
-      ${font.svgImportUrl}
+      ${getSvgFontImport(font)}
       .stat-label { font: 600 13.5px ${font.fontFamily}; fill: ${theme.textSecondary}; }
       .stat-value { font: 800 28px ${font.fontFamily}; fill: ${theme.textPrimary}; }
       .stat-grade-${data.item} { font: 800 15px ${font.fontFamily}; fill: ${gColor.text}; }
@@ -347,7 +347,7 @@ export function designGradedStatBox(
   <rect x="1" y="1" width="${width - 2}" height="${height - 2}" rx="${theme.borderRadius}" fill="url(#statGrad_${data.item})" stroke="${theme.border}" stroke-width="1.5" />
 
   <!-- Top-Left Label -->
-  <text x="16" y="28" class="stat-label">${label}</text>
+  <text x="16" y="28" class="stat-label" fill="${theme.textSecondary}">${label}</text>
 
   <!-- Top-Right Grade Pill -->
   <g transform="translate(${width - 42}, 11)">
@@ -356,7 +356,7 @@ export function designGradedStatBox(
   </g>
 
   <!-- Main Value -->
-  <text x="16" y="${height - 20}" class="stat-value">${valStr}</text>
+  <text x="16" y="${height - 20}" class="stat-value" fill="${theme.textPrimary}">${valStr}</text>
 </svg>`;
 }
 
@@ -382,7 +382,7 @@ export function designOverallBox(
       <stop offset="100%" stop-color="${theme.cardBgGradientEnd}" />
     </linearGradient>
     <style>
-      ${font.svgImportUrl}
+      ${getSvgFontImport(font)}
       .ov-label { font: 600 14px ${font.fontFamily}; fill: ${theme.textSecondary}; }
       .ov-grade { font: 900 42px ${font.fontFamily}; fill: ${gColor.text}; }
     </style>
@@ -390,7 +390,7 @@ export function designOverallBox(
 
   <rect x="1" y="1" width="${width - 2}" height="${height - 2}" rx="${theme.borderRadius}" fill="url(#overallGrad)" stroke="${theme.border}" stroke-width="1.5" />
 
-  <text x="${width / 2}" y="28" text-anchor="middle" class="ov-label">overall</text>
+  <text x="${width / 2}" y="28" text-anchor="middle" class="ov-label" fill="${theme.textSecondary}">overall</text>
   <text x="${width / 2}" y="${height - 18}" text-anchor="middle" class="ov-grade" fill="${gColor.text}">${grade}</text>
 </svg>`;
 }
@@ -417,7 +417,7 @@ export function designStreakBox(
       <stop offset="100%" stop-color="${theme.cardBgGradientEnd}" />
     </linearGradient>
     <style>
-      ${font.svgImportUrl}
+      ${getSvgFontImport(font)}
       .st-label { font: 600 14px ${font.fontFamily}; fill: ${theme.textSecondary}; }
       .st-val { font: 800 28px ${font.fontFamily}; fill: ${theme.textPrimary}; }
     </style>
@@ -425,8 +425,8 @@ export function designStreakBox(
 
   <rect x="1" y="1" width="${width - 2}" height="${height - 2}" rx="${theme.borderRadius}" fill="url(#streakGrad_${data.item})" stroke="${theme.border}" stroke-width="1.5" />
 
-  <text x="18" y="30" class="st-label">${label}</text>
-  <text x="18" y="${height - 20}" class="st-val">${formatted}</text>
+  <text x="18" y="30" class="st-label" fill="${theme.textSecondary}">${label}</text>
+  <text x="18" y="${height - 20}" class="st-val" fill="${theme.textPrimary}">${formatted}</text>
 </svg>`;
 }
 
@@ -482,7 +482,7 @@ export function designContributionsBox(
       <stop offset="100%" stop-color="${theme.cardBgGradientEnd}" />
     </linearGradient>
     <style>
-      ${font.svgImportUrl}
+      ${getSvgFontImport(font)}
       .c-title { font: 600 14px ${font.fontFamily}; fill: ${theme.textSecondary}; }
       .c-right { font: 700 14px ${font.fontFamily}; fill: ${theme.textPrimary}; }
     </style>
@@ -491,8 +491,8 @@ export function designContributionsBox(
   <rect x="1" y="1" width="798" height="164" rx="${theme.borderRadius}" fill="url(#contribGrad)" stroke="${theme.border}" stroke-width="1.5" />
 
   <!-- Top Left & Top Right Labels -->
-  <text x="22" y="29" class="c-title">contributions last year</text>
-  <text x="778" y="29" text-anchor="end" class="c-right">${rightLabel}</text>
+  <text x="22" y="29" class="c-title" fill="${theme.textSecondary}">contributions last year</text>
+  <text x="778" y="29" text-anchor="end" class="c-right" fill="${theme.textPrimary}">${rightLabel}</text>
 
   <!-- Contribution Calendar Grid -->
   ${cells.join('\n  ')}
@@ -603,7 +603,7 @@ export function designFullCanvasCard(
     if (showProfile && options?.tagline && options.tagline.trim().length > 0) {
       const safeTagline = escapeXml(truncateText(options.tagline.trim(), 96));
       elements.push(
-        `<text x="${padX + 8}" y="${y + 14}" class="canvas-tagline">${safeTagline}</text>`
+        `<text x="${padX + 8}" y="${y + 14}" class="canvas-tagline" fill="${theme.textSecondary}">${safeTagline}</text>`
       );
       y += 26;
     }
@@ -617,7 +617,7 @@ export function designFullCanvasCard(
 
   const renderSectionHeading = (title: string) => {
     elements.push(
-      `<text x="${padX + 2}" y="${y + 20}" class="canvas-section-title">${escapeXml(title)}</text>`
+      `<text x="${padX + 2}" y="${y + 20}" class="canvas-section-title" fill="${theme.textPrimary}">${escapeXml(title)}</text>`
     );
     y += 32;
   };
@@ -849,7 +849,7 @@ export function designFullCanvasCard(
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${canvasWidth}" height="${totalHeight}" viewBox="0 0 ${canvasWidth} ${totalHeight}" fill="none" role="img" aria-label="${fullName}'s GitHub Profile">
   <defs>
     <style>
-      ${font.svgImportUrl}
+      ${getSvgFontImport(font)}
       .canvas-section-title { font: 700 20px ${font.fontFamily}; fill: ${theme.textPrimary}; }
       .canvas-tagline { font: 400 14px ${font.fontFamily}; fill: ${theme.textSecondary}; }
       .canvas-bio-line { font: 400 13.5px ${font.fontFamily}; }

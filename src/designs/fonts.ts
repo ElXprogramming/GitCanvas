@@ -197,3 +197,15 @@ export function getDesignFont(fontId?: string | null): DesignFont {
 
   return DESIGN_FONTS[key] || DESIGN_FONTS.josefin_slab;
 }
+
+/**
+ * Generates the valid CSS @import rule for SVG documents.
+ * Ensures the Google Fonts URL is properly escaped with &amp; and wrapped in @import url('...').
+ */
+export function getSvgFontImport(font?: DesignFont | null): string {
+  const targetFont = font || DESIGN_FONTS.josefin_slab;
+  const url = targetFont.svgImportUrl || targetFont.importUrl;
+  if (!url) return '';
+  if (url.startsWith('@import')) return url;
+  return `@import url('${url}');`;
+}
