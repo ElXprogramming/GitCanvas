@@ -288,15 +288,14 @@ export function designLanguagesBarCard(
     </clipPath>
   </defs>
 
-  <rect x="1" y="1" width="798" height="96" rx="${theme.borderRadius}" fill="${theme.cardBg}" stroke="${theme.border}" stroke-width="1.5" />
+  <rect x="0" y="0" width="800" height="98" rx="${theme.borderRadius}" fill="${theme.cardBg}" />
 
   <!-- Segmented Proportional Bar -->
-  <rect x="${barX}" y="${barY}" width="${barWidth}" height="${barHeight}" rx="7" fill="${theme.border}" />
+  <rect x="${barX}" y="${barY}" width="${barWidth}" height="${barHeight}" rx="7" fill="${theme.cardBg}" />
   <g clip-path="url(#langBarClip)">
     ${segments.join('\n    ')}
     ${dividers.join('\n    ')}
   </g>
-  <rect x="${barX}" y="${barY}" width="${barWidth}" height="${barHeight}" rx="7" fill="none" stroke="${theme.border}" stroke-width="1.5" />
 
   <!-- Language Names Underneath -->
   ${labels.join('\n  ')}
