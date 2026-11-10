@@ -188,3 +188,5 @@ export interface DeploymentDiff {
   owner: string;
   sha?: string;
 }
+
+export * from './stats';
