@@ -561,17 +561,14 @@ export function calculateStreakStats(days: CalendarDay[]): UserStreakStats {
   }
 
   // Find the current active streak.
-  // GitHub returns calendar weeks up to Saturday. Find the most recent day <= today.
+  // GitHub returns calendar weeks up to Saturday. Find the most recent day <= todayUtc,
+  // or the latest day with recorded contributions (for users in ahead timezones).
   const now = new Date();
   const todayUtc = now.toISOString().slice(0, 10);
-  const nowYear = now.getFullYear();
-  const nowMonth = String(now.getMonth() + 1).padStart(2, '0');
-  const nowDay = String(now.getDate()).padStart(2, '0');
-  const todayLocal = `${nowYear}-${nowMonth}-${nowDay}`;
 
   let todayIdx = -1;
   for (let i = days.length - 1; i >= 0; i--) {
-    if (days[i].date <= todayUtc || days[i].date <= todayLocal) {
+    if (days[i].date <= todayUtc || (days[i].contributionCount || 0) > 0) {
       todayIdx = i;
       break;
     }

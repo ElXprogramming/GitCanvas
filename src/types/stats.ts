@@ -19,6 +19,7 @@ export type StatItemType =
 export interface ProfileItemData {
   item: 'profile';
   username: string;
+  login?: string;
   name: string | null;
   avatarUrl: string;
   avatarBase64?: string;

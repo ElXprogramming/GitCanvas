@@ -247,90 +247,82 @@ export function getMascotAnimationStyles(
     ? `
       /* ==================== ZORO CROSS-CARD WANDERER ==================== */
       @keyframes zoroRoamProfile800 {
-        0%   { transform: translate(0px, 0px); opacity: 1; }
-        3%   { transform: translate(-70px, -3px); opacity: 1; }
-        6%   { transform: translate(-140px, 0px); opacity: 1; }
-        9%   { transform: translate(-210px, -3px); opacity: 1; }
-        12%  { transform: translate(-280px, 0px); opacity: 1; }
-        15%  { transform: translate(-350px, -3px); opacity: 1; }
-        18%  { transform: translate(-420px, 0px); opacity: 1; }
-        20%  { transform: translate(-460px, -2px); opacity: 1; }
-        22%  { transform: translate(-460px, 0px); opacity: 1; }
-        38%  { transform: translate(-460px, 0px); opacity: 1; }
-        40%  { transform: translate(-460px, 0px); opacity: 1; }
-        43%  { transform: translate(-360px, -3px); opacity: 1; }
-        46%  { transform: translate(-260px, 0px); opacity: 1; }
-        49%  { transform: translate(-160px, -3px); opacity: 1; }
-        52%  { transform: translate(-60px, 0px); opacity: 1; }
-        55%  { transform: translate(40px, -3px); opacity: 1; }
-        57%  { transform: translate(110px, 0px); opacity: 0; }
-        59%  { transform: translate(-740px, 0px); opacity: 0; }
-        60%  { transform: translate(-740px, 0px); opacity: 1; }
-        63%  { transform: translate(-580px, -3px); opacity: 1; }
-        66%  { transform: translate(-420px, 0px); opacity: 1; }
-        69%  { transform: translate(-260px, -3px); opacity: 1; }
-        72%  { transform: translate(-100px, 0px); opacity: 1; }
-        75%  { transform: translate(60px, -3px); opacity: 1; }
-        78%  { transform: translate(130px, 0px); opacity: 0; }
-        86%  { transform: translate(130px, 0px); opacity: 0; }
-        92%  { transform: translate(0px, 0px); opacity: 0; }
-        96%  { transform: translate(0px, 0px); opacity: 1; }
-        100% { transform: translate(0px, 0px); opacity: 1; }
+      @keyframes zoroRoamProfile800 {
+        0%   { transform: translate(0px, 0px); }
+        4%   { transform: translate(-40px, -3px); }
+        8%   { transform: translate(-80px, 0px); }
+        12%  { transform: translate(-130px, -3px); }
+        16%  { transform: translate(-190px, 0px); }
+        20%  { transform: translate(-250px, -3px); }
+        24%  { transform: translate(-310px, 0px); }
+        37%  { transform: translate(-310px, 0px); }
+        40%  { transform: translate(-310px, 0px); }
+        44%  { transform: translate(-230px, -3px); }
+        48%  { transform: translate(-150px, 0px); }
+        52%  { transform: translate(-70px, -3px); }
+        56%  { transform: translate(10px, 0px); }
+        60%  { transform: translate(80px, -3px); }
+        64%  { transform: translate(110px, 0px); }
+        72%  { transform: translate(110px, 0px); }
+        76%  { transform: translate(80px, -3px); }
+        82%  { transform: translate(50px, 0px); }
+        88%  { transform: translate(20px, -3px); }
+        94%  { transform: translate(0px, 0px); }
+        100% { transform: translate(0px, 0px); }
       }
       @keyframes zoroRoamProfile420 {
-        0%   { transform: translate(0px, 0px); opacity: 1; }
-        4%   { transform: translate(-45px, -3px); opacity: 1; }
-        8%   { transform: translate(-90px, 0px); opacity: 1; }
-        12%  { transform: translate(-135px, -3px); opacity: 1; }
-        16%  { transform: translate(-180px, 0px); opacity: 1; }
-        20%  { transform: translate(-230px, -2px); opacity: 1; }
-        22%  { transform: translate(-230px, 0px); opacity: 1; }
-        38%  { transform: translate(-230px, 0px); opacity: 1; }
-        40%  { transform: translate(-230px, 0px); opacity: 1; }
-        44%  { transform: translate(-160px, -3px); opacity: 1; }
-        48%  { transform: translate(-90px, 0px); opacity: 1; }
-        52%  { transform: translate(-20px, -3px); opacity: 1; }
-        56%  { transform: translate(50px, 0px); opacity: 1; }
-        59%  { transform: translate(90px, 0px); opacity: 0; }
-        60%  { transform: translate(-360px, 0px); opacity: 1; }
-        64%  { transform: translate(-280px, -3px); opacity: 1; }
-        68%  { transform: translate(-200px, 0px); opacity: 1; }
-        72%  { transform: translate(-120px, -3px); opacity: 1; }
-        76%  { transform: translate(-40px, 0px); opacity: 1; }
-        80%  { transform: translate(40px, -3px); opacity: 1; }
-        84%  { transform: translate(90px, 0px); opacity: 0; }
-        92%  { transform: translate(0px, 0px); opacity: 0; }
-        96%  { transform: translate(0px, 0px); opacity: 1; }
-        100% { transform: translate(0px, 0px); opacity: 1; }
+        0%   { transform: translate(0px, 0px); }
+        4%   { transform: translate(-15px, -3px); }
+        8%   { transform: translate(-30px, 0px); }
+        12%  { transform: translate(-45px, -3px); }
+        16%  { transform: translate(-60px, 0px); }
+        20%  { transform: translate(-75px, -3px); }
+        24%  { transform: translate(-80px, 0px); }
+        37%  { transform: translate(-80px, 0px); }
+        40%  { transform: translate(-80px, 0px); }
+        44%  { transform: translate(-55px, -3px); }
+        48%  { transform: translate(-30px, 0px); }
+        52%  { transform: translate(-10px, -3px); }
+        56%  { transform: translate(15px, 0px); }
+        60%  { transform: translate(35px, -3px); }
+        64%  { transform: translate(45px, 0px); }
+        72%  { transform: translate(45px, 0px); }
+        76%  { transform: translate(35px, -3px); }
+        82%  { transform: translate(20px, 0px); }
+        88%  { transform: translate(10px, -3px); }
+        94%  { transform: translate(0px, 0px); }
+        100% { transform: translate(0px, 0px); }
       }
       @keyframes zoroFlip800 {
         0%, 39.99%  { transform: scaleX(1); }
-        40%, 86.99% { transform: scaleX(-1); }
-        87%, 100%   { transform: scaleX(1); }
+        40%, 72.99% { transform: scaleX(-1); }
+        73%, 100%   { transform: scaleX(1); }
       }
       @keyframes zoroFlip420 {
         0%, 39.99%  { transform: scaleX(1); }
-        40%, 86.99% { transform: scaleX(-1); }
-        87%, 100%   { transform: scaleX(1); }
+        40%, 72.99% { transform: scaleX(-1); }
+        73%, 100%   { transform: scaleX(1); }
       }
       @keyframes zoroSignpost {
-        0%, 21%   { opacity: 0; transform: scale(0.6); }
-        23%, 38%  { opacity: 1; transform: scale(1); }
-        40%, 100% { opacity: 0; transform: scale(0.6); }
+        0%, 23.99%     { opacity: 0; transform: scale(0.6); }
+        24%, 37%       { opacity: 1; transform: scale(1); }
+        37.01%, 100%   { opacity: 0; transform: scale(0.6); }
       }
       @keyframes zoroDustPuff {
-        0%, 39%   { opacity: 0; transform: scale(0.3); }
-        41%, 47%  { opacity: 0.85; transform: scale(1.1); }
-        49%, 100% { opacity: 0; transform: scale(0.3); }
+        0%, 38.99%     { opacity: 0; transform: scale(0.3); }
+        39%, 43%       { opacity: 0.85; transform: scale(1.1); }
+        43.01%, 71.99% { opacity: 0; transform: scale(0.3); }
+        72%, 76%       { opacity: 0.85; transform: scale(1.1); }
+        76.01%, 100%   { opacity: 0; transform: scale(0.3); }
       }
       .zoro-wander-track-800 { animation: zoroRoamProfile800 15s ease-in-out infinite; }
       .zoro-wander-track-420 { animation: zoroRoamProfile420 15s ease-in-out infinite; }
-      .zoro-wander-flip-800  { animation: zoroFlip800 15s steps(1) infinite; transform-origin: 42px 42px; }
-      .zoro-wander-flip-420  { animation: zoroFlip420 15s steps(1) infinite; transform-origin: 42px 42px; }
-      .zoro-signpost         { animation: zoroSignpost 15s ease-in-out infinite; transform-origin: 22px 20px; }
-      .zoro-dust             { animation: zoroDustPuff 15s ease-in-out infinite; transform-origin: 14px 74px; }
+      .zoro-wander-flip-800  { animation: zoroFlip800 15s steps(1) infinite; transform-origin: 0px 0px; }
+      .zoro-wander-flip-420  { animation: zoroFlip420 15s steps(1) infinite; transform-origin: 0px 0px; }
+      .zoro-signpost         { animation: zoroSignpost 15s ease-in-out infinite; transform-origin: 0px 0px; }
+      .zoro-dust             { animation: zoroDustPuff 15s ease-in-out infinite; transform-origin: 0px 0px; }
 
-      /* ==================== WANO SAKURA & BAMBOO FALLING ==================== */
+      /* ==================== WANO SAKURA AND BAMBOO FALLING ==================== */
       @keyframes windSlashGust {
         0%   { opacity: 0.12; stroke-dashoffset: 40; }
         50%  { opacity: 0.38; }
@@ -479,60 +471,69 @@ export function renderZoroWandererSvg(
   const flipClass = isSmall ? 'zoro-wander-flip-420' : 'zoro-wander-flip-800';
 
   const roamValues = isSmall
-    ? '0,0; -45,-3; -90,0; -135,-3; -180,0; -230,-2; -230,0; -230,0; -230,0; -160,-3; -90,0; -20,-3; 50,0; 90,0; -360,0; -280,-3; -200,0; -120,-3; -40,0; 40,-3; 90,0; 90,0; 0,0'
-    : '0,0; -70,-3; -140,0; -210,-3; -280,0; -350,-3; -420,0; -460,-2; -460,0; -460,0; -460,0; -360,-3; -260,0; -160,-3; -60,0; 40,-3; 110,0; 110,0; -740,0; -580,-3; -420,0; -260,-3; -100,0; 60,-3; 130,0; 130,0; 0,0';
+    ? '0,0; -15,-3; -30,0; -45,-3; -60,0; -75,-3; -80,0; -80,0; -80,0; -55,-3; -30,0; -10,-3; 15,0; 35,-3; 45,0; 45,0; 35,-3; 20,0; 10,-3; 0,0; 0,0'
+    : '0,0; -40,-3; -80,0; -130,-3; -190,0; -250,-3; -310,0; -310,0; -310,0; -230,-3; -150,0; -70,-3; 10,0; 80,-3; 110,0; 110,0; 80,-3; 50,0; 20,-3; 0,0; 0,0';
 
-  const keyTimes = isSmall
-    ? '0.00;0.04;0.08;0.12;0.16;0.20;0.22;0.38;0.40;0.44;0.48;0.52;0.56;0.59;0.60;0.64;0.68;0.72;0.76;0.80;0.84;0.92;1.00'
-    : '0.00;0.03;0.06;0.09;0.12;0.15;0.18;0.20;0.22;0.38;0.40;0.43;0.46;0.49;0.52;0.55;0.57;0.59;0.60;0.63;0.66;0.69;0.72;0.75;0.78;0.88;1.00';
+  const keyTimes =
+    '0.00;0.04;0.08;0.12;0.16;0.20;0.24;0.37;0.40;0.44;0.48;0.52;0.56;0.60;0.64;0.72;0.76;0.82;0.88;0.94;1.00';
 
-  const opacityValues = isSmall
-    ? '1;1;1;1;1;1;1;1;1;1;1;1;1;0;0;1;1;1;1;1;0;0;1'
-    : '1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;0;0;1;1;1;1;1;1;0;0;1';
-
-  const flipValues = '1 1; 1 1; -1 1; -1 1; 1 1';
-  const flipTimes = '0.00; 0.399; 0.40; 0.869; 0.87; 1.00';
+  const flipValues = '1 1; 1 1; -1 1; -1 1; 1 1; 1 1';
+  const flipTimes = '0.00; 0.399; 0.40; 0.729; 0.73; 1.00';
 
   const signOpacity = '0; 0; 1; 1; 0; 0';
-  const signTimes = '0.00; 0.21; 0.23; 0.38; 0.40; 1.00';
+  const signTimes = '0.00; 0.239; 0.24; 0.37; 0.371; 1.00';
 
-  const dustOpacity = '0; 0; 0.85; 0.85; 0; 0';
-  const dustTimes = '0.00; 0.39; 0.41; 0.47; 0.49; 1.00';
+  const dustOpacity = '0; 0; 0.85; 0.85; 0; 0; 0.85; 0.85; 0; 0';
+  const dustTimes = '0.00; 0.389; 0.39; 0.43; 0.431; 0.719; 0.72; 0.76; 0.761; 1.00';
 
   const halfW = width / 2;
   const halfH = height / 2;
 
+  const signOffset = isSmall ? -50 : -56;
+
   return `\n  <!-- Roronoa Zoro (Cross-Card Wanderer) -->
   <g class="${groupClass} zoro-wanderer" role="img" aria-label="${safeName} (Cross-Card Wanderer)">
-    <g class="${trackClass}" transform="translate(${x}, ${y})">
-      <animateTransform attributeName="transform" type="translate" values="${roamValues}" keyTimes="${keyTimes}" dur="15s" repeatCount="indefinite" />
-      <animate attributeName="opacity" values="${opacityValues}" keyTimes="${keyTimes}" dur="15s" repeatCount="indefinite" />
+    <g transform="translate(${x}, ${y})">
+      <g class="${trackClass}">
+        <animateTransform attributeName="transform" type="translate" values="${roamValues}" keyTimes="${keyTimes}" dur="15s" repeatCount="indefinite" />
 
-      <!-- Comedic Signpost & Sweat Bubble Popup -->
-      <g class="zoro-signpost" transform="translate(18, -26)" opacity="0">
-        <animate attributeName="opacity" values="${signOpacity}" keyTimes="${signTimes}" dur="15s" repeatCount="indefinite" />
-        <rect x="20" y="8" width="4" height="28" rx="1" fill="#78350f" />
-        <path d="M 4 8 L 20 8 L 20 18 L 4 18 L 0 13 Z" fill="#b45309" stroke="#78350f" stroke-width="0.7" />
-        <text x="3" y="15.5" font-size="7" font-weight="800" fill="#fef3c7" font-family="sans-serif">COMMITS</text>
-        <path d="M 24 14 L 40 14 L 44 19 L 40 24 L 24 24 Z" fill="#92400e" stroke="#78350f" stroke-width="0.7" />
-        <text x="26" y="21.5" font-size="7" font-weight="800" fill="#fde68a" font-family="sans-serif">NORTH</text>
-        <text x="18" y="-2" font-size="18" font-weight="900" fill="#ef4444" font-family="sans-serif">?</text>
-        <path d="M 34 2 C 32 2 30 4 31 6 C 32 8 34 10 34 10 C 34 10 36 8 37 6 C 38 4 36 2 34 2 Z" fill="#38bdf8" />
-      </g>
+        <!-- Comedic Signpost Left of Zoro -->
+        <g transform="translate(${signOffset}, 24)">
+          <g class="zoro-signpost" opacity="0">
+            <animate attributeName="opacity" values="${signOpacity}" keyTimes="${signTimes}" dur="15s" repeatCount="indefinite" />
+            <rect x="20" y="8" width="4" height="30" rx="1" fill="#78350f" />
+            <path d="M 4 8 L 20 8 L 20 18 L 4 18 L 0 13 Z" fill="#b45309" stroke="#78350f" stroke-width="0.7" />
+            <text x="3" y="15.5" font-size="7" font-weight="800" fill="#fef3c7" font-family="sans-serif">COMMITS</text>
+            <path d="M 24 14 L 40 14 L 44 19 L 40 24 L 24 24 Z" fill="#92400e" stroke="#78350f" stroke-width="0.7" />
+            <text x="26" y="21.5" font-size="7" font-weight="800" fill="#fde68a" font-family="sans-serif">NORTH</text>
+          </g>
+        </g>
 
-      <!-- Cartoon Dust Cloud when turning/running -->
-      <g class="zoro-dust" opacity="0">
-        <animate attributeName="opacity" values="${dustOpacity}" keyTimes="${dustTimes}" dur="15s" repeatCount="indefinite" />
-        <circle cx="14" cy="74" r="5" fill="#e2e8f0" opacity="0.6" />
-        <circle cx="8" cy="77" r="3.5" fill="#cbd5e1" opacity="0.5" />
-        <circle cx="20" cy="76" r="4" fill="#cbd5e1" opacity="0.5" />
-      </g>
+        <!-- Zoro's Reaction: Question Mark and Sweat Droplet Above Head -->
+        <g transform="translate(42, 6)">
+          <g class="zoro-signpost" opacity="0">
+            <animate attributeName="opacity" values="${signOpacity}" keyTimes="${signTimes}" dur="15s" repeatCount="indefinite" />
+            <text x="-5" y="-10" font-size="20" font-weight="900" fill="#ef4444" font-family="sans-serif">?</text>
+            <path d="M 12 -4 C 10 -4 8 -2 9 0 C 10 2 12 4 12 4 C 12 4 14 2 15 0 C 16 -2 14 -4 12 -4 Z" fill="#38bdf8" />
+          </g>
+        </g>
 
-      <!-- Centered Image Container for Pixel-Perfect 180 Flip -->
-      <g transform="translate(${halfW}, ${halfH})">
-        <g class="${flipClass}">
-          <animateTransform attributeName="transform" type="scale" values="${flipValues}" keyTimes="${flipTimes}" dur="15s" repeatCount="indefinite" />
-          <image href="${mascot.avatarBase64}" x="-${halfW}" y="-${halfH}" width="${width}" height="${height}" preserveAspectRatio="xMidYMid meet" style="image-rendering: pixelated; image-rendering: crisp-edges;" />
+        <!-- Cartoon Dust Cloud when turning/running -->
+        <g transform="translate(42, 70)">
+          <g class="zoro-dust" opacity="0">
+            <animate attributeName="opacity" values="${dustOpacity}" keyTimes="${dustTimes}" dur="15s" repeatCount="indefinite" />
+            <circle cx="0" cy="4" r="5" fill="#e2e8f0" opacity="0.6" />
+            <circle cx="-7" cy="7" r="3.5" fill="#cbd5e1" opacity="0.5" />
+            <circle cx="7" cy="6" r="4" fill="#cbd5e1" opacity="0.5" />
+          </g>
+        </g>
+
+        <!-- Centered Image Container for Pixel-Perfect 180 Flip -->
+        <g transform="translate(${halfW}, ${halfH})">
+          <g class="${flipClass}">
+            <animateTransform attributeName="transform" type="scale" values="${flipValues}" keyTimes="${flipTimes}" dur="15s" repeatCount="indefinite" />
+            <image href="${mascot.avatarBase64}" x="-${halfW}" y="-${halfH}" width="${width}" height="${height}" preserveAspectRatio="xMidYMid meet" style="image-rendering: pixelated; image-rendering: crisp-edges;" />
+          </g>
         </g>
       </g>
     </g>
@@ -595,52 +596,52 @@ export function renderFloatingSakura(
   const bambooLeaf2 = `<path d="M -3 -14 C -7 -6 -5 4 2 14 C 6 4 4 -6 -3 -14 Z" fill="#34d399" stroke="#10b981" stroke-width="0.7" />`;
 
   if (isMasterCanvas) {
-    const windTrail1 = `<path d="M 20 40 Q 280 220 540 400 T 820 620" stroke="rgba(16, 185, 129, 0.28)" stroke-width="1.6" stroke-linecap="round" fill="none" stroke-dasharray="16 10" class="wind-slash-gust" />`;
-    const windTrail2 = `<path d="M 40 ${Math.floor(height * 0.32)} Q 320 ${Math.floor(height * 0.50)} 560 ${Math.floor(height * 0.68)} T 820 ${Math.floor(height * 0.88)}" stroke="rgba(52, 211, 153, 0.24)" stroke-width="1.5" stroke-linecap="round" fill="none" stroke-dasharray="14 10" class="wind-slash-gust" />`;
-    const windTrail3 = `<path d="M 60 ${Math.floor(height * 0.55)} Q 340 ${Math.floor(height * 0.72)} 580 ${Math.floor(height * 0.88)} T 810 ${height + 20}" stroke="rgba(168, 85, 247, 0.22)" stroke-width="1.4" stroke-linecap="round" fill="none" stroke-dasharray="12 8" class="wind-slash-gust" />`;
+    const windTrail1 = `<path d="M 20 40 Q 280 220 540 400 T 820 620" stroke="rgba(52, 211, 153, 0.38)" stroke-width="2" stroke-linecap="round" fill="none" stroke-dasharray="16 10" class="wind-slash-gust" />`;
+    const windTrail2 = `<path d="M 40 ${Math.floor(height * 0.32)} Q 320 ${Math.floor(height * 0.50)} 560 ${Math.floor(height * 0.68)} T 820 ${Math.floor(height * 0.88)}" stroke="rgba(52, 211, 153, 0.35)" stroke-width="1.8" stroke-linecap="round" fill="none" stroke-dasharray="14 10" class="wind-slash-gust" />`;
+    const windTrail3 = `<path d="M 60 ${Math.floor(height * 0.55)} Q 340 ${Math.floor(height * 0.72)} 580 ${Math.floor(height * 0.88)} T 810 ${height + 20}" stroke="rgba(168, 85, 247, 0.32)" stroke-width="1.8" stroke-linecap="round" fill="none" stroke-dasharray="12 8" class="wind-slash-gust" />`;
 
-    return `\n  <!-- Master Profile Canvas Falling Wano Sakura & Bamboo Leaves (Top-Left to Bottom-Right) -->
+    return `\n  <!-- Master Profile Canvas Falling Wano Sakura and Bamboo Leaves (Top-Left to Bottom-Right) -->
   <g class="canvas-floating-sakura" role="img" aria-label="Wano Sakura and Bamboo Leaves Falling">
     ${windTrail1}
     ${windTrail2}
     ${windTrail3}
-    <g class="sakura-fall-canvas-1" transform="translate(-25, 20)" opacity="0.9">
-      <animateTransform attributeName="transform" type="translate" values="-25,20; 240,${Math.floor(height * 0.25)}; 520,${Math.floor(height * 0.55)}; 850,${Math.floor(height * 0.85)}; -25,20" dur="18s" repeatCount="indefinite" />
+    <g class="sakura-fall-canvas-1" transform="translate(180, 80)" opacity="0.95">
+      <animateTransform attributeName="transform" type="translate" values="180,80; 480,${Math.floor(height * 0.45)}; 760,${Math.floor(height * 0.75)}; 860,${Math.floor(height * 0.85)}; -25,-25; 180,80" dur="18s" repeatCount="indefinite" />
       <g transform="rotate(-15 0 0)">
         <animateTransform attributeName="transform" type="rotate" values="-15 0 0; 45 0 0; -20 0 0; 60 0 0; -15 0 0" dur="18s" repeatCount="indefinite" additive="sum" />
         ${sakuraPetal1}
       </g>
     </g>
-    <g class="sakura-fall-canvas-2" transform="translate(100, -25)" opacity="0.85">
-      <animateTransform attributeName="transform" type="translate" values="100,-25; 360,${Math.floor(height * 0.32)}; 640,${Math.floor(height * 0.68)}; 850,${Math.floor(height * 0.92)}; 100,-25" dur="22s" repeatCount="indefinite" />
+    <g class="sakura-fall-canvas-2" transform="translate(480, 120)" opacity="0.9">
+      <animateTransform attributeName="transform" type="translate" values="480,120; 720,${Math.floor(height * 0.48)}; 860,${Math.floor(height * 0.72)}; 100,-25; 300,${Math.floor(height * 0.22)}; 480,120" dur="22s" repeatCount="indefinite" />
       <g transform="rotate(25 0 0)">
         <animateTransform attributeName="transform" type="rotate" values="25 0 0; -35 0 0; 40 0 0; -20 0 0; 25 0 0" dur="22s" repeatCount="indefinite" additive="sum" />
         ${bambooLeaf1}
       </g>
     </g>
-    <g class="sakura-fall-canvas-3" transform="translate(-30, ${Math.floor(height * 0.28)})" opacity="0.8">
-      <animateTransform attributeName="transform" type="translate" values="-30,${Math.floor(height * 0.28)}; 260,${Math.floor(height * 0.58)}; 580,${Math.floor(height * 0.86)}; 850,${height + 20}; -30,${Math.floor(height * 0.28)}" dur="20s" repeatCount="indefinite" />
+    <g class="sakura-fall-canvas-3" transform="translate(90, 260)" opacity="0.85">
+      <animateTransform attributeName="transform" type="translate" values="90,260; 380,${Math.floor(height * 0.58)}; 680,${Math.floor(height * 0.86)}; 860,${height + 20}; -30,${Math.floor(height * 0.15)}; 90,260" dur="20s" repeatCount="indefinite" />
       <g transform="rotate(-30 0 0)">
         <animateTransform attributeName="transform" type="rotate" values="-30 0 0; 30 0 0; -45 0 0; 20 0 0; -30 0 0" dur="20s" repeatCount="indefinite" additive="sum" />
         ${sakuraPetal2}
       </g>
     </g>
-    <g class="sakura-fall-canvas-4" transform="translate(320, -25)" opacity="0.8">
-      <animateTransform attributeName="transform" type="translate" values="320,-25; 540,${Math.floor(height * 0.26)}; 760,${Math.floor(height * 0.58)}; 850,${Math.floor(height * 0.72)}; 320,-25" dur="16s" repeatCount="indefinite" />
+    <g class="sakura-fall-canvas-4" transform="translate(620, 60)" opacity="0.85">
+      <animateTransform attributeName="transform" type="translate" values="620,60; 780,${Math.floor(height * 0.35)}; 860,${Math.floor(height * 0.52)}; 320,-25; 480,${Math.floor(height * 0.18)}; 620,60" dur="16s" repeatCount="indefinite" />
       <g transform="rotate(10 0 0)">
         <animateTransform attributeName="transform" type="rotate" values="10 0 0; -30 0 0; 25 0 0; -15 0 0; 10 0 0" dur="16s" repeatCount="indefinite" additive="sum" />
         ${bambooLeaf2}
       </g>
     </g>
-    <g class="sakura-fall-canvas-5" transform="translate(-25, ${Math.floor(height * 0.55)})" opacity="0.85">
-      <animateTransform attributeName="transform" type="translate" values="-25,${Math.floor(height * 0.55)}; 220,${Math.floor(height * 0.78)}; 560,${height + 15}; 850,${height + 25}; -25,${Math.floor(height * 0.55)}" dur="15s" repeatCount="indefinite" />
+    <g class="sakura-fall-canvas-5" transform="translate(260, 420)" opacity="0.9">
+      <animateTransform attributeName="transform" type="translate" values="260,420; 540,${Math.floor(height * 0.72)}; 780,${height + 15}; -25,${Math.floor(height * 0.35)}; 120,${Math.floor(height * 0.48)}; 260,420" dur="15s" repeatCount="indefinite" />
       <g transform="rotate(-10 0 0)">
         <animateTransform attributeName="transform" type="rotate" values="-10 0 0; 50 0 0; -25 0 0; 35 0 0; -10 0 0" dur="15s" repeatCount="indefinite" additive="sum" />
         ${sakuraPetal1}
       </g>
     </g>
-    <g class="sakura-fall-canvas-6" transform="translate(200, ${Math.floor(height * 0.35)})" opacity="0.75">
-      <animateTransform attributeName="transform" type="translate" values="200,${Math.floor(height * 0.35)}; 450,${Math.floor(height * 0.62)}; 720,${Math.floor(height * 0.88)}; 850,${height + 20}; 200,${Math.floor(height * 0.35)}" dur="19s" repeatCount="indefinite" />
+    <g class="sakura-fall-canvas-6" transform="translate(380, 240)" opacity="0.85">
+      <animateTransform attributeName="transform" type="translate" values="380,240; 620,${Math.floor(height * 0.58)}; 860,${Math.floor(height * 0.85)}; 120,-10; 250,${Math.floor(height * 0.18)}; 380,240" dur="19s" repeatCount="indefinite" />
       <g transform="rotate(15 0 0)">
         <animateTransform attributeName="transform" type="rotate" values="15 0 0; -25 0 0; 35 0 0; -10 0 0; 15 0 0" dur="19s" repeatCount="indefinite" additive="sum" />
         ${sakuraPetal2}
@@ -857,10 +858,11 @@ export function designProfileCard(
   const height = options?.height || 96;
   const mascot = theme.mascot;
   const maxNameLength = mascot && width <= 460 ? 18 : 26;
+  const userLogin = profile.login || profile.username || 'developer';
   const name = escapeXml(
-    truncateText(options?.customName || profile.name || profile.username, maxNameLength)
+    truncateText(options?.customName || profile.name || userLogin, maxNameLength)
   );
-  const nickname = escapeXml(`@${profile.username}`);
+  const nickname = escapeXml(`@${userLogin}`);
   const avatarHref = profile.avatarBase64 || profile.avatarUrl;
 
   const showCompany =
@@ -903,6 +905,9 @@ export function designProfileCard(
       .p-bio { font: 400 13px ${font.fontFamily}; fill: ${theme.textSecondary}; }
     </style>
   </defs>
+
+  <!-- Card Background (Standalone) -->
+  <rect x="0" y="0" width="${width}" height="${height}" rx="${theme.borderRadius || 14}" fill="${options?.isSubCard ? 'transparent' : theme.cardBg}" stroke="${options?.isSubCard ? 'none' : theme.border}" stroke-width="${options?.isSubCard ? 0 : 1.5}" />
 
   <!-- PFP Frame -->
   <rect x="8" y="8" width="80" height="80" rx="14" fill="${theme.cardBg}" fill-opacity="0.8" stroke="${theme.border}" stroke-width="2" />
@@ -1202,11 +1207,12 @@ export function designOverallBox(
   const font = getDesignFont(fontId);
   const grade = data.grade;
   const gColor = theme.gradeColors[grade] || theme.gradeColors.C;
-  // Exclude Luffy punching (luffy_gatling) and straw_hat from the overall grade box
+  // Exclude Luffy punching (luffy_gatling), straw_hat, and Zoro (wano_zoro) from the overall grade box
   const mascot =
     theme.mascot &&
     theme.mascot.id !== 'luffy_gatling' &&
-    theme.mascot.id !== 'straw_hat'
+    theme.mascot.id !== 'straw_hat' &&
+    theme.mascot.id !== 'zoro'
       ? theme.mascot
       : null;
   const contentX = mascot ? (width - 48) / 2 : width / 2;
@@ -1378,7 +1384,7 @@ function embedSubSvg(
 
   return cleanedSvg.replace(
     /^<svg[^>]*>/,
-    `<svg x="${x}" y="${y}" width="${targetW}" height="${targetH}" viewBox="${viewBox}" fill="none">`
+    `<svg x="${x}" y="${y}" width="${targetW}" height="${targetH}" viewBox="${viewBox}" fill="none" overflow="visible" style="overflow: visible;">`
   );
 }
 
