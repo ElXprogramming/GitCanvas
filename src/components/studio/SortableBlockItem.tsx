@@ -606,6 +606,7 @@ function PinnedProjectsEditor({
   onChange: (s: Partial<PinnedProjectsSettings>) => void;
   userRepos: Repository[];
 }) {
+  const isLivePinned = settings.useLivePinned !== false;
   const currentNames = new Set(settings.featuredProjects.map((p) => p.name));
 
   const addRepo = (repo: Repository) => {
@@ -619,6 +620,7 @@ function PinnedProjectsEditor({
       demoUrl: repo.homepage || undefined,
     };
     onChange({
+      useLivePinned: false,
       featuredProjects: [...settings.featuredProjects, newProj],
     });
   };
@@ -626,16 +628,43 @@ function PinnedProjectsEditor({
   const removeProject = (index: number) => {
     const updated = [...settings.featuredProjects];
     updated.splice(index, 1);
-    onChange({ featuredProjects: updated });
+    onChange({ useLivePinned: false, featuredProjects: updated });
   };
 
   return (
     <div className="space-y-3">
+      {/* Auto-sync live pinned toggle */}
+      <div className="p-2.5 rounded-lg bg-slate-900/80 border border-slate-800">
+        <label className="flex items-start gap-2 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={isLivePinned}
+            onChange={(e) => onChange({ useLivePinned: e.target.checked })}
+            className="mt-0.5 rounded bg-slate-950 border-slate-800 text-cyan-500 focus:ring-0"
+          />
+          <div>
+            <span className="text-xs font-semibold text-slate-200 block">
+              Auto-sync live GitHub pinned repos (Recommended)
+            </span>
+            <span className="text-[11px] text-slate-400 block mt-0.5 leading-relaxed">
+              When enabled, your README card automatically reflects your actual pinned repositories directly from GitHub in real-time without locking in hardcoded repos.
+            </span>
+          </div>
+        </label>
+      </div>
+
       {/* Featured list */}
       <div className="space-y-2">
-        <span className="text-slate-400 font-medium">
-          Pinned Repositories ({settings.featuredProjects.length})
-        </span>
+        <div className="flex items-center justify-between">
+          <span className="text-slate-400 font-medium">
+            {isLivePinned ? 'Current GitHub Pinned Repos' : 'Custom Repositories'} ({settings.featuredProjects.length})
+          </span>
+          {isLivePinned && (
+            <span className="text-[10px] uppercase font-mono px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+              Live GitHub Sync
+            </span>
+          )}
+        </div>
 
         {settings.featuredProjects.map((p, i) => (
           <div
@@ -650,19 +679,21 @@ function PinnedProjectsEditor({
                 {p.description}
               </span>
             </div>
-            <button
-              onClick={() => removeProject(i)}
-              className="text-slate-500 hover:text-rose-400 p-1 shrink-0 ml-2"
-              title="Remove repository"
-            >
-              <Trash2 className="w-3.5 h-3.5" />
-            </button>
+            {!isLivePinned && (
+              <button
+                onClick={() => removeProject(i)}
+                className="text-slate-500 hover:text-rose-400 p-1 shrink-0 ml-2"
+                title="Remove repository"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+              </button>
+            )}
           </div>
         ))}
       </div>
 
       {/* Available repos to add */}
-      {userRepos.length > 0 && (
+      {!isLivePinned && userRepos.length > 0 && (
         <div className="pt-2 border-t border-slate-800">
           <span className="text-slate-400 text-[11px] block mb-1.5">
             Add from repositories:

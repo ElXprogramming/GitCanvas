@@ -123,8 +123,8 @@ export function buildCanvasCardUrl(
     }
   }
 
-  // Custom pinned repositories
-  if (isEnabled('pinned_projects', true)) {
+  // Custom pinned repositories (only override if user explicitly opted out of live pinned repos)
+  if (isEnabled('pinned_projects', true) && projectsSettings?.useLivePinned === false) {
     const customRepos = (projectsSettings?.featuredProjects || [])
       .map((p) => p.name?.trim())
       .filter((n): n is string => Boolean(n));

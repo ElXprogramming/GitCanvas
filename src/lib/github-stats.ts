@@ -19,13 +19,26 @@ import {
   FullCanvasData,
 } from '@/types/stats';
 
-// In-memory cache for raw GitHub API responses (10-minute TTL)
+// In-memory cache for raw GitHub API responses (60s TTL)
 interface CacheEntry<T> {
   data: T;
   expiry: number;
 }
 const cache = new Map<string, CacheEntry<any>>();
-const CACHE_TTL_MS = 10 * 60 * 1000;
+const CACHE_TTL_MS = 60 * 1000;
+
+export function clearUserCache(username?: string): void {
+  if (!username) {
+    cache.clear();
+    return;
+  }
+  const prefix = username.toLowerCase();
+  cache.forEach((_, key) => {
+    if (key.includes(prefix)) {
+      cache.delete(key);
+    }
+  });
+}
 
 function getCached<T>(key: string): T | null {
   const entry = cache.get(key);
@@ -141,12 +154,20 @@ export function computeOverallGrade(grades: StatGrade[]): {
 // CORE NATIVE GITHUB GRAPHQL FETCHER
 // ==========================================================
 
-export async function fetchUserRawGraphQL(username: string, token?: string) {
+export async function fetchUserRawGraphQL(
+  username: string,
+  token?: string,
+  forceRefresh = false
+) {
   const key = `raw_graphql_${username.toLowerCase()}`;
-  const cached = getCached<any>(key);
-  if (cached) return cached;
+  if (forceRefresh) {
+    clearUserCache(username);
+  } else {
+    const cached = getCached<any>(key);
+    if (cached) return cached;
+  }
 
-  const existingPromise = inflightGraphQL.get(key);
+  const existingPromise = !forceRefresh ? inflightGraphQL.get(key) : undefined;
   if (existingPromise) return existingPromise;
 
   const promise = (async () => {
@@ -168,7 +189,7 @@ export async function fetchUserRawGraphQL(username: string, token?: string) {
             followers { totalCount }
             following { totalCount }
             gists(privacy: ALL) { totalCount }
-            pinnedItems(first: 4, types: REPOSITORY) {
+            pinnedItems(first: 6, types: [REPOSITORY]) {
               nodes {
                 ... on Repository {
                   name
@@ -257,15 +278,18 @@ export async function fetchUserRawGraphQL(username: string, token?: string) {
 export async function fetchLifetimeCommits(
   username: string,
   years: number[],
-  token?: string
+  token?: string,
+  forceRefresh = false
 ): Promise<{ totalLifetimeCommits: number; restrictedLifetimeCommits: number }> {
   if (!years || years.length === 0) {
     return { totalLifetimeCommits: 0, restrictedLifetimeCommits: 0 };
   }
 
   const cacheKey = `lifetime_commits_${username.toLowerCase()}`;
-  const cached = getCached<{ totalLifetimeCommits: number; restrictedLifetimeCommits: number }>(cacheKey);
-  if (cached) return cached;
+  if (!forceRefresh) {
+    const cached = getCached<{ totalLifetimeCommits: number; restrictedLifetimeCommits: number }>(cacheKey);
+    if (cached) return cached;
+  }
 
   const aliases = years
     .map(
@@ -322,14 +346,15 @@ export async function fetchLifetimeCommits(
 export async function fetchProfileItem(
   username: string,
   token?: string,
-  includeBase64Avatar = false
+  includeBase64Avatar = false,
+  forceRefresh = false
 ): Promise<ProfileItemData> {
-  const user = await fetchUserRawGraphQL(username, token);
+  const user = await fetchUserRawGraphQL(username, token, forceRefresh);
 
   let avatarBase64: string | undefined;
   if (includeBase64Avatar && user.avatarUrl) {
     const avatarCacheKey = `avatar_b64_${username.toLowerCase()}`;
-    const cachedAvatar = getCached<string>(avatarCacheKey);
+    const cachedAvatar = !forceRefresh ? getCached<string>(avatarCacheKey) : null;
     if (cachedAvatar) {
       avatarBase64 = cachedAvatar;
     } else {
@@ -365,25 +390,25 @@ export async function fetchProfileItem(
 }
 
 /**
- * ITEM 2: Pinned Projects (4 projects from GitHub pinnedItems + top repos fallback)
+ * ITEM 2: Pinned Projects (Uses user's active GitHub pinned repositories; falls back to top repos only if none are pinned)
  */
 export async function fetchPinnedProjectsItem(
   username: string,
-  token?: string
+  token?: string,
+  forceRefresh = false
 ): Promise<PinnedProjectsItemData> {
-  const user = await fetchUserRawGraphQL(username, token);
-  const pinnedNodes: any[] = user.pinnedItems?.nodes || [];
-  const allRepoNodes: any[] = user.repositories?.nodes || [];
+  const user = await fetchUserRawGraphQL(username, token, forceRefresh);
+  const pinnedNodes: any[] = (user.pinnedItems?.nodes || []).filter(Boolean);
+  const allRepoNodes: any[] = (user.repositories?.nodes || []).filter(Boolean);
 
-  const combined: any[] = [...pinnedNodes];
-  for (const repo of allRepoNodes) {
-    if (combined.length >= 4) break;
-    if (!combined.some((p) => p?.name === repo.name)) {
-      combined.push(repo);
-    }
-  }
+  // If user has pinned items on GitHub, use their actual pinned items (up to 6) without padding random repos!
+  // ONLY if the user has 0 pinned items on GitHub, fall back to their top public repositories.
+  const projectsList =
+    pinnedNodes.length > 0
+      ? pinnedNodes.slice(0, 6)
+      : allRepoNodes.slice(0, 4);
 
-  const projects: PinnedProjectItem[] = combined.slice(0, 4).map((r) => {
+  const projects: PinnedProjectItem[] = projectsList.map((r) => {
     const langName = r.primaryLanguage?.name || null;
     const langColor =
       r.primaryLanguage?.color ||
@@ -412,18 +437,19 @@ export async function fetchSingleProjectItem(
   username: string,
   index = 0,
   repoName?: string | null,
-  token?: string
+  token?: string,
+  forceRefresh = false
 ): Promise<PinnedProjectItem> {
-  const user = await fetchUserRawGraphQL(username, token);
-  const pinnedNodes: any[] = user.pinnedItems?.nodes || [];
-  const allRepoNodes: any[] = user.repositories?.nodes || [];
+  const user = await fetchUserRawGraphQL(username, token, forceRefresh);
+  const pinnedNodes: any[] = (user.pinnedItems?.nodes || []).filter(Boolean);
+  const allRepoNodes: any[] = (user.repositories?.nodes || []).filter(Boolean);
 
   if (repoName) {
     const match =
-      allRepoNodes.find(
+      pinnedNodes.find(
         (r) => r?.name?.toLowerCase() === repoName.toLowerCase()
       ) ||
-      pinnedNodes.find(
+      allRepoNodes.find(
         (r) => r?.name?.toLowerCase() === repoName.toLowerCase()
       );
     if (match) {
@@ -443,9 +469,30 @@ export async function fetchSingleProjectItem(
         languageColor: langColor,
       };
     }
+
+    // Direct fetch fallback if repoName is not in GraphQL top list
+    try {
+      const octokit = getOctokit(token);
+      const res = await octokit.rest.repos.get({
+        owner: username,
+        repo: repoName,
+      });
+      const langName = res.data.language || null;
+      return {
+        name: res.data.name,
+        description: res.data.description ?? null,
+        url: res.data.html_url,
+        homepageUrl: res.data.homepage || null,
+        stars: res.data.stargazers_count ?? 0,
+        forks: res.data.forks_count ?? 0,
+        language: langName,
+        languageColor:
+          (langName ? GITHUB_LANG_COLORS[langName] : null) || '#8b949e',
+      };
+    } catch (_) {}
   }
 
-  const pinnedData = await fetchPinnedProjectsItem(username, token);
+  const pinnedData = await fetchPinnedProjectsItem(username, token, forceRefresh);
   return (
     pinnedData.projects[index] || {
       name: repoName || `Project ${index + 1}`,
@@ -466,13 +513,16 @@ export async function fetchSingleProjectItem(
  */
 export async function fetchLanguagesItem(
   username: string,
-  token?: string
+  token?: string,
+  forceRefresh = false
 ): Promise<LanguagesItemData> {
   const cacheKey = `item_languages_${username.toLowerCase()}`;
-  const cached = getCached<LanguagesItemData>(cacheKey);
-  if (cached) return cached;
+  if (!forceRefresh) {
+    const cached = getCached<LanguagesItemData>(cacheKey);
+    if (cached) return cached;
+  }
 
-  const user = await fetchUserRawGraphQL(username, token);
+  const user = await fetchUserRawGraphQL(username, token, forceRefresh);
   const repoNodes: any[] = user.repositories?.nodes || [];
 
   const languageBytes: Record<string, number> = {};
@@ -521,9 +571,10 @@ export async function fetchLanguagesItem(
  */
 export async function fetchCommitsItem(
   username: string,
-  token?: string
+  token?: string,
+  forceRefresh = false
 ): Promise<GradedMetricItemData> {
-  const user = await fetchUserRawGraphQL(username, token);
+  const user = await fetchUserRawGraphQL(username, token, forceRefresh);
   const cc = user.contributionsCollection;
   const years: number[] = cc?.contributionYears || [];
 
@@ -531,7 +582,7 @@ export async function fetchCommitsItem(
     (cc?.totalCommitContributions || 0) +
     (cc?.restrictedContributionsCount || 0);
 
-  const lifetime = await fetchLifetimeCommits(username, years, token);
+  const lifetime = await fetchLifetimeCommits(username, years, token, forceRefresh);
   const value = Math.max(pastYearCommits, lifetime.totalLifetimeCommits);
 
   return {
@@ -548,9 +599,10 @@ export async function fetchCommitsItem(
  */
 export async function fetchPRsItem(
   username: string,
-  token?: string
+  token?: string,
+  forceRefresh = false
 ): Promise<GradedMetricItemData> {
-  const user = await fetchUserRawGraphQL(username, token);
+  const user = await fetchUserRawGraphQL(username, token, forceRefresh);
   const value =
     user.contributionsCollection?.totalPullRequestContributions || 0;
 
@@ -568,9 +620,10 @@ export async function fetchPRsItem(
  */
 export async function fetchIssuesItem(
   username: string,
-  token?: string
+  token?: string,
+  forceRefresh = false
 ): Promise<GradedMetricItemData> {
-  const user = await fetchUserRawGraphQL(username, token);
+  const user = await fetchUserRawGraphQL(username, token, forceRefresh);
   const value = user.contributionsCollection?.totalIssueContributions || 0;
 
   return {
@@ -587,9 +640,10 @@ export async function fetchIssuesItem(
  */
 export async function fetchStarsItem(
   username: string,
-  token?: string
+  token?: string,
+  forceRefresh = false
 ): Promise<GradedMetricItemData> {
-  const user = await fetchUserRawGraphQL(username, token);
+  const user = await fetchUserRawGraphQL(username, token, forceRefresh);
   const repos = user.repositories?.nodes || [];
   const value = repos.reduce(
     (acc: number, r: any) => acc + (r.stargazerCount || 0),
@@ -610,9 +664,10 @@ export async function fetchStarsItem(
  */
 export async function fetchReposItem(
   username: string,
-  token?: string
+  token?: string,
+  forceRefresh = false
 ): Promise<GradedMetricItemData> {
-  const user = await fetchUserRawGraphQL(username, token);
+  const user = await fetchUserRawGraphQL(username, token, forceRefresh);
   const value = user.repositories?.totalCount ?? 0;
 
   return {
@@ -629,9 +684,10 @@ export async function fetchReposItem(
  */
 export async function fetchPolyglotItem(
   username: string,
-  token?: string
+  token?: string,
+  forceRefresh = false
 ): Promise<GradedMetricItemData> {
-  const langsData = await fetchLanguagesItem(username, token);
+  const langsData = await fetchLanguagesItem(username, token, forceRefresh);
   const value = langsData.totalLanguagesCount;
 
   return {
@@ -648,15 +704,16 @@ export async function fetchPolyglotItem(
  */
 export async function fetchOverallItem(
   username: string,
-  token?: string
+  token?: string,
+  forceRefresh = false
 ): Promise<OverallItemData> {
   const [commits, prs, issues, stars, repos, polyglot] = await Promise.all([
-    fetchCommitsItem(username, token),
-    fetchPRsItem(username, token),
-    fetchIssuesItem(username, token),
-    fetchStarsItem(username, token),
-    fetchReposItem(username, token),
-    fetchPolyglotItem(username, token),
+    fetchCommitsItem(username, token, forceRefresh),
+    fetchPRsItem(username, token, forceRefresh),
+    fetchIssuesItem(username, token, forceRefresh),
+    fetchStarsItem(username, token, forceRefresh),
+    fetchReposItem(username, token, forceRefresh),
+    fetchPolyglotItem(username, token, forceRefresh),
   ]);
 
   const breakdown = {
@@ -773,9 +830,10 @@ export function calculateStreakStats(days: CalendarDay[]): UserStreakStats {
  */
 export async function fetchStreakItem(
   username: string,
-  token?: string
+  token?: string,
+  forceRefresh = false
 ): Promise<StreakMetricItemData> {
-  const user = await fetchUserRawGraphQL(username, token);
+  const user = await fetchUserRawGraphQL(username, token, forceRefresh);
   const weeks = user.contributionsCollection?.contributionCalendar?.weeks || [];
   const days: CalendarDay[] = weeks.flatMap((w: any) => w.contributionDays);
   const stats = calculateStreakStats(days);
@@ -798,9 +856,10 @@ export async function fetchStreakItem(
  */
 export async function fetchLongestStreakItem(
   username: string,
-  token?: string
+  token?: string,
+  forceRefresh = false
 ): Promise<StreakMetricItemData> {
-  const user = await fetchUserRawGraphQL(username, token);
+  const user = await fetchUserRawGraphQL(username, token, forceRefresh);
   const weeks = user.contributionsCollection?.contributionCalendar?.weeks || [];
   const days: CalendarDay[] = weeks.flatMap((w: any) => w.contributionDays);
   const stats = calculateStreakStats(days);
@@ -822,9 +881,10 @@ export async function fetchLongestStreakItem(
  */
 export async function fetchActiveDaysItem(
   username: string,
-  token?: string
+  token?: string,
+  forceRefresh = false
 ): Promise<StreakMetricItemData> {
-  const user = await fetchUserRawGraphQL(username, token);
+  const user = await fetchUserRawGraphQL(username, token, forceRefresh);
   const weeks = user.contributionsCollection?.contributionCalendar?.weeks || [];
   const days: CalendarDay[] = weeks.flatMap((w: any) => w.contributionDays);
   const stats = calculateStreakStats(days);
@@ -844,9 +904,10 @@ export async function fetchActiveDaysItem(
  */
 export async function fetchContributionsItem(
   username: string,
-  token?: string
+  token?: string,
+  forceRefresh = false
 ): Promise<ContributionsItemData> {
-  const user = await fetchUserRawGraphQL(username, token);
+  const user = await fetchUserRawGraphQL(username, token, forceRefresh);
   const calendar = user.contributionsCollection?.contributionCalendar;
   const totalCommits = calendar?.totalContributions ?? 0;
   const weeks = calendar?.weeks ?? [];
@@ -856,7 +917,7 @@ export async function fetchContributionsItem(
     username: user.login,
     label: 'contributions last year',
     totalCommits,
-    rightLabel: `${totalCommits} commits`,
+    rightLabel: `${totalCommits} contributions`,
     weeks,
   };
 }
@@ -867,9 +928,10 @@ export async function fetchContributionsItem(
 
 export async function fetchUserOverviewStats(
   username: string,
-  token?: string
+  token?: string,
+  forceRefresh = false
 ): Promise<UserOverviewStats> {
-  const user = await fetchUserRawGraphQL(username, token);
+  const user = await fetchUserRawGraphQL(username, token, forceRefresh);
   const repos = user.repositories?.nodes || [];
 
   const totalStarsEarned = repos.reduce(
@@ -918,9 +980,10 @@ export async function fetchUserOverviewStats(
 
 export async function fetchUserStreakStats(
   username: string,
-  token?: string
+  token?: string,
+  forceRefresh = false
 ): Promise<UserStreakStats> {
-  const user = await fetchUserRawGraphQL(username, token);
+  const user = await fetchUserRawGraphQL(username, token, forceRefresh);
   const weeks = user.contributionsCollection?.contributionCalendar?.weeks || [];
   const days: CalendarDay[] = weeks.flatMap((w: any) => w.contributionDays);
   return calculateStreakStats(days);
@@ -928,9 +991,10 @@ export async function fetchUserStreakStats(
 
 export async function fetchUserCommitStats(
   username: string,
-  token?: string
+  token?: string,
+  forceRefresh = false
 ): Promise<UserCommitStats> {
-  const user = await fetchUserRawGraphQL(username, token);
+  const user = await fetchUserRawGraphQL(username, token, forceRefresh);
   const cc = user.contributionsCollection;
   const years: number[] = cc?.contributionYears || [];
 
@@ -938,7 +1002,7 @@ export async function fetchUserCommitStats(
     (cc?.totalCommitContributions || 0) +
     (cc?.restrictedContributionsCount || 0);
 
-  const lifetime = await fetchLifetimeCommits(username, years, token);
+  const lifetime = await fetchLifetimeCommits(username, years, token, forceRefresh);
   const totalLifetime = Math.max(pastYearCommits, lifetime.totalLifetimeCommits);
 
   const weeks = cc?.contributionCalendar?.weeks || [];
@@ -993,10 +1057,11 @@ export async function fetchUserCommitStats(
 
 export async function fetchUserLanguageStats(
   username: string,
-  token?: string
+  token?: string,
+  forceRefresh = false
 ): Promise<UserLanguageStats> {
-  const data = await fetchLanguagesItem(username, token);
-  const user = await fetchUserRawGraphQL(username, token);
+  const data = await fetchLanguagesItem(username, token, forceRefresh);
+  const user = await fetchUserRawGraphQL(username, token, forceRefresh);
   const repoNodes = user.repositories?.nodes || [];
   const repoCounts: Record<string, number> = {};
   for (const r of repoNodes) {
@@ -1014,9 +1079,10 @@ export async function fetchUserLanguageStats(
 
 export async function fetchUserActivityStats(
   username: string,
-  token?: string
+  token?: string,
+  forceRefresh = false
 ): Promise<UserActivityStats> {
-  const user = await fetchUserRawGraphQL(username, token);
+  const user = await fetchUserRawGraphQL(username, token, forceRefresh);
   const cc = user.contributionsCollection;
   const weeks = cc?.contributionCalendar?.weeks || [];
   const days: CalendarDay[] = weeks.flatMap((w: any) => w.contributionDays);
@@ -1058,21 +1124,22 @@ export async function fetchUserActivityStats(
 
 export async function fetchAllGitHubStats(
   username: string,
-  options?: { include?: string[]; token?: string }
+  options?: { include?: string[]; token?: string; forceRefresh?: boolean }
 ): Promise<UnifiedGitHubStats> {
   const include = options?.include;
   const token = options?.token;
+  const forceRefresh = options?.forceRefresh ?? false;
   const shouldInclude = (item: string) =>
     !include || include.length === 0 || include.includes(item);
 
   const [overview, streak, commits, languages, activity, overall] =
     await Promise.all([
-      shouldInclude('overview') ? fetchUserOverviewStats(username, token) : Promise.resolve(undefined),
-      shouldInclude('streak') ? fetchUserStreakStats(username, token) : Promise.resolve(undefined),
-      shouldInclude('commits') ? fetchUserCommitStats(username, token) : Promise.resolve(undefined),
-      shouldInclude('languages') ? fetchUserLanguageStats(username, token) : Promise.resolve(undefined),
-      shouldInclude('activity') ? fetchUserActivityStats(username, token) : Promise.resolve(undefined),
-      fetchOverallItem(username, token),
+      shouldInclude('overview') ? fetchUserOverviewStats(username, token, forceRefresh) : Promise.resolve(undefined),
+      shouldInclude('streak') ? fetchUserStreakStats(username, token, forceRefresh) : Promise.resolve(undefined),
+      shouldInclude('commits') ? fetchUserCommitStats(username, token, forceRefresh) : Promise.resolve(undefined),
+      shouldInclude('languages') ? fetchUserLanguageStats(username, token, forceRefresh) : Promise.resolve(undefined),
+      shouldInclude('activity') ? fetchUserActivityStats(username, token, forceRefresh) : Promise.resolve(undefined),
+      fetchOverallItem(username, token, forceRefresh),
     ]);
 
   const rank: DeveloperRank = {
@@ -1101,9 +1168,11 @@ export async function fetchFullCanvasData(
     customName?: string | null;
     projectCount?: number;
     token?: string;
+    forceRefresh?: boolean;
   }
 ): Promise<FullCanvasData> {
   const token = options?.token;
+  const forceRefresh = options?.forceRefresh ?? false;
   const customRepos = (options?.repos || [])
     .map((r) => r.trim())
     .filter((r) => r.length > 0)
@@ -1113,11 +1182,11 @@ export async function fetchFullCanvasData(
     customRepos.length > 0
       ? Promise.all(
           customRepos.map((repoName, idx) =>
-            fetchSingleProjectItem(username, idx, repoName, token)
+            fetchSingleProjectItem(username, idx, repoName, token, forceRefresh)
           )
         )
-      : fetchPinnedProjectsItem(username, token).then((res) =>
-          res.projects.slice(0, options?.projectCount ?? 4)
+      : fetchPinnedProjectsItem(username, token, forceRefresh).then((res) =>
+          res.projects.slice(0, options?.projectCount ?? 6)
         );
 
   const [
@@ -1136,20 +1205,20 @@ export async function fetchFullCanvasData(
     activeDays,
     contributions,
   ] = await Promise.all([
-    fetchProfileItem(username, token, true),
+    fetchProfileItem(username, token, true, forceRefresh),
     projectsPromise,
-    fetchLanguagesItem(username, token),
-    fetchCommitsItem(username, token),
-    fetchPRsItem(username, token),
-    fetchIssuesItem(username, token),
-    fetchStarsItem(username, token),
-    fetchReposItem(username, token),
-    fetchPolyglotItem(username, token),
-    fetchOverallItem(username, token),
-    fetchStreakItem(username, token),
-    fetchLongestStreakItem(username, token),
-    fetchActiveDaysItem(username, token),
-    fetchContributionsItem(username, token),
+    fetchLanguagesItem(username, token, forceRefresh),
+    fetchCommitsItem(username, token, forceRefresh),
+    fetchPRsItem(username, token, forceRefresh),
+    fetchIssuesItem(username, token, forceRefresh),
+    fetchStarsItem(username, token, forceRefresh),
+    fetchReposItem(username, token, forceRefresh),
+    fetchPolyglotItem(username, token, forceRefresh),
+    fetchOverallItem(username, token, forceRefresh),
+    fetchStreakItem(username, token, forceRefresh),
+    fetchLongestStreakItem(username, token, forceRefresh),
+    fetchActiveDaysItem(username, token, forceRefresh),
+    fetchContributionsItem(username, token, forceRefresh),
   ]);
 
   const effectiveProfile: ProfileItemData = options?.customName?.trim()

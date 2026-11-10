@@ -43,6 +43,14 @@ export function getOctokit(token?: string): Octokit {
   const authToken = token || process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
   return new Octokit({
     auth: authToken || undefined,
+    request: {
+      fetch: (url: any, opts: any) =>
+        fetch(url, {
+          ...opts,
+          cache: 'no-store',
+          next: { revalidate: 0 },
+        }),
+    },
   });
 }
 

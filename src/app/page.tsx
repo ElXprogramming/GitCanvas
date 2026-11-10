@@ -11,6 +11,7 @@ import {
   ThemeConfig,
   BioTone,
   TechBadgeItem,
+  PinnedProjectItem,
 } from '@/types';
 import { createDefaultBlocks } from '@/lib/default-state';
 import { generateMarkdown } from '@/lib/markdown-generator';
@@ -33,6 +34,7 @@ export default function GitCanvasPage() {
   const [archetype, setArchetype] = useState<DeveloperArchetype | null>(null);
   const [languages, setLanguages] = useState<LanguageDistribution[]>([]);
   const [repositories, setRepositories] = useState<Repository[]>([]);
+  const [pinnedProjects, setPinnedProjects] = useState<PinnedProjectItem[]>([]);
   const [blocks, setBlocks] = useState<ReadmeBlockConfig[]>(() =>
     createDefaultBlocks(null, null, [], [])
   );
@@ -75,7 +77,7 @@ export default function GitCanvasPage() {
 
   // Fetch GitHub User Data
   const loadUserData = useCallback(
-    async (userToLoad: string) => {
+    async (userToLoad: string, forceRefresh = false) => {
       if (!userToLoad) return;
       setIsLoading(true);
 
@@ -85,10 +87,10 @@ export default function GitCanvasPage() {
           headers['Authorization'] = `Bearer ${personalToken}`;
         }
 
-        const res = await fetch(
-          `/api/github/profile?username=${encodeURIComponent(userToLoad)}`,
-          { headers }
-        );
+        const url = `/api/github/profile?username=${encodeURIComponent(userToLoad)}${
+          forceRefresh ? '&refresh=true' : ''
+        }`;
+        const res = await fetch(url, { headers });
 
         const data = await res.json();
         if (!res.ok) {
@@ -100,19 +102,21 @@ export default function GitCanvasPage() {
         setArchetype(data.archetype);
         setLanguages(data.languages || []);
         setRepositories(data.repos || []);
+        setPinnedProjects(data.pinnedProjects || []);
 
         // Create default blocks configured to this user's archetype & tech
         const initialBlocks = createDefaultBlocks(
           data.profile,
           data.archetype,
           data.languages || [],
-          data.repos || []
+          data.repos || [],
+          data.pinnedProjects || []
         );
         setBlocks(initialBlocks);
 
         showToast(
           'success',
-          `Loaded @${data.profile.login}`,
+          forceRefresh ? `Refreshed @${data.profile.login}` : `Loaded @${data.profile.login}`,
           `Archetype detected: ${data.archetype?.label || 'Developer'}`
         );
       } catch (err: any) {
@@ -287,7 +291,13 @@ export default function GitCanvasPage() {
   // Reset to default presets
   const handleResetDefaults = () => {
     if (profile) {
-      const resetBlocks = createDefaultBlocks(profile, archetype, languages, repositories);
+      const resetBlocks = createDefaultBlocks(
+        profile,
+        archetype,
+        languages,
+        repositories,
+        pinnedProjects
+      );
       setBlocks(resetBlocks);
       showToast('info', 'Reset Sections', 'Restored default block configurations.');
     }

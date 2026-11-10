@@ -19,6 +19,7 @@ import {
 } from '@/lib/github-stats';
 
 export const dynamic = 'force-dynamic';
+export const fetchCache = 'force-no-store';
 
 export async function GET(
   req: NextRequest,
@@ -30,6 +31,9 @@ export async function GET(
     const username = (
       searchParams.get('username') || searchParams.get('user')
     )?.trim();
+    const forceRefresh =
+      searchParams.get('refresh') === 'true' ||
+      searchParams.get('cache') === 'false';
 
     if (!username) {
       return NextResponse.json(
@@ -50,53 +54,53 @@ export async function GET(
 
     switch (item) {
       case 'profile':
-        data = await fetchProfileItem(username, userToken);
+        data = await fetchProfileItem(username, userToken, false, forceRefresh);
         break;
       case 'pinned':
-        data = await fetchPinnedProjectsItem(username, userToken);
+        data = await fetchPinnedProjectsItem(username, userToken, forceRefresh);
         break;
       case 'languages':
-        data = await fetchLanguagesItem(username, userToken);
+        data = await fetchLanguagesItem(username, userToken, forceRefresh);
         break;
       case 'commits':
-        data = await fetchCommitsItem(username, userToken);
+        data = await fetchCommitsItem(username, userToken, forceRefresh);
         break;
       case 'prs':
       case 'pr':
-        data = await fetchPRsItem(username, userToken);
+        data = await fetchPRsItem(username, userToken, forceRefresh);
         break;
       case 'issues':
-        data = await fetchIssuesItem(username, userToken);
+        data = await fetchIssuesItem(username, userToken, forceRefresh);
         break;
       case 'stars':
-        data = await fetchStarsItem(username, userToken);
+        data = await fetchStarsItem(username, userToken, forceRefresh);
         break;
       case 'repos':
-        data = await fetchReposItem(username, userToken);
+        data = await fetchReposItem(username, userToken, forceRefresh);
         break;
       case 'polyglot':
-        data = await fetchPolyglotItem(username, userToken);
+        data = await fetchPolyglotItem(username, userToken, forceRefresh);
         break;
       case 'overall':
-        data = await fetchOverallItem(username, userToken);
+        data = await fetchOverallItem(username, userToken, forceRefresh);
         break;
       case 'streak':
-        data = await fetchStreakItem(username, userToken);
+        data = await fetchStreakItem(username, userToken, forceRefresh);
         break;
       case 'longest-streak':
-        data = await fetchLongestStreakItem(username, userToken);
+        data = await fetchLongestStreakItem(username, userToken, forceRefresh);
         break;
       case 'active-days':
-        data = await fetchActiveDaysItem(username, userToken);
+        data = await fetchActiveDaysItem(username, userToken, forceRefresh);
         break;
       case 'contributions':
-        data = await fetchContributionsItem(username, userToken);
+        data = await fetchContributionsItem(username, userToken, forceRefresh);
         break;
       case 'overview':
-        data = await fetchUserOverviewStats(username, userToken);
+        data = await fetchUserOverviewStats(username, userToken, forceRefresh);
         break;
       case 'activity':
-        data = await fetchUserActivityStats(username, userToken);
+        data = await fetchUserActivityStats(username, userToken, forceRefresh);
         break;
       default:
         return NextResponse.json(
@@ -123,9 +127,13 @@ export async function GET(
         );
     }
 
+    const cacheHeader = forceRefresh
+      ? 'no-cache, no-store, must-revalidate'
+      : 'public, max-age=120, s-maxage=120, stale-while-revalidate=300';
+
     return NextResponse.json(data, {
       headers: {
-        'Cache-Control': 'public, s-maxage=600, stale-while-revalidate=1200',
+        'Cache-Control': cacheHeader,
       },
     });
   } catch (error: any) {

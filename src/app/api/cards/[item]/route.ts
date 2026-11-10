@@ -29,6 +29,7 @@ import {
 } from '@/designs/card-designs';
 
 export const dynamic = 'force-dynamic';
+export const fetchCache = 'force-no-store';
 
 export async function GET(
   req: NextRequest,
@@ -38,6 +39,9 @@ export async function GET(
     const item = params.item?.toLowerCase().trim();
     const { searchParams } = new URL(req.url);
     const theme = searchParams.get('theme') || 'default';
+    const forceRefresh =
+      searchParams.get('refresh') === 'true' ||
+      searchParams.get('cache') === 'false';
 
     // Social icon card doesn't require a GitHub API call
     if (item === 'social') {
@@ -148,6 +152,7 @@ export async function GET(
           repos: customRepos,
           customName,
           token: userToken,
+          forceRefresh,
         });
 
         svg = designFullCanvasCard(fullData, {
@@ -172,7 +177,7 @@ export async function GET(
         break;
       }
       case 'profile': {
-        const data = await fetchProfileItem(username, userToken, true);
+        const data = await fetchProfileItem(username, userToken, true, forceRefresh);
         const customName = searchParams.get('name')?.trim();
         const profileToRender = customName ? { ...data, name: customName } : data;
         svg = designProfileCard(profileToRender, theme);
@@ -186,69 +191,70 @@ export async function GET(
           username,
           index,
           repoName,
-          userToken
+          userToken,
+          forceRefresh
         );
         svg = designPinnedProjectCard(project, theme);
         break;
       }
       case 'languages': {
-        const data = await fetchLanguagesItem(username, userToken);
+        const data = await fetchLanguagesItem(username, userToken, forceRefresh);
         svg = designLanguagesBarCard(data, theme);
         break;
       }
       case 'commits': {
-        const data = await fetchCommitsItem(username, userToken);
+        const data = await fetchCommitsItem(username, userToken, forceRefresh);
         svg = designGradedStatBox(data, theme, 192, 98);
         break;
       }
       case 'prs':
       case 'pr': {
-        const data = await fetchPRsItem(username, userToken);
+        const data = await fetchPRsItem(username, userToken, forceRefresh);
         svg = designGradedStatBox(data, theme, 192, 98);
         break;
       }
       case 'issues': {
-        const data = await fetchIssuesItem(username, userToken);
+        const data = await fetchIssuesItem(username, userToken, forceRefresh);
         svg = designGradedStatBox(data, theme, 192, 98);
         break;
       }
       case 'stars': {
-        const data = await fetchStarsItem(username, userToken);
+        const data = await fetchStarsItem(username, userToken, forceRefresh);
         svg = designGradedStatBox(data, theme, 192, 98);
         break;
       }
       case 'repos': {
-        const data = await fetchReposItem(username, userToken);
+        const data = await fetchReposItem(username, userToken, forceRefresh);
         svg = designGradedStatBox(data, theme, 258, 104);
         break;
       }
       case 'polyglot': {
-        const data = await fetchPolyglotItem(username, userToken);
+        const data = await fetchPolyglotItem(username, userToken, forceRefresh);
         svg = designGradedStatBox(data, theme, 258, 104);
         break;
       }
       case 'overall': {
-        const data = await fetchOverallItem(username, userToken);
+        const data = await fetchOverallItem(username, userToken, forceRefresh);
         svg = designOverallBox(data, theme, 258, 104);
         break;
       }
       case 'streak': {
-        const data = await fetchStreakItem(username, userToken);
+        const data = await fetchStreakItem(username, userToken, forceRefresh);
         svg = designStreakBox(data, theme, 258, 104);
         break;
       }
       case 'longest-streak': {
-        const data = await fetchLongestStreakItem(username, userToken);
+        const data = await fetchLongestStreakItem(username, userToken, forceRefresh);
         svg = designStreakBox(data, theme, 258, 104);
         break;
       }
       case 'active-days': {
-        const data = await fetchActiveDaysItem(username, userToken);
+        const data = await fetchActiveDaysItem(username, userToken, forceRefresh);
         svg = designStreakBox(data, theme, 258, 104);
         break;
       }
       case 'contributions': {
-        const data = await fetchContributionsItem(username, userToken);
+        const data = await fetchContributionsItem(username, userToken, forceRefresh);
         svg = designContributionsBox(data, theme);
         break;
       }
@@ -259,12 +265,15 @@ export async function GET(
         );
     }
 
+    const cacheHeader = forceRefresh
+      ? 'no-cache, no-store, must-revalidate'
+      : 'public, max-age=120, s-maxage=120, stale-while-revalidate=300';
+
     return new NextResponse(svg, {
       status: 200,
       headers: {
         'Content-Type': 'image/svg+xml; charset=utf-8',
-        'Cache-Control':
-          'public, max-age=1800, s-maxage=3600, stale-while-revalidate=86400',
+        'Cache-Control': cacheHeader,
       },
     });
   } catch (error: any) {

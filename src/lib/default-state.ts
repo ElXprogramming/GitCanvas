@@ -13,6 +13,7 @@ import {
   SocialLinksSettings,
   FeaturedProject,
   TechBadgeItem,
+  PinnedProjectItem,
 } from '@/types';
 import { TECH_CATALOG } from './tech-catalog';
 
@@ -20,7 +21,8 @@ export function createDefaultBlocks(
   profile: GitHubUserProfile | null,
   archetype: DeveloperArchetype | null,
   languages: LanguageDistribution[],
-  repos: Repository[]
+  repos: Repository[],
+  pinnedProjects?: PinnedProjectItem[]
 ): ReadmeBlockConfig[] {
   const username = profile?.login || 'torvalds';
   const name = profile?.name || username;
@@ -68,22 +70,33 @@ export function createDefaultBlocks(
     }
   }
 
-  // Pinned/Featured projects from top repos
+  // Pinned/Featured projects: prefer actual GitHub pinned repos if available
   const topRepos = repos
     .filter((r) => !r.fork && r.name !== username)
     .sort((a, b) => (b.stargazers_count || 0) - (a.stargazers_count || 0))
     .slice(0, 4);
 
-  const featuredProjects: FeaturedProject[] = topRepos.map((r) => ({
-    name: r.name,
-    description:
-      r.description || `High-performance ${r.language || 'software'} project.`,
-    stars: r.stargazers_count,
-    forks: r.forks_count,
-    language: r.language || 'TypeScript',
-    url: r.html_url,
-    demoUrl: r.homepage || undefined,
-  }));
+  const featuredProjects: FeaturedProject[] =
+    pinnedProjects && pinnedProjects.length > 0
+      ? pinnedProjects.map((p) => ({
+          name: p.name,
+          description: p.description || 'Open-source repository on GitHub.',
+          stars: p.stars,
+          forks: p.forks,
+          language: p.language || 'TypeScript',
+          url: p.url,
+          demoUrl: p.homepageUrl || undefined,
+        }))
+      : topRepos.map((r) => ({
+          name: r.name,
+          description:
+            r.description || `High-performance ${r.language || 'software'} project.`,
+          stars: r.stargazers_count,
+          forks: r.forks_count,
+          language: r.language || 'TypeScript',
+          url: r.html_url,
+          demoUrl: r.homepage || undefined,
+        }));
 
   // Profile Header block defaults
   const heroSettings: HeroSettings = {
@@ -149,6 +162,7 @@ export function createDefaultBlocks(
 
   // Pinned projects settings
   const pinnedProjectsSettings: PinnedProjectsSettings = {
+    useLivePinned: true,
     featuredProjects,
     displayStyle: 'cards',
     showStars: true,

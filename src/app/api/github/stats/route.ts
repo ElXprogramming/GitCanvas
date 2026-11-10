@@ -2,11 +2,15 @@ import { NextRequest, NextResponse } from 'next/server';
 import { fetchAllGitHubStats } from '@/lib/github-stats';
 
 export const dynamic = 'force-dynamic';
+export const fetchCache = 'force-no-store';
 
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const username = searchParams.get('username')?.trim();
+    const forceRefresh =
+      searchParams.get('refresh') === 'true' ||
+      searchParams.get('cache') === 'false';
 
     if (!username) {
       return NextResponse.json(
@@ -32,11 +36,16 @@ export async function GET(req: NextRequest) {
     const stats = await fetchAllGitHubStats(username, {
       include,
       token: userToken,
+      forceRefresh,
     });
+
+    const cacheHeader = forceRefresh
+      ? 'no-cache, no-store, must-revalidate'
+      : 'public, max-age=120, s-maxage=120, stale-while-revalidate=300';
 
     return NextResponse.json(stats, {
       headers: {
-        'Cache-Control': 'public, s-maxage=600, stale-while-revalidate=1200',
+        'Cache-Control': cacheHeader,
       },
     });
   } catch (error: any) {

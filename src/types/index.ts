@@ -137,6 +137,7 @@ export interface PinnedProjectsSettings {
   displayStyle: 'table' | 'cards' | 'badges';
   showStars: boolean;
   showForks: boolean;
+  useLivePinned?: boolean;
 }
 
 export interface SocialLinksSettings {

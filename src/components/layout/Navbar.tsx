@@ -13,6 +13,7 @@ import {
   User,
   Loader2,
   Check,
+  RotateCw,
 } from 'lucide-react';
 
 function GitHubIcon({ className }: { className?: string }) {
@@ -26,7 +27,7 @@ import { useToast } from '@/components/common/Toast';
 
 interface NavbarProps {
   currentUsername: string;
-  onSearchUser: (username: string) => void;
+  onSearchUser: (username: string, forceRefresh?: boolean) => void;
   isLoading: boolean;
   onOpenDeployModal: () => void;
   onOpenTokenModal: () => void;
@@ -54,7 +55,7 @@ export default function Navbar({
     e.preventDefault();
     const trimmed = searchInput.trim();
     if (trimmed) {
-      onSearchUser(trimmed);
+      onSearchUser(trimmed, true);
     }
   };
 
@@ -137,19 +138,30 @@ export default function Navbar({
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               placeholder="Enter GitHub username (e.g. torvalds)..."
-              className="w-full pl-9 pr-20 py-1.5 text-xs sm:text-sm bg-slate-900/90 border border-slate-800 rounded-lg text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30 transition-all"
+              className="w-full pl-9 pr-24 py-1.5 text-xs sm:text-sm bg-slate-900/90 border border-slate-800 rounded-lg text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30 transition-all"
             />
-            <button
-              type="submit"
-              disabled={isLoading || !searchInput.trim()}
-              className="absolute right-1 px-2.5 py-1 text-xs font-medium rounded-md bg-cyan-600 hover:bg-cyan-500 text-white disabled:opacity-40 disabled:hover:bg-cyan-600 transition-colors flex items-center gap-1"
-            >
-              {isLoading ? (
-                <Loader2 className="w-3.5 h-3.5 animate-spin" />
-              ) : (
-                'Load'
-              )}
-            </button>
+            <div className="absolute right-1 flex items-center gap-1">
+              <button
+                type="button"
+                onClick={() => onSearchUser(searchInput.trim() || currentUsername, true)}
+                disabled={isLoading}
+                title="Force refresh stats and pinned projects from GitHub"
+                className="p-1 rounded-md text-slate-400 hover:text-cyan-400 hover:bg-slate-800 disabled:opacity-40 transition-colors"
+              >
+                <RotateCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} />
+              </button>
+              <button
+                type="submit"
+                disabled={isLoading || !searchInput.trim()}
+                className="px-2.5 py-1 text-xs font-medium rounded-md bg-cyan-600 hover:bg-cyan-500 text-white disabled:opacity-40 disabled:hover:bg-cyan-600 transition-colors flex items-center gap-1"
+              >
+                {isLoading ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                ) : (
+                  'Load'
+                )}
+              </button>
+            </div>
           </form>
         </div>
 
