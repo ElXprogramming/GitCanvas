@@ -138,6 +138,7 @@ export interface FullCanvasData {
 
 export interface FullCanvasRenderOptions {
   theme?: string | null;
+  font?: string | null;
   customName?: string | null;
   tagline?: string | null;
   hideProfile?: boolean;

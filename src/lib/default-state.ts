@@ -149,6 +149,7 @@ export function createDefaultBlocks(
   // GitHub Stats settings
   const githubStatsSettings: GitHubStatsSettings = {
     cardTheme: 'default',
+    cardFont: 'josefin_slab',
     cardProvider: 'standalone',
     showOverallStats: true,
     showTopLangs: true,
@@ -241,6 +242,7 @@ export function createInitialCanvasState(): CanvasState {
     theme: {
       accentColor: 'cyan',
       cardTheme: 'default',
+      cardFont: 'josefin_slab',
       badgeStyle: 'for-the-badge',
       layoutTemplate: 'bento',
     },

@@ -10,6 +10,7 @@ import {
   FullCanvasRenderOptions,
 } from '@/types/stats';
 import { getDesignTheme } from './themes';
+import { getDesignFont } from './fonts';
 
 function escapeXml(unsafe: string | null | undefined): string {
   if (!unsafe) return '';
@@ -38,8 +39,8 @@ function truncateText(text: string, maxLength: number): string {
 
 function wrapTextTwoLines(
   rawText: string,
-  maxLine1 = 46,
-  maxLine2 = 46
+  maxLine1 = 34,
+  maxLine2 = 34
 ): [string, string] {
   const clean = rawText.trim().replace(/\s+/g, ' ');
   if (clean.length <= maxLine1) {
@@ -65,17 +66,16 @@ function wrapTextTwoLines(
   return [line1, line2];
 }
 
-const FONT_IMPORT = `@import url('https://fonts.googleapis.com/css2?family=Josefin+Slab:ital,wght@0,400;0,600;0,700;0,800;1,400&amp;display=swap');`;
-const FONT_FAMILY = `'Josefin Slab', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, serif, sans-serif`;
-
 // ==========================================================
 // 1. PROFILE HEADER CARD (PFP + Name + @nickname)
 // ==========================================================
 export function designProfileCard(
   profile: ProfileItemData,
-  themeId?: string | null
+  themeId?: string | null,
+  fontId?: string | null
 ): string {
   const theme = getDesignTheme(themeId);
+  const font = getDesignFont(fontId);
   const name = escapeXml(truncateText(profile.name || profile.username, 22));
   const nickname = escapeXml(`@${profile.username}`);
   const avatarHref = profile.avatarBase64 || profile.avatarUrl;
@@ -86,9 +86,9 @@ export function designProfileCard(
       <rect x="8" y="8" width="80" height="80" rx="14" />
     </clipPath>
     <style>
-      ${FONT_IMPORT}
-      .name { font: 800 26px ${FONT_FAMILY}; fill: ${theme.textPrimary}; }
-      .nick { font: 600 18px ${FONT_FAMILY}; fill: ${theme.textSecondary}; }
+      ${font.svgImportUrl}
+      .name { font: 800 26px ${font.fontFamily}; fill: ${theme.textPrimary}; }
+      .nick { font: 600 18px ${font.fontFamily}; fill: ${theme.textSecondary}; }
     </style>
   </defs>
 
@@ -113,9 +113,11 @@ export function designProfileCard(
 export function designSocialItemCard(
   type: string,
   label: string,
-  themeId?: string | null
+  themeId?: string | null,
+  fontId?: string | null
 ): string {
   const theme = getDesignTheme(themeId);
+  const font = getDesignFont(fontId);
   const safeLabel = escapeXml(truncateText(label, 12));
   const norm = type.toLowerCase();
 
@@ -141,7 +143,7 @@ export function designSocialItemCard(
   <g transform="translate(36, 10) scale(0.95)">
     ${iconSvg}
   </g>
-  <text x="48" y="50" text-anchor="middle" font-size="12" font-weight="600" fill="${theme.textSecondary}" font-family="${FONT_FAMILY}">${safeLabel}</text>
+  <text x="48" y="50" text-anchor="middle" font-size="12" font-weight="600" fill="${theme.textSecondary}" font-family="${font.fontFamily}">${safeLabel}</text>
 </svg>`;
 }
 
@@ -152,9 +154,11 @@ export function designPinnedProjectCard(
   project: PinnedProjectItem,
   themeId?: string | null,
   width = 256,
-  height = 96
+  height = 96,
+  fontId?: string | null
 ): string {
   const theme = getDesignTheme(themeId);
+  const font = getDesignFont(fontId);
   const name = escapeXml(truncateText(project.name, 22));
   const safeId = project.name.replace(/[^a-zA-Z0-9_-]/g, '_') || 'repo';
   const rawDesc = project.description || 'Open-source repository on GitHub.';
@@ -175,10 +179,10 @@ export function designPinnedProjectCard(
       <stop offset="100%" stop-color="${theme.cardBgGradientEnd}" />
     </linearGradient>
     <style>
-      ${FONT_IMPORT}
-      .proj-title { font: 600 13px ${FONT_FAMILY}; fill: ${theme.textPrimary}; }
-      .proj-desc { font: 400 10.5px ${FONT_FAMILY}; fill: ${theme.textSecondary}; }
-      .proj-meta { font: 500 10px ${FONT_FAMILY}; fill: ${theme.textSecondary}; }
+      ${font.svgImportUrl}
+      .proj-title { font: 600 13px ${font.fontFamily}; fill: ${theme.textPrimary}; }
+      .proj-desc { font: 400 10.5px ${font.fontFamily}; fill: ${theme.textSecondary}; }
+      .proj-meta { font: 500 10px ${font.fontFamily}; fill: ${theme.textSecondary}; }
     </style>
   </defs>
 
@@ -219,9 +223,11 @@ export function designPinnedProjectCard(
 // ==========================================================
 export function designLanguagesBarCard(
   data: LanguagesItemData,
-  themeId?: string | null
+  themeId?: string | null,
+  fontId?: string | null
 ): string {
   const theme = getDesignTheme(themeId);
+  const font = getDesignFont(fontId);
   const langs = (data.languages || []).slice(0, 7);
   const totalBytes = langs.reduce((acc, l) => acc + l.bytes, 0) || 1;
 
@@ -281,8 +287,8 @@ export function designLanguagesBarCard(
     const safeName = escapeXml(truncateText(lang.name, 12));
     return `<g transform="translate(${x}, 38)">
       <circle cx="4" cy="-3.5" r="3" fill="${lang.color || theme.accent}" />
-      <text x="12" y="0" font-size="11" font-weight="600" fill="${theme.textPrimary}" font-family="${FONT_FAMILY}">${safeName}</text>
-      <text x="12" y="13" font-size="9.5" font-weight="400" fill="${theme.textSecondary}" font-family="${FONT_FAMILY}">${lang.percentage}%</text>
+      <text x="12" y="0" font-size="11" font-weight="600" fill="${theme.textPrimary}" font-family="${font.fontFamily}">${safeName}</text>
+      <text x="12" y="13" font-size="9.5" font-weight="400" fill="${theme.textSecondary}" font-family="${font.fontFamily}">${lang.percentage}%</text>
     </g>`;
   });
 
@@ -314,9 +320,11 @@ export function designGradedStatBox(
   data: GradedMetricItemData,
   themeId?: string | null,
   width = 192,
-  height = 98
+  height = 98,
+  fontId?: string | null
 ): string {
   const theme = getDesignTheme(themeId);
+  const font = getDesignFont(fontId);
   const label = escapeXml(data.label);
   const valStr = escapeXml(formatCompactNumber(data.value));
   const grade = data.grade;
@@ -329,10 +337,10 @@ export function designGradedStatBox(
       <stop offset="100%" stop-color="${theme.cardBgGradientEnd}" />
     </linearGradient>
     <style>
-      ${FONT_IMPORT}
-      .stat-label { font: 600 13.5px ${FONT_FAMILY}; fill: ${theme.textSecondary}; }
-      .stat-value { font: 800 28px ${FONT_FAMILY}; fill: ${theme.textPrimary}; }
-      .stat-grade-${data.item} { font: 800 15px ${FONT_FAMILY}; fill: ${gColor.text}; }
+      ${font.svgImportUrl}
+      .stat-label { font: 600 13.5px ${font.fontFamily}; fill: ${theme.textSecondary}; }
+      .stat-value { font: 800 28px ${font.fontFamily}; fill: ${theme.textPrimary}; }
+      .stat-grade-${data.item} { font: 800 15px ${font.fontFamily}; fill: ${gColor.text}; }
     </style>
   </defs>
 
@@ -359,9 +367,11 @@ export function designOverallBox(
   data: OverallItemData,
   themeId?: string | null,
   width = 258,
-  height = 104
+  height = 104,
+  fontId?: string | null
 ): string {
   const theme = getDesignTheme(themeId);
+  const font = getDesignFont(fontId);
   const grade = data.grade;
   const gColor = theme.gradeColors[grade] || theme.gradeColors.C;
 
@@ -372,9 +382,9 @@ export function designOverallBox(
       <stop offset="100%" stop-color="${theme.cardBgGradientEnd}" />
     </linearGradient>
     <style>
-      ${FONT_IMPORT}
-      .ov-label { font: 600 14px ${FONT_FAMILY}; fill: ${theme.textSecondary}; }
-      .ov-grade { font: 900 42px ${FONT_FAMILY}; fill: ${gColor.text}; }
+      ${font.svgImportUrl}
+      .ov-label { font: 600 14px ${font.fontFamily}; fill: ${theme.textSecondary}; }
+      .ov-grade { font: 900 42px ${font.fontFamily}; fill: ${gColor.text}; }
     </style>
   </defs>
 
@@ -392,9 +402,11 @@ export function designStreakBox(
   data: StreakMetricItemData,
   themeId?: string | null,
   width = 258,
-  height = 104
+  height = 104,
+  fontId?: string | null
 ): string {
   const theme = getDesignTheme(themeId);
+  const font = getDesignFont(fontId);
   const label = escapeXml(data.label);
   const formatted = escapeXml(data.formatted);
 
@@ -405,9 +417,9 @@ export function designStreakBox(
       <stop offset="100%" stop-color="${theme.cardBgGradientEnd}" />
     </linearGradient>
     <style>
-      ${FONT_IMPORT}
-      .st-label { font: 600 14px ${FONT_FAMILY}; fill: ${theme.textSecondary}; }
-      .st-val { font: 800 28px ${FONT_FAMILY}; fill: ${theme.textPrimary}; }
+      ${font.svgImportUrl}
+      .st-label { font: 600 14px ${font.fontFamily}; fill: ${theme.textSecondary}; }
+      .st-val { font: 800 28px ${font.fontFamily}; fill: ${theme.textPrimary}; }
     </style>
   </defs>
 
@@ -423,9 +435,11 @@ export function designStreakBox(
 // ==========================================================
 export function designContributionsBox(
   data: ContributionsItemData,
-  themeId?: string | null
+  themeId?: string | null,
+  fontId?: string | null
 ): string {
   const theme = getDesignTheme(themeId);
+  const font = getDesignFont(fontId);
   const rightLabel = escapeXml(data.rightLabel);
   const weeks = (data.weeks || []).slice(-53);
 
@@ -468,9 +482,9 @@ export function designContributionsBox(
       <stop offset="100%" stop-color="${theme.cardBgGradientEnd}" />
     </linearGradient>
     <style>
-      ${FONT_IMPORT}
-      .c-title { font: 600 14px ${FONT_FAMILY}; fill: ${theme.textSecondary}; }
-      .c-right { font: 700 14px ${FONT_FAMILY}; fill: ${theme.textPrimary}; }
+      ${font.svgImportUrl}
+      .c-title { font: 600 14px ${font.fontFamily}; fill: ${theme.textSecondary}; }
+      .c-right { font: 700 14px ${font.fontFamily}; fill: ${theme.textPrimary}; }
     </style>
   </defs>
 
@@ -517,6 +531,8 @@ export function designFullCanvasCard(
 ): string {
   const themeId = options?.theme;
   const theme = getDesignTheme(themeId);
+  const fontId = options?.font;
+  const font = getDesignFont(fontId);
   const canvasWidth = 840;
   const padX = 20;
   const innerWidth = 800; // 840 - 2 * 20
@@ -547,7 +563,13 @@ export function designFullCanvasCard(
   if (showProfile || visibleSocials.length > 0) {
     if (showProfile) {
       elements.push(
-        embedSubSvg(designProfileCard(data.profile, themeId), padX, y, 420, 96)
+        embedSubSvg(
+          designProfileCard(data.profile, themeId, fontId),
+          padX,
+          y,
+          420,
+          96
+        )
       );
     }
 
@@ -565,7 +587,7 @@ export function designFullCanvasCard(
         const sx = startX + idx * (socialW + socialGap);
         elements.push(
           embedSubSvg(
-            designSocialItemCard(soc.type, soc.label, themeId),
+            designSocialItemCard(soc.type, soc.label, themeId, fontId),
             sx,
             socialY,
             socialW,
@@ -617,7 +639,7 @@ export function designFullCanvasCard(
           const bx = padX + idx * (boxW + gap);
           elements.push(
             embedSubSvg(
-              designGradedStatBox(metric, themeId, boxW, boxH),
+              designGradedStatBox(metric, themeId, boxW, boxH, fontId),
               bx,
               y,
               boxW,
@@ -633,7 +655,7 @@ export function designFullCanvasCard(
         const gap = 13;
         elements.push(
           embedSubSvg(
-            designGradedStatBox(data.repos, themeId, boxW, boxH),
+            designGradedStatBox(data.repos, themeId, boxW, boxH, fontId),
             padX,
             y,
             boxW,
@@ -642,7 +664,7 @@ export function designFullCanvasCard(
         );
         elements.push(
           embedSubSvg(
-            designGradedStatBox(data.polyglot, themeId, boxW, boxH),
+            designGradedStatBox(data.polyglot, themeId, boxW, boxH, fontId),
             padX + (boxW + gap),
             y,
             boxW,
@@ -651,7 +673,7 @@ export function designFullCanvasCard(
         );
         elements.push(
           embedSubSvg(
-            designOverallBox(data.overall, themeId, boxW, boxH),
+            designOverallBox(data.overall, themeId, boxW, boxH, fontId),
             padX + 2 * (boxW + gap),
             y,
             boxW,
@@ -669,7 +691,7 @@ export function designFullCanvasCard(
           const bx = padX + idx * (boxW + gap);
           elements.push(
             embedSubSvg(
-              designStreakBox(metric, themeId, boxW, boxH),
+              designStreakBox(metric, themeId, boxW, boxH, fontId),
               bx,
               y,
               boxW,
@@ -682,7 +704,7 @@ export function designFullCanvasCard(
         // Row 4: contributions last year (800 x 166)
         elements.push(
           embedSubSvg(
-            designContributionsBox(data.contributions, themeId),
+            designContributionsBox(data.contributions, themeId, fontId),
             padX,
             y,
             800,
@@ -719,7 +741,7 @@ export function designFullCanvasCard(
           const py = y + row * (cardH + rowGap);
           elements.push(
             embedSubSvg(
-              designPinnedProjectCard(proj, themeId, cardW, cardH),
+              designPinnedProjectCard(proj, themeId, cardW, cardH, fontId),
               px,
               py,
               cardW,
@@ -735,7 +757,7 @@ export function designFullCanvasCard(
       renderSectionHeading('Languages');
       elements.push(
         embedSubSvg(
-          designLanguagesBarCard(data.languages, themeId),
+          designLanguagesBarCard(data.languages, themeId, fontId),
           padX,
           y,
           800,
@@ -827,10 +849,10 @@ export function designFullCanvasCard(
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${canvasWidth}" height="${totalHeight}" viewBox="0 0 ${canvasWidth} ${totalHeight}" fill="none" role="img" aria-label="${fullName}'s GitHub Profile">
   <defs>
     <style>
-      ${FONT_IMPORT}
-      .canvas-section-title { font: 700 20px ${FONT_FAMILY}; fill: ${theme.textPrimary}; }
-      .canvas-tagline { font: 400 14px ${FONT_FAMILY}; fill: ${theme.textSecondary}; }
-      .canvas-bio-line { font: 400 13.5px ${FONT_FAMILY}; }
+      ${font.svgImportUrl}
+      .canvas-section-title { font: 700 20px ${font.fontFamily}; fill: ${theme.textPrimary}; }
+      .canvas-tagline { font: 400 14px ${font.fontFamily}; fill: ${theme.textSecondary}; }
+      .canvas-bio-line { font: 400 13.5px ${font.fontFamily}; }
     </style>
   </defs>
 

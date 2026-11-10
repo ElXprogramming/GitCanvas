@@ -39,6 +39,7 @@ export async function GET(
     const item = params.item?.toLowerCase().trim();
     const { searchParams } = new URL(req.url);
     const theme = searchParams.get('theme') || 'default';
+    const font = searchParams.get('font')?.trim() || undefined;
     const forceRefresh =
       searchParams.get('refresh') === 'true' ||
       searchParams.get('cache') === 'false';
@@ -47,7 +48,7 @@ export async function GET(
     if (item === 'social') {
       const type = searchParams.get('type') || 'website';
       const label = searchParams.get('label') || type;
-      const svg = designSocialItemCard(type, label, theme);
+      const svg = designSocialItemCard(type, label, theme, font);
       return new NextResponse(svg, {
         status: 200,
         headers: {
@@ -157,6 +158,7 @@ export async function GET(
 
         svg = designFullCanvasCard(fullData, {
           theme,
+          font,
           customName,
           tagline,
           hideProfile,
@@ -180,7 +182,7 @@ export async function GET(
         const data = await fetchProfileItem(username, userToken, true, forceRefresh);
         const customName = searchParams.get('name')?.trim();
         const profileToRender = customName ? { ...data, name: customName } : data;
-        svg = designProfileCard(profileToRender, theme);
+        svg = designProfileCard(profileToRender, theme, font);
         break;
       }
       case 'project':
@@ -200,68 +202,68 @@ export async function GET(
           userToken,
           forceRefresh
         );
-        svg = designPinnedProjectCard(project, theme, customW, customH);
+        svg = designPinnedProjectCard(project, theme, customW, customH, font);
         break;
       }
       case 'languages': {
         const data = await fetchLanguagesItem(username, userToken, forceRefresh);
-        svg = designLanguagesBarCard(data, theme);
+        svg = designLanguagesBarCard(data, theme, font);
         break;
       }
       case 'commits': {
         const data = await fetchCommitsItem(username, userToken, forceRefresh);
-        svg = designGradedStatBox(data, theme, 192, 98);
+        svg = designGradedStatBox(data, theme, 192, 98, font);
         break;
       }
       case 'prs':
       case 'pr': {
         const data = await fetchPRsItem(username, userToken, forceRefresh);
-        svg = designGradedStatBox(data, theme, 192, 98);
+        svg = designGradedStatBox(data, theme, 192, 98, font);
         break;
       }
       case 'issues': {
         const data = await fetchIssuesItem(username, userToken, forceRefresh);
-        svg = designGradedStatBox(data, theme, 192, 98);
+        svg = designGradedStatBox(data, theme, 192, 98, font);
         break;
       }
       case 'stars': {
         const data = await fetchStarsItem(username, userToken, forceRefresh);
-        svg = designGradedStatBox(data, theme, 192, 98);
+        svg = designGradedStatBox(data, theme, 192, 98, font);
         break;
       }
       case 'repos': {
         const data = await fetchReposItem(username, userToken, forceRefresh);
-        svg = designGradedStatBox(data, theme, 258, 104);
+        svg = designGradedStatBox(data, theme, 258, 104, font);
         break;
       }
       case 'polyglot': {
         const data = await fetchPolyglotItem(username, userToken, forceRefresh);
-        svg = designGradedStatBox(data, theme, 258, 104);
+        svg = designGradedStatBox(data, theme, 258, 104, font);
         break;
       }
       case 'overall': {
         const data = await fetchOverallItem(username, userToken, forceRefresh);
-        svg = designOverallBox(data, theme, 258, 104);
+        svg = designOverallBox(data, theme, 258, 104, font);
         break;
       }
       case 'streak': {
         const data = await fetchStreakItem(username, userToken, forceRefresh);
-        svg = designStreakBox(data, theme, 258, 104);
+        svg = designStreakBox(data, theme, 258, 104, font);
         break;
       }
       case 'longest-streak': {
         const data = await fetchLongestStreakItem(username, userToken, forceRefresh);
-        svg = designStreakBox(data, theme, 258, 104);
+        svg = designStreakBox(data, theme, 258, 104, font);
         break;
       }
       case 'active-days': {
         const data = await fetchActiveDaysItem(username, userToken, forceRefresh);
-        svg = designStreakBox(data, theme, 258, 104);
+        svg = designStreakBox(data, theme, 258, 104, font);
         break;
       }
       case 'contributions': {
         const data = await fetchContributionsItem(username, userToken, forceRefresh);
-        svg = designContributionsBox(data, theme);
+        svg = designContributionsBox(data, theme, font);
         break;
       }
       default:

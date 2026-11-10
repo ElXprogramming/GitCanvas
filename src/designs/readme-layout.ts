@@ -42,7 +42,8 @@ export function buildCanvasCardUrl(
   blocks: ReadmeBlockConfig[],
   profile: GitHubUserProfile | null,
   cardTheme = 'default',
-  fallbackUsername = 'ElXprogramming'
+  fallbackUsername = 'ElXprogramming',
+  cardFont?: string
 ): string {
   const username = profile?.login || fallbackUsername || 'ElXprogramming';
   const defaultDisplayName = profile?.name || username;
@@ -64,6 +65,7 @@ export function buildCanvasCardUrl(
   const projectsSettings = projectsBlockCfg?.settings as PinnedProjectsSettings | undefined;
 
   const effectiveTheme = statsSettings?.cardTheme || cardTheme || 'default';
+  const effectiveFont = statsSettings?.cardFont || cardFont;
 
   const hasBlocks = blocks.length > 0;
   const isEnabled = (id: string, defaultVal = true) => {
@@ -75,6 +77,9 @@ export function buildCanvasCardUrl(
   const params = new URLSearchParams();
   params.set('username', username);
   params.set('theme', effectiveTheme);
+  if (effectiveFont) {
+    params.set('font', effectiveFont);
+  }
 
   // Custom display name override or hidden profile header
   if (!isEnabled('hero', true)) {
@@ -171,7 +176,8 @@ export function generateMainReadmeLayout(
   blocks: ReadmeBlockConfig[],
   profile: GitHubUserProfile | null,
   cardTheme = 'default',
-  fallbackUsername = 'ElXprogramming'
+  fallbackUsername = 'ElXprogramming',
+  cardFont?: string
 ): string {
   const username = profile?.login || fallbackUsername || 'ElXprogramming';
   const heroBlockCfg = blocks.find((b) => b.id === 'hero');
@@ -183,7 +189,8 @@ export function generateMainReadmeLayout(
     blocks,
     profile,
     cardTheme,
-    fallbackUsername
+    fallbackUsername,
+    cardFont
   );
 
   return `![${displayName}'s GitHub Profile](${canvasUrl})`;

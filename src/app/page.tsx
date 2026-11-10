@@ -38,6 +38,7 @@ export default function GitCanvasPage() {
   const [theme, setTheme] = useState<ThemeConfig>({
     accentColor: 'cyan',
     cardTheme: 'default',
+    cardFont: 'josefin_slab',
     badgeStyle: 'for-the-badge',
   });
 
@@ -102,16 +103,17 @@ export default function GitCanvasPage() {
     }
   }, [loadUserData, profile]);
 
-  // Generate markdown from blocks & selected theme
+  // Generate markdown from blocks & selected theme & font
   const generatedMarkdown = useMemo(() => {
     return generateMarkdown(
       blocks,
       profile,
       archetype,
       theme.cardTheme || 'default',
-      username
+      username,
+      theme.cardFont || 'josefin_slab'
     );
-  }, [blocks, profile, archetype, theme.cardTheme, username]);
+  }, [blocks, profile, archetype, theme.cardTheme, theme.cardFont, username]);
 
   // AI Bio Regeneration
   const handleRegenerateAiBio = async (tone: BioTone) => {

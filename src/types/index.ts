@@ -111,6 +111,7 @@ export interface TechStackSettings {
 
 export interface GitHubStatsSettings {
   cardTheme: string;
+  cardFont?: string;
   cardProvider?: 'standalone' | 'legacy';
   showOverallStats: boolean;
   showTopLangs: boolean;
@@ -167,6 +168,7 @@ export type LayoutTemplateId = 'bento' | 'terminal' | 'editorial' | 'classic';
 export interface ThemeConfig {
   accentColor: string; // e.g. emerald, cyan, violet, rose, sunset
   cardTheme: string;   // e.g. catppuccin_mocha, tokyonight, nord, dracula, radical
+  cardFont?: string;    // e.g. inter, roboto, open_sans, lato, etc.
   badgeStyle: BadgeStyle;
   layoutTemplate?: LayoutTemplateId;
 }
