@@ -11,6 +11,7 @@ import {
 } from '@/types/stats';
 import { getDesignTheme } from './themes';
 import { getDesignFont, getSvgFontImport } from './fonts';
+import { OnePieceMascot } from './onepiece-stickers';
 
 const XML_ESCAPE_MAP: Record<string, string> = {
   '&': '&amp;',
@@ -70,6 +71,61 @@ export function wrapTextTwoLines(
   return [line1, line2];
 }
 
+export function getMascotAnimationStyles(mascot?: OnePieceMascot | null): string {
+  if (!mascot?.frames || mascot.frames.length <= 1) return '';
+  const numFrames = mascot.frames.length;
+  const dur = ((mascot.frameDuration || 0.11) * numFrames).toFixed(2);
+
+  return `
+      @keyframes gatlingF0 { 0%, 25% { opacity: 1; } 25.01%, 100% { opacity: 0; } }
+      @keyframes gatlingF1 { 0%, 24.99% { opacity: 0; } 25%, 50% { opacity: 1; } 50.01%, 100% { opacity: 0; } }
+      @keyframes gatlingF2 { 0%, 49.99% { opacity: 0; } 50%, 75% { opacity: 1; } 75.01%, 100% { opacity: 0; } }
+      @keyframes gatlingF3 { 0%, 74.99% { opacity: 0; } 75%, 100% { opacity: 1; } }
+      .gatling-f0 { animation: gatlingF0 ${dur}s steps(1) infinite; }
+      .gatling-f1 { animation: gatlingF1 ${dur}s steps(1) infinite; }
+      .gatling-f2 { animation: gatlingF2 ${dur}s steps(1) infinite; }
+      .gatling-f3 { animation: gatlingF3 ${dur}s steps(1) infinite; }
+      @media (prefers-reduced-motion: reduce) {
+        .gatling-f0 { opacity: 1 !important; animation: none !important; }
+        .gatling-f1, .gatling-f2, .gatling-f3 { opacity: 0 !important; animation: none !important; }
+      }`;
+}
+
+export function renderMascotSvg(
+  mascot: OnePieceMascot,
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  groupClass = 'p-mascot'
+): string {
+  const safeName = escapeXml(mascot.name);
+  if (mascot.frames && mascot.frames.length > 1) {
+    const numFrames = mascot.frames.length;
+    const dur = ((mascot.frameDuration || 0.11) * numFrames).toFixed(2);
+    const keyTimes = Array.from({ length: numFrames + 1 }, (_, i) =>
+      (i / numFrames).toFixed(2)
+    ).join(';');
+
+    const images = mascot.frames
+      .map((frameB64, idx) => {
+        const vals = Array.from({ length: numFrames + 1 }, (_, i) => {
+          const frameIndex = i === numFrames ? 0 : i;
+          return frameIndex === idx ? '1' : '0';
+        }).join(';');
+        const initOpacity = idx === 0 ? '1' : '0';
+        return `    <image href="${frameB64}" class="gatling-f${idx}" x="${x}" y="${y}" width="${width}" height="${height}" opacity="${initOpacity}" preserveAspectRatio="xMidYMid meet" style="image-rendering: pixelated; image-rendering: crisp-edges;">
+      <animate attributeName="opacity" values="${vals}" keyTimes="${keyTimes}" dur="${dur}s" repeatCount="indefinite" calcMode="discrete" />
+    </image>`;
+      })
+      .join('\n');
+
+    return `\n  <!-- Theme Character Mascot (Animated Borderless) -->\n  <g class="${groupClass}" role="img" aria-label="${safeName}">\n${images}\n  </g>`;
+  }
+
+  return `\n  <!-- Theme Character Mascot (Borderless) -->\n  <g class="${groupClass}" role="img" aria-label="${safeName}">\n    <image href="${mascot.avatarBase64}" x="${x}" y="${y}" width="${width}" height="${height}" preserveAspectRatio="xMidYMid meet" style="image-rendering: pixelated; image-rendering: crisp-edges;" />\n  </g>`;
+}
+
 // ==========================================================
 // 1. PROFILE HEADER CARD (PFP + Name + @nickname)
 // ==========================================================
@@ -122,7 +178,7 @@ export function designProfileCard(
   const bioY = 74;
 
   const mascotBadge = mascot
-    ? `\n  <!-- Theme Character Mascot (Borderless) -->\n  <g class="p-mascot" role="img" aria-label="${escapeXml(mascot.name)}">\n    <image href="${mascot.avatarBase64}" x="${width - 92}" y="6" width="84" height="84" preserveAspectRatio="xMidYMid meet" style="image-rendering: pixelated; image-rendering: crisp-edges;" />\n  </g>`
+    ? renderMascotSvg(mascot, width - 92, 6, 84, 84, 'p-mascot')
     : '';
 
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" fill="none" role="img" aria-label="${name} (${nickname})">
@@ -132,6 +188,7 @@ export function designProfileCard(
     </clipPath>
     <style>
       ${getSvgFontImport(font)}
+      ${getMascotAnimationStyles(mascot)}
       .p-name { font: 800 ${nameSize}px ${font.fontFamily}; fill: ${theme.textPrimary}; }
       .p-nick { font: 600 ${nickSize}px ${font.fontFamily}; fill: ${theme.textSecondary}; }
       .p-bio { font: 400 13px ${font.fontFamily}; fill: ${theme.textSecondary}; }
@@ -447,6 +504,7 @@ export function designOverallBox(
     </linearGradient>
     <style>
       ${getSvgFontImport(font)}
+      ${getMascotAnimationStyles(mascot)}
       .ov-label { font: 600 14px ${font.fontFamily}; fill: ${theme.textSecondary}; }
       .ov-grade { font: 900 42px ${font.fontFamily}; fill: ${gColor.text}; }
     </style>
@@ -458,9 +516,7 @@ export function designOverallBox(
   <text x="${contentX}" y="${height - 18}" text-anchor="middle" class="ov-grade" fill="${gColor.text}">${grade}</text>
   ${
     mascot
-      ? `<g class="ov-mascot" role="img" aria-label="${escapeXml(mascot.name)}">
-    <image href="${mascot.avatarBase64}" x="${width - 66}" y="22" width="52" height="60" preserveAspectRatio="xMidYMid meet" style="image-rendering: pixelated; image-rendering: crisp-edges;" />
-  </g>`
+      ? renderMascotSvg(mascot, width - 66, 22, 52, 60, 'ov-mascot')
       : ''
   }
 </svg>`;
@@ -907,6 +963,7 @@ export function designFullCanvasCard(
   <defs>
     <style>
       ${getSvgFontImport(font)}
+      ${getMascotAnimationStyles(theme.mascot)}
       .canvas-section-title { font: 700 20px ${font.fontFamily}; fill: ${theme.textPrimary}; }
       .canvas-tagline { font: 400 14px ${font.fontFamily}; fill: ${theme.textSecondary}; }
       .canvas-bio-line { font: 400 13.5px ${font.fontFamily}; }

@@ -71,7 +71,10 @@ test('One Piece themes are configured with mascots and custom palettes', () => {
   const gatlingTheme = getDesignTheme('onepiece_gatling');
   assert.equal(gatlingTheme.id, 'onepiece_gatling');
   assert.equal(gatlingTheme.border, 'transparent');
-  assert.ok(gatlingTheme.mascot?.avatarBase64.startsWith('data:image/gif;base64,'));
+  assert.equal(gatlingTheme.mascot?.isAnimated, true);
+  assert.equal(gatlingTheme.mascot?.frames?.length, 4);
+  assert.ok(gatlingTheme.mascot?.gifBase64?.startsWith('data:image/gif;base64,'));
+  assert.ok(gatlingTheme.mascot?.avatarBase64.startsWith('data:image/png;base64,'));
 
   const zoroTheme = getDesignTheme('wano_zoro');
   assert.equal(zoroTheme.mascot?.id, 'zoro');
@@ -103,7 +106,8 @@ test('designProfileCard renders mascot borderless without rect border box', () =
 
   const svg = designProfileCard(profile, 'onepiece_gatling');
   assert.ok(svg.includes('class="p-mascot"'), 'Profile card should render mascot');
-  assert.ok(svg.includes('data:image/gif;base64,'), 'Mascot should be embedded as animated GIF');
+  assert.ok(svg.includes('<animate attributeName="opacity"'), 'Mascot should use native SMIL animation for GitHub compatibility');
+  assert.ok(svg.includes('@keyframes gatlingF'), 'Mascot should define CSS keyframe animation');
   assert.ok(svg.includes('image-rendering: pixelated'), 'Mascot image should have pixelated rendering');
   // Verify it does NOT have an enclosing border rect inside the p-mascot group
   assert.ok(!svg.includes('<rect x="334"'), 'Mascot should NOT have a mini card rect border');
@@ -111,6 +115,29 @@ test('designProfileCard renders mascot borderless without rect border box', () =
   // Verify non-mascot theme does not have mascot
   const defaultSvg = designProfileCard(profile, 'default');
   assert.ok(!defaultSvg.includes('class="p-mascot"'));
+});
+
+test('animated mascot renders native SVG SMIL and CSS keyframe animations for GitHub Camo compatibility', () => {
+  const profile = {
+    username: 'luffy',
+    name: 'Monkey D. Luffy',
+    avatarUrl: 'https://avatars.githubusercontent.com/u/1?v=4',
+  };
+
+  const svg = designProfileCard(profile, 'onepiece_gatling');
+  // Must contain all 4 frames
+  assert.ok(svg.includes('class="gatling-f0"'));
+  assert.ok(svg.includes('class="gatling-f1"'));
+  assert.ok(svg.includes('class="gatling-f2"'));
+  assert.ok(svg.includes('class="gatling-f3"'));
+
+  // SMIL declarative animations must repeat indefinitely
+  assert.ok(svg.includes('repeatCount="indefinite"'));
+  assert.ok(svg.includes('calcMode="discrete"'));
+
+  // CSS keyframes must be present
+  assert.ok(svg.includes('@keyframes gatlingF0'));
+  assert.ok(svg.includes('.gatling-f0 { animation: gatlingF0'));
 });
 
 test('designOverallBox renders mascot in SVG when present', () => {
