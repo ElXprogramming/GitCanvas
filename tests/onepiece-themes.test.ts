@@ -54,6 +54,8 @@ test('getOnePieceMascot resolves character names and aliases', () => {
   assert.equal(getOnePieceMascot('law')?.id, 'law');
   assert.equal(getOnePieceMascot('brook')?.id, 'brook');
   assert.equal(getOnePieceMascot('nami')?.id, 'nami');
+  assert.equal(getOnePieceMascot('gatling')?.id, 'luffy_gatling');
+  assert.equal(getOnePieceMascot('gomu_gomu')?.id, 'luffy_gatling');
   assert.equal(getOnePieceMascot('nonexistent_character'), undefined);
 });
 
@@ -65,6 +67,11 @@ test('One Piece themes are configured with mascots and custom palettes', () => {
 
   const luffyTheme = getDesignTheme('straw_hat');
   assert.equal(luffyTheme.mascot?.id, 'luffy');
+
+  const gatlingTheme = getDesignTheme('onepiece_gatling');
+  assert.equal(gatlingTheme.id, 'onepiece_gatling');
+  assert.equal(gatlingTheme.border, 'transparent');
+  assert.ok(gatlingTheme.mascot?.avatarBase64.startsWith('data:image/gif;base64,'));
 
   const zoroTheme = getDesignTheme('wano_zoro');
   assert.equal(zoroTheme.mascot?.id, 'zoro');
@@ -82,24 +89,26 @@ test('getDesignTheme supports mascot override for any theme', () => {
   assert.ok(darkWithChopper.mascot, 'Theme should have Chopper mascot attached');
   assert.equal(darkWithChopper.mascot?.id, 'chopper');
 
-  const draculaWithZoro = getDesignTheme('dracula', 'zoro');
-  assert.equal(draculaWithZoro.id, 'dracula');
-  assert.equal(draculaWithZoro.mascot?.id, 'zoro');
+  const draculaWithGatling = getDesignTheme('dracula', 'gatling');
+  assert.equal(draculaWithGatling.id, 'dracula');
+  assert.equal(draculaWithGatling.mascot?.id, 'luffy_gatling');
 });
 
-test('designProfileCard renders mascot badge in SVG', () => {
+test('designProfileCard renders mascot borderless without rect border box', () => {
   const profile = {
     username: 'luffy',
     name: 'Monkey D. Luffy',
     avatarUrl: 'https://avatars.githubusercontent.com/u/1?v=4',
   };
 
-  const svg = designProfileCard(profile, 'onepiece_chopper');
-  assert.ok(svg.includes('class="p-mascot"'), 'Profile card should render mascot badge');
+  const svg = designProfileCard(profile, 'onepiece_gatling');
+  assert.ok(svg.includes('class="p-mascot"'), 'Profile card should render mascot');
+  assert.ok(svg.includes('data:image/gif;base64,'), 'Mascot should be embedded as animated GIF');
   assert.ok(svg.includes('image-rendering: pixelated'), 'Mascot image should have pixelated rendering');
-  assert.ok(svg.includes('data:image/png;base64,'), 'Mascot should be embedded as base64 PNG');
+  // Verify it does NOT have an enclosing border rect inside the p-mascot group
+  assert.ok(!svg.includes('<rect x="334"'), 'Mascot should NOT have a mini card rect border');
 
-  // Verify non-mascot theme does not have mascot badge
+  // Verify non-mascot theme does not have mascot
   const defaultSvg = designProfileCard(profile, 'default');
   assert.ok(!defaultSvg.includes('class="p-mascot"'));
 });

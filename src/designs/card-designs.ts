@@ -122,7 +122,7 @@ export function designProfileCard(
   const bioY = 74;
 
   const mascotBadge = mascot
-    ? `\n  <!-- Theme Character Mascot -->\n  <g class="p-mascot" role="img" aria-label="${escapeXml(mascot.name)}">\n    <rect x="${width - 86}" y="8" width="76" height="80" rx="14" fill="${theme.cardBg}" stroke="${theme.border}" stroke-width="1.5" />\n    <image href="${mascot.avatarBase64}" x="${width - 82}" y="12" width="68" height="72" preserveAspectRatio="xMidYMid meet" style="image-rendering: pixelated; image-rendering: crisp-edges;" />\n  </g>`
+    ? `\n  <!-- Theme Character Mascot (Borderless) -->\n  <g class="p-mascot" role="img" aria-label="${escapeXml(mascot.name)}">\n    <image href="${mascot.avatarBase64}" x="${width - 92}" y="6" width="84" height="84" preserveAspectRatio="xMidYMid meet" style="image-rendering: pixelated; image-rendering: crisp-edges;" />\n  </g>`
     : '';
 
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" fill="none" role="img" aria-label="${name} (${nickname})">

@@ -202,6 +202,26 @@ export const DESIGN_THEMES: Record<string, DesignTheme> = {
     heatmapLevels: ['#0f291e', '#065f46', '#059669', '#10b981', '#a855f7'],
     mascot: ONE_PIECE_MASCOTS.zoro,
   },
+  onepiece_gatling: {
+    id: 'onepiece_gatling',
+    label: 'Luffy Gatling (Animated GIF)',
+    cardBg: '#0b132b',
+    cardBgGradientEnd: '#070c1d',
+    border: 'transparent',
+    borderRadius: 14,
+    textPrimary: '#f8fafc',
+    textSecondary: '#fcd34d',
+    accent: '#ef4444',
+    gradeColors: {
+      S: { text: '#ef4444', bg: 'rgba(239, 68, 68, 0.16)', border: '#ef4444' },
+      A: { text: '#fbbf24', bg: 'rgba(251, 191, 36, 0.16)', border: '#fbbf24' },
+      B: { text: '#38bdf8', bg: 'rgba(56, 189, 248, 0.16)', border: '#38bdf8' },
+      C: { text: '#10b981', bg: 'rgba(16, 185, 129, 0.16)', border: '#10b981' },
+      D: { text: '#94a3b8', bg: 'rgba(148, 163, 184, 0.12)', border: '#64748b' },
+    },
+    heatmapLevels: ['#162038', '#1e3a8a', '#d97706', '#f59e0b', '#ef4444'],
+    mascot: ONE_PIECE_MASCOTS.luffy_gatling,
+  },
   onepiece_chopper: {
     id: 'onepiece_chopper',
     label: 'Chopper (Pixel Art)',
@@ -359,6 +379,14 @@ export function getDesignTheme(
     key === 'cotton_candy'
   ) {
     baseTheme = DESIGN_THEMES.onepiece_chopper;
+  } else if (
+    key === 'gatling' ||
+    key === 'luffy_gatling' ||
+    key === 'onepiece_gatling' ||
+    key === 'gomu_gomu' ||
+    key === 'punch'
+  ) {
+    baseTheme = DESIGN_THEMES.onepiece_gatling;
   } else if (
     key === 'onepiece' ||
     key === 'one_piece' ||
