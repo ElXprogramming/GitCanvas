@@ -105,7 +105,7 @@ test('designProfileCard renders optional company and bio', () => {
   assert.ok(svg.includes('Custom synthesized bio for testing'));
 });
 
-test('designGradedStatBox renders metric with grade color', () => {
+test('designGradedStatBox renders borderless metric with grade color', () => {
   const svg = designGradedStatBox({
     item: 'commits',
     username: 'octocat',
@@ -117,6 +117,8 @@ test('designGradedStatBox renders metric with grade color', () => {
   assert.ok(svg.includes('450'));
   assert.ok(svg.includes('commits'));
   assert.ok(svg.includes('>S<'));
+  assert.ok(svg.includes('stroke="none"'));
+  assert.ok(!svg.includes('stroke-width="1.5"'));
 });
 
 test('designSocialItemCard renders smaller, borderless social button SVG', () => {
@@ -167,7 +169,7 @@ test('designLanguagesBarCard renders language distribution bar', () => {
   assert.ok(svg.includes('Rust'));
 });
 
-test('designOverallBox, designStreakBox, and designContributionsBox render valid SVGs', () => {
+test('designOverallBox, designStreakBox, and designContributionsBox render borderless SVGs', () => {
   const overallSvg = designOverallBox({
     item: 'overall',
     username: 'octocat',
@@ -178,6 +180,8 @@ test('designOverallBox, designStreakBox, and designContributionsBox render valid
   });
   assert.ok(overallSvg.startsWith('<svg'));
   assert.ok(overallSvg.includes('>A<'));
+  assert.ok(overallSvg.includes('stroke="none"'));
+  assert.ok(!overallSvg.includes('stroke-width="1.5"'));
 
   const streakSvg = designStreakBox({
     item: 'streak',
@@ -189,6 +193,8 @@ test('designOverallBox, designStreakBox, and designContributionsBox render valid
   });
   assert.ok(streakSvg.startsWith('<svg'));
   assert.ok(streakSvg.includes('42 days'));
+  assert.ok(streakSvg.includes('stroke="none"'));
+  assert.ok(!streakSvg.includes('stroke-width="1.5"'));
 
   const contribSvg = designContributionsBox({
     item: 'contributions',
@@ -200,6 +206,8 @@ test('designOverallBox, designStreakBox, and designContributionsBox render valid
   });
   assert.ok(contribSvg.startsWith('<svg'));
   assert.ok(contribSvg.includes('365 contributions'));
+  assert.ok(contribSvg.includes('stroke="none"'));
+  assert.ok(!contribSvg.includes('stroke-width="1.5"'));
 });
 
 test('getDesignTheme and getDesignFont resolve correctly with aliases', () => {

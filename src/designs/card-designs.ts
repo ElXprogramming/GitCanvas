@@ -398,7 +398,7 @@ export function designGradedStatBox(
     </style>
   </defs>
 
-  <rect x="1" y="1" width="${width - 2}" height="${height - 2}" rx="${theme.borderRadius}" fill="url(#statGrad_${data.item})" stroke="${theme.border}" stroke-width="1.5" />
+  <rect width="${width}" height="${height}" rx="${theme.borderRadius}" fill="url(#statGrad_${data.item})" stroke="none" />
 
   <!-- Top-Left Label -->
   <text x="16" y="28" class="stat-label" fill="${theme.textSecondary}">${label}</text>
@@ -442,7 +442,7 @@ export function designOverallBox(
     </style>
   </defs>
 
-  <rect x="1" y="1" width="${width - 2}" height="${height - 2}" rx="${theme.borderRadius}" fill="url(#overallGrad)" stroke="${theme.border}" stroke-width="1.5" />
+  <rect width="${width}" height="${height}" rx="${theme.borderRadius}" fill="url(#overallGrad)" stroke="none" />
 
   <text x="${width / 2}" y="28" text-anchor="middle" class="ov-label" fill="${theme.textSecondary}">overall</text>
   <text x="${width / 2}" y="${height - 18}" text-anchor="middle" class="ov-grade" fill="${gColor.text}">${grade}</text>
@@ -477,7 +477,7 @@ export function designStreakBox(
     </style>
   </defs>
 
-  <rect x="1" y="1" width="${width - 2}" height="${height - 2}" rx="${theme.borderRadius}" fill="url(#streakGrad_${data.item})" stroke="${theme.border}" stroke-width="1.5" />
+  <rect width="${width}" height="${height}" rx="${theme.borderRadius}" fill="url(#streakGrad_${data.item})" stroke="none" />
 
   <text x="18" y="30" class="st-label" fill="${theme.textSecondary}">${label}</text>
   <text x="18" y="${height - 20}" class="st-val" fill="${theme.textPrimary}">${formatted}</text>
@@ -546,7 +546,7 @@ export function designContributionsBox(
     </style>
   </defs>
 
-  <rect x="1" y="1" width="798" height="164" rx="${theme.borderRadius}" fill="url(#contribGrad)" stroke="${theme.border}" stroke-width="1.5" />
+  <rect width="800" height="166" rx="${theme.borderRadius}" fill="url(#contribGrad)" stroke="none" />
 
   <!-- Top Left & Top Right Labels -->
   <text x="22" y="29" class="c-title" fill="${theme.textSecondary}">contributions last year</text>
@@ -875,7 +875,7 @@ export function designFullCanvasCard(
         .join('\n  ');
 
       elements.push(`<g transform="translate(${padX}, ${y})">
-  <rect x="1" y="1" width="798" height="${bioCardH - 2}" rx="${theme.borderRadius}" fill="${theme.cardBg}" stroke="${theme.border}" stroke-width="1.5" />
+  <rect width="800" height="${bioCardH}" rx="${theme.borderRadius}" fill="${theme.cardBg}" stroke="none" />
   ${bioItemsSvg}
 </g>`);
       y += bioCardH + 28;
