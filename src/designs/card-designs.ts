@@ -65,6 +65,9 @@ function wrapTextTwoLines(
   return [line1, line2];
 }
 
+const FONT_IMPORT = `@import url('https://fonts.googleapis.com/css2?family=Josefin+Slab:ital,wght@0,400;0,600;0,700;0,800;1,400&amp;display=swap');`;
+const FONT_FAMILY = `'Josefin Slab', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, serif, sans-serif`;
+
 // ==========================================================
 // 1. PROFILE HEADER CARD (PFP + Name + @nickname)
 // ==========================================================
@@ -83,8 +86,9 @@ export function designProfileCard(
       <rect x="8" y="8" width="80" height="80" rx="14" />
     </clipPath>
     <style>
-      .name { font: 800 26px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; fill: ${theme.textPrimary}; }
-      .nick { font: 600 18px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; fill: ${theme.textSecondary}; }
+      ${FONT_IMPORT}
+      .name { font: 800 26px ${FONT_FAMILY}; fill: ${theme.textPrimary}; }
+      .nick { font: 600 18px ${FONT_FAMILY}; fill: ${theme.textSecondary}; }
     </style>
   </defs>
 
@@ -137,7 +141,7 @@ export function designSocialItemCard(
   <g transform="translate(36, 10) scale(0.95)">
     ${iconSvg}
   </g>
-  <text x="48" y="50" text-anchor="middle" font-size="12" font-weight="600" fill="${theme.textSecondary}" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif">${safeLabel}</text>
+  <text x="48" y="50" text-anchor="middle" font-size="12" font-weight="600" fill="${theme.textSecondary}" font-family="${FONT_FAMILY}">${safeLabel}</text>
 </svg>`;
 }
 
@@ -167,9 +171,10 @@ export function designPinnedProjectCard(
       <stop offset="100%" stop-color="${theme.cardBgGradientEnd}" />
     </linearGradient>
     <style>
-      .proj-title { font: 700 16px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; fill: ${theme.textPrimary}; }
-      .proj-desc { font: 400 12.5px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; fill: ${theme.textSecondary}; }
-      .proj-meta { font: 600 12px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; fill: ${theme.textSecondary}; }
+      ${FONT_IMPORT}
+      .proj-title { font: 700 16px ${FONT_FAMILY}; fill: ${theme.textPrimary}; }
+      .proj-desc { font: 400 12.5px ${FONT_FAMILY}; fill: ${theme.textSecondary}; }
+      .proj-meta { font: 600 12px ${FONT_FAMILY}; fill: ${theme.textSecondary}; }
     </style>
   </defs>
 
@@ -271,8 +276,8 @@ export function designLanguagesBarCard(
     const safeName = escapeXml(truncateText(lang.name, 12));
     return `<g transform="translate(${x}, 66)">
       <circle cx="6" cy="-5" r="4.5" fill="${lang.color || theme.accent}" />
-      <text x="15" y="0" font-size="13" font-weight="600" fill="${theme.textPrimary}" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif">${safeName}</text>
-      <text x="15" y="16" font-size="11" font-weight="500" fill="${theme.textSecondary}" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif">${lang.percentage}%</text>
+      <text x="15" y="0" font-size="13" font-weight="600" fill="${theme.textPrimary}" font-family="${FONT_FAMILY}">${safeName}</text>
+      <text x="15" y="16" font-size="11" font-weight="500" fill="${theme.textSecondary}" font-family="${FONT_FAMILY}">${lang.percentage}%</text>
     </g>`;
   });
 
@@ -320,9 +325,10 @@ export function designGradedStatBox(
       <stop offset="100%" stop-color="${theme.cardBgGradientEnd}" />
     </linearGradient>
     <style>
-      .stat-label { font: 600 13.5px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; fill: ${theme.textSecondary}; }
-      .stat-value { font: 800 28px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; fill: ${theme.textPrimary}; }
-      .stat-grade-${data.item} { font: 800 15px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; fill: ${gColor.text}; }
+      ${FONT_IMPORT}
+      .stat-label { font: 600 13.5px ${FONT_FAMILY}; fill: ${theme.textSecondary}; }
+      .stat-value { font: 800 28px ${FONT_FAMILY}; fill: ${theme.textPrimary}; }
+      .stat-grade-${data.item} { font: 800 15px ${FONT_FAMILY}; fill: ${gColor.text}; }
     </style>
   </defs>
 
@@ -362,8 +368,9 @@ export function designOverallBox(
       <stop offset="100%" stop-color="${theme.cardBgGradientEnd}" />
     </linearGradient>
     <style>
-      .ov-label { font: 600 14px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; fill: ${theme.textSecondary}; }
-      .ov-grade { font: 900 42px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; fill: ${gColor.text}; }
+      ${FONT_IMPORT}
+      .ov-label { font: 600 14px ${FONT_FAMILY}; fill: ${theme.textSecondary}; }
+      .ov-grade { font: 900 42px ${FONT_FAMILY}; fill: ${gColor.text}; }
     </style>
   </defs>
 
@@ -394,8 +401,9 @@ export function designStreakBox(
       <stop offset="100%" stop-color="${theme.cardBgGradientEnd}" />
     </linearGradient>
     <style>
-      .st-label { font: 600 14px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; fill: ${theme.textSecondary}; }
-      .st-val { font: 800 28px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; fill: ${theme.textPrimary}; }
+      ${FONT_IMPORT}
+      .st-label { font: 600 14px ${FONT_FAMILY}; fill: ${theme.textSecondary}; }
+      .st-val { font: 800 28px ${FONT_FAMILY}; fill: ${theme.textPrimary}; }
     </style>
   </defs>
 
@@ -456,8 +464,9 @@ export function designContributionsBox(
       <stop offset="100%" stop-color="${theme.cardBgGradientEnd}" />
     </linearGradient>
     <style>
-      .c-title { font: 600 14px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; fill: ${theme.textSecondary}; }
-      .c-right { font: 700 14px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; fill: ${theme.textPrimary}; }
+      ${FONT_IMPORT}
+      .c-title { font: 600 14px ${FONT_FAMILY}; fill: ${theme.textSecondary}; }
+      .c-right { font: 700 14px ${FONT_FAMILY}; fill: ${theme.textPrimary}; }
     </style>
   </defs>
 
@@ -814,9 +823,10 @@ export function designFullCanvasCard(
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${canvasWidth}" height="${totalHeight}" viewBox="0 0 ${canvasWidth} ${totalHeight}" fill="none" role="img" aria-label="${fullName}'s GitHub Profile">
   <defs>
     <style>
-      .canvas-section-title { font: 700 20px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; fill: ${theme.textPrimary}; }
-      .canvas-tagline { font: 500 14px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; fill: ${theme.textSecondary}; }
-      .canvas-bio-line { font: 500 13.5px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+      ${FONT_IMPORT}
+      .canvas-section-title { font: 700 20px ${FONT_FAMILY}; fill: ${theme.textPrimary}; }
+      .canvas-tagline { font: 400 14px ${FONT_FAMILY}; fill: ${theme.textSecondary}; }
+      .canvas-bio-line { font: 400 13.5px ${FONT_FAMILY}; }
     </style>
   </defs>
 

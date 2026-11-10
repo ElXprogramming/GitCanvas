@@ -42,9 +42,9 @@ export function buildCanvasCardUrl(
   blocks: ReadmeBlockConfig[],
   profile: GitHubUserProfile | null,
   cardTheme = 'default',
-  fallbackUsername = 'torvalds'
+  fallbackUsername = 'ElXprogramming'
 ): string {
-  const username = profile?.login || fallbackUsername || 'torvalds';
+  const username = profile?.login || fallbackUsername || 'ElXprogramming';
   const defaultDisplayName = profile?.name || username;
   const base = getCardsBaseUrl();
 
@@ -171,9 +171,9 @@ export function generateMainReadmeLayout(
   blocks: ReadmeBlockConfig[],
   profile: GitHubUserProfile | null,
   cardTheme = 'default',
-  fallbackUsername = 'torvalds'
+  fallbackUsername = 'ElXprogramming'
 ): string {
-  const username = profile?.login || fallbackUsername || 'torvalds';
+  const username = profile?.login || fallbackUsername || 'ElXprogramming';
   const heroBlockCfg = blocks.find((b) => b.id === 'hero');
   const heroSettings = heroBlockCfg?.settings as HeroSettings | undefined;
   const displayName =

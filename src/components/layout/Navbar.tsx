@@ -111,7 +111,7 @@ export default function Navbar({
           {/* Quick Demo Chips */}
           <div className="hidden xl:flex items-center gap-1.5 pl-3 border-l border-slate-800">
             <span className="text-[11px] text-slate-500 uppercase tracking-wider font-mono">Demo:</span>
-            {['torvalds', 'shadcn', 'gaearon', 'sindresorhus'].map((demo) => (
+            {['ElXprogramming'].map((demo) => (
               <button
                 key={demo}
                 onClick={() => handleQuickLoad(demo)}
@@ -137,7 +137,7 @@ export default function Navbar({
               type="text"
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              placeholder="Enter GitHub username (e.g. torvalds)..."
+              placeholder="Enter GitHub username (e.g. ElXprogramming)..."
               className="w-full pl-9 pr-24 py-1.5 text-xs sm:text-sm bg-slate-900/90 border border-slate-800 rounded-lg text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30 transition-all"
             />
             <div className="absolute right-1 flex items-center gap-1">

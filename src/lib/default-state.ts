@@ -24,7 +24,7 @@ export function createDefaultBlocks(
   repos: Repository[],
   pinnedProjects?: PinnedProjectItem[]
 ): ReadmeBlockConfig[] {
-  const username = profile?.login || 'torvalds';
+  const username = profile?.login || 'ElXprogramming';
   const name = profile?.name || username;
   const topLangs = languages.slice(0, 5).map((l) => l.name);
 

@@ -19,7 +19,7 @@ export function generateMarkdown(
   profile: GitHubUserProfile | null,
   _archetype?: DeveloperArchetype | null,
   cardTheme = 'default',
-  fallbackUsername = 'torvalds'
+  fallbackUsername = 'ElXprogramming'
 ): string {
   return generateMainReadmeLayout(blocks, profile, cardTheme, fallbackUsername);
 }

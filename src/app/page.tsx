@@ -29,7 +29,7 @@ export default function GitCanvasPage() {
   const { data: session, status: authStatus } = useSession();
   const { showToast } = useToast();
 
-  const [username, setUsername] = useState('torvalds');
+  const [username, setUsername] = useState('ElXprogramming');
   const [profile, setProfile] = useState<GitHubUserProfile | null>(null);
   const [archetype, setArchetype] = useState<DeveloperArchetype | null>(null);
   const [languages, setLanguages] = useState<LanguageDistribution[]>([]);
@@ -133,10 +133,10 @@ export default function GitCanvasPage() {
     if (authStatus === 'authenticated' && session?.user) {
       const sessionUser =
         (session as any).user?.login ||
-        (session.user.name ? session.user.name.split(' ')[0] : 'torvalds');
+        (session.user.name ? session.user.name.split(' ')[0] : 'ElXprogramming');
       loadUserData(sessionUser);
     } else if (authStatus === 'unauthenticated' && !profile) {
-      loadUserData('torvalds');
+      loadUserData('ElXprogramming');
     }
   }, [authStatus, session, loadUserData, profile]);
 

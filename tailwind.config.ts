@@ -8,6 +8,10 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['var(--font-josefin-slab)', 'Josefin Slab', 'serif'],
+        serif: ['var(--font-josefin-slab)', 'Josefin Slab', 'serif'],
+      },
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
