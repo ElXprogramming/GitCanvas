@@ -5,10 +5,7 @@ import {
 } from '@/types';
 import {
   generateMainReadmeLayout,
-  getCardsBaseUrl,
 } from '@/designs/readme-layout';
-
-export { getCardsBaseUrl };
 
 /**
  * Generates the single Main Layout defined in src/designs/readme-layout.ts.

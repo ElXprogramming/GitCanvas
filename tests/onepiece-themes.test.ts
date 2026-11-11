@@ -9,7 +9,6 @@ import {
 } from '../src/designs/onepiece-stickers';
 import {
   getDesignTheme,
-  DESIGN_THEMES,
   NORMAL_THEMES,
   SHOWCASE_THEMES,
   ON_HOLD_THEMES,
@@ -23,7 +22,46 @@ import {
   isFloatingSanjiTheme,
   renderSanjiSkywalkCornerSvg,
 } from '../src/designs/card-designs';
-import { FullCanvasData } from '../src/types/stats';
+import { FullCanvasData, ProfileItemData, OverallItemData } from '../src/types/stats';
+
+function createMockProfile(override: Partial<ProfileItemData> = {}): ProfileItemData {
+  return {
+    item: 'profile',
+    username: 'luffy',
+    name: 'Monkey D. Luffy',
+    avatarUrl: 'https://avatars.githubusercontent.com/u/1?v=4',
+    bio: null,
+    company: null,
+    location: null,
+    email: null,
+    blog: null,
+    twitterUsername: null,
+    followers: 100,
+    following: 10,
+    createdAt: '2020-01-01',
+    htmlUrl: 'https://github.com/luffy',
+    ...override,
+  };
+}
+
+function createMockOverall(override: Partial<OverallItemData> = {}): OverallItemData {
+  return {
+    item: 'overall',
+    username: 'luffy',
+    label: 'overall',
+    grade: 'S',
+    score: 95,
+    breakdown: {
+      commits: 'S',
+      prs: 'S',
+      issues: 'S',
+      stars: 'S',
+      repos: 'S',
+      polyglot: 'S',
+    },
+    ...override,
+  };
+}
 
 test('ONE_PIECE_MASCOTS contains all extracted character stickers', () => {
   const characters = [
@@ -117,11 +155,11 @@ test('getDesignTheme supports mascot override for any theme', () => {
 });
 
 test('designProfileCard renders mascot borderless without rect border box', () => {
-  const profile = {
+  const profile = createMockProfile({
     username: 'luffy',
     name: 'Monkey D. Luffy',
     avatarUrl: 'https://avatars.githubusercontent.com/u/1?v=4',
-  };
+  });
 
   const svg = designProfileCard(profile, 'onepiece_gatling');
   assert.ok(svg.includes('class="p-mascot"'), 'Profile card should render mascot');
@@ -137,11 +175,11 @@ test('designProfileCard renders mascot borderless without rect border box', () =
 });
 
 test('animated mascot renders native SVG SMIL and CSS keyframe animations for GitHub Camo compatibility', () => {
-  const profile = {
+  const profile = createMockProfile({
     username: 'luffy',
     name: 'Monkey D. Luffy',
     avatarUrl: 'https://avatars.githubusercontent.com/u/1?v=4',
-  };
+  });
 
   const svg = designProfileCard(profile, 'onepiece_gatling');
   // Must contain all 4 frames
@@ -160,12 +198,7 @@ test('animated mascot renders native SVG SMIL and CSS keyframe animations for Gi
 });
 
 test('designOverallBox renders mascot in SVG when present', () => {
-  const overallData = {
-    item: 'overall' as const,
-    label: 'overall',
-    grade: 'S' as const,
-    score: 95,
-  };
+  const overallData = createMockOverall();
 
   const svgWithMascot = designOverallBox(overallData, 'straw_hat');
   assert.ok(svgWithMascot.includes('class="ov-mascot"'), 'Overall box should render mascot when present');
@@ -179,7 +212,7 @@ test('designOverallBox renders mascot in SVG when present', () => {
 
 test('designFullCanvasCard embeds profile card with mascot', () => {
   const mockData: FullCanvasData = {
-    profile: {
+    profile: createMockProfile({
       username: 'luffy',
       name: 'Monkey D. Luffy',
       avatarUrl: 'https://avatars.githubusercontent.com/u/1?v=4',
@@ -193,7 +226,7 @@ test('designFullCanvasCard embeds profile card with mascot', () => {
       following: 10,
       createdAt: '2020-01-01',
       htmlUrl: 'https://github.com/luffy',
-    },
+    }),
     projects: [],
     languages: {
       item: 'languages',
@@ -292,18 +325,13 @@ test('onepiece_straw_hat theme is configured with flapping straw hat mascot', ()
 });
 
 test('onepiece_gatling theme renders floating flapping straw hat in background with wind animation', () => {
-  const profile = {
+  const profile = createMockProfile({
     username: 'luffy',
     name: 'Monkey D. Luffy',
     avatarUrl: 'https://avatars.githubusercontent.com/u/1?v=4',
-  };
+  });
 
-  const overallData = {
-    item: 'overall' as const,
-    label: 'overall',
-    grade: 'S' as const,
-    score: 95,
-  };
+  const overallData = createMockOverall();
 
   // 1. Standalone overall box in onepiece_gatling theme (Luffy punching and hats removed)
   const overallSvg = designOverallBox(overallData, 'onepiece_gatling');
@@ -331,7 +359,7 @@ test('onepiece_gatling theme renders floating flapping straw hat in background w
 
   // 4. Full master canvas in onepiece_gatling theme (straw hats roaming all over the canvas space)
   const mockCanvasData: FullCanvasData = {
-    profile: {
+    profile: createMockProfile({
       username: 'luffy',
       name: 'Monkey D. Luffy',
       avatarUrl: 'https://avatars.githubusercontent.com/u/1?v=4',
@@ -345,7 +373,7 @@ test('onepiece_gatling theme renders floating flapping straw hat in background w
       following: 10,
       createdAt: '2020-01-01',
       htmlUrl: 'https://github.com/luffy',
-    },
+    }),
     projects: [
       {
         name: 'thousand-sunny',
@@ -467,11 +495,11 @@ test('NORMAL_THEMES, SHOWCASE_THEMES, and ON_HOLD_THEMES are correctly categoriz
 });
 
 test('wano_zoro theme renders Cross-Card Wanderer mascot with signpost, dust puff, and SMIL/CSS animations', () => {
-  const profile = {
+  const profile = createMockProfile({
     username: 'zoro',
     name: 'Roronoa Zoro',
     avatarUrl: 'https://avatars.githubusercontent.com/u/2?v=4',
-  };
+  });
 
   const profileSvg = designProfileCard(profile, 'wano_zoro', null, { width: 800 });
   assert.ok(profileSvg.includes('class="p-mascot zoro-wanderer"'), 'Profile card should render Zoro Cross-Card Wanderer');
@@ -491,11 +519,11 @@ test('wano_zoro theme renders Cross-Card Wanderer mascot with signpost, dust puf
 });
 
 test('wano_zoro theme renders falling Wano Sakura petals, bamboo leaves, and green flying slash wind trails from top-left to bottom-right', () => {
-  const profile = {
+  const profile = createMockProfile({
     username: 'zoro',
     name: 'Roronoa Zoro',
     avatarUrl: 'https://avatars.githubusercontent.com/u/2?v=4',
-  };
+  });
 
   const profileSvg = designProfileCard(profile, 'wano_zoro');
   assert.ok(profileSvg.includes('class="card-floating-sakura"'), 'Profile card should render floating sakura');
@@ -503,7 +531,7 @@ test('wano_zoro theme renders falling Wano Sakura petals, bamboo leaves, and gre
   assert.ok(profileSvg.includes('class="wind-slash-gust"'), 'Profile card should have emerald wind slash gust');
 
   const mockCanvasData: FullCanvasData = {
-    profile: {
+    profile: createMockProfile({
       username: 'zoro',
       name: 'Roronoa Zoro',
       avatarUrl: 'https://avatars.githubusercontent.com/u/2?v=4',
@@ -517,7 +545,7 @@ test('wano_zoro theme renders falling Wano Sakura petals, bamboo leaves, and gre
       following: 5,
       createdAt: '2020-01-01',
       htmlUrl: 'https://github.com/zoro',
-    },
+    }),
     projects: [],
     languages: {
       item: 'languages',
@@ -608,11 +636,11 @@ test('Sanji mascot has 4 discrete spin frames and animated metadata', () => {
 });
 
 test('onepiece_sanji theme renders floating spinning Sanji Sky Walk cyclone in background with air shockwave rings', () => {
-  const profile = {
+  const profile = createMockProfile({
     username: 'sanji',
     name: 'Vinsmoke Sanji',
     avatarUrl: 'https://avatars.githubusercontent.com/u/1?v=4',
-  };
+  });
 
   // 1. isFloatingSanjiTheme helper verification
   assert.equal(isFloatingSanjiTheme('onepiece_sanji'), true);
@@ -643,7 +671,7 @@ test('onepiece_sanji theme renders floating spinning Sanji Sky Walk cyclone in b
 
   // 3. Full master canvas in onepiece_sanji theme
   const mockCanvasData: FullCanvasData = {
-    profile: {
+    profile: createMockProfile({
       username: 'sanji',
       name: 'Vinsmoke Sanji',
       avatarUrl: 'https://avatars.githubusercontent.com/u/1?v=4',
@@ -657,7 +685,7 @@ test('onepiece_sanji theme renders floating spinning Sanji Sky Walk cyclone in b
       following: 10,
       createdAt: '2020-01-01',
       htmlUrl: 'https://github.com/sanji',
-    },
+    }),
     projects: [
       {
         name: 'all-blue-recipe-book',

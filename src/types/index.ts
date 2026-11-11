@@ -119,17 +119,6 @@ export interface PinnedProjectsSettings {
   useLivePinned?: boolean;
 }
 
-export interface SocialLinksSettings {
-  links: {
-    linkedin: string;
-    twitter: string;
-    portfolio: string;
-    discord: string;
-    youtube: string;
-    email: string;
-  };
-}
-
 export interface ReadmeBlockConfig {
   id: BlockId;
   title: string;

@@ -16,7 +16,6 @@ import {
   DeveloperArchetype,
 } from '@/types';
 import {
-  DESIGN_THEMES,
   NORMAL_THEMES,
   SHOWCASE_THEMES,
 } from '@/designs/themes';

@@ -1,21 +1,5 @@
 export type StatGrade = 'S' | 'A' | 'B' | 'C' | 'D';
 
-export type StatItemType =
-  | 'profile'
-  | 'pinned'
-  | 'languages'
-  | 'commits'
-  | 'prs'
-  | 'issues'
-  | 'stars'
-  | 'repos'
-  | 'polyglot'
-  | 'overall'
-  | 'streak'
-  | 'longest-streak'
-  | 'active-days'
-  | 'contributions';
-
 export interface ProfileItemData {
   item: 'profile';
   username: string;

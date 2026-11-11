@@ -661,7 +661,7 @@ export function renderSanjiSkywalkCornerSvg(
   width: number,
   height: number,
   groupClass = 'p-mascot',
-  isSmall = false
+  _isSmall = false
 ): string {
   const safeName = escapeXml(mascot.name);
   const gifHref = mascot.gifBase64 || mascot.avatarBase64;
@@ -725,11 +725,11 @@ export function renderMascotSvg(
 }
 
 export function renderFloatingSakura(
-  themeId?: string | null,
+  _themeId?: string | null,
   width = 800,
   height = 104,
   isMasterCanvas = false,
-  mascotId?: string | null
+  _mascotId?: string | null
 ): string {
   const sakuraPetal1 = `<path d="M 0 -10 C -3 -14 -7 -14 -9 -8 C -11 -2 -7 5 0 14 C 7 5 11 -2 9 -8 C 7 -14 3 -14 0 -10 Z" fill="#fda4af" stroke="#f472b6" stroke-width="0.8" />`;
   const sakuraPetal2 = `<path d="M -2 -8 C -7 -11 -10 -7 -9 -1 C -8 5 -2 11 3 13 C 4 8 7 2 5 -4 C 4 -8 0 -11 -2 -8 Z" fill="#fbcfe8" stroke="#f472b6" stroke-width="0.8" />`;
@@ -881,11 +881,11 @@ export function renderFloatingSakura(
 }
 
 export function renderFloatingSanji(
-  themeId?: string | null,
+  _themeId?: string | null,
   width = 800,
   height = 104,
   isMasterCanvas = false,
-  mascotId?: string | null
+  _mascotId?: string | null
 ): string {
   const numFrames = SANJI_SPIN_FRAMES.length; // 4
   const frameDur = '0.44';
