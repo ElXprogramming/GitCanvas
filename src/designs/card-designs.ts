@@ -509,7 +509,7 @@ export function renderZoroWandererSvg(
         </g>
 
         <!-- Zoro's Reaction: Question Mark and Sweat Droplet Above Head -->
-        <g transform="translate(42, 6)">
+        <g transform="translate(24, 0)">
           <g class="zoro-signpost" opacity="0">
             <animate attributeName="opacity" values="${signOpacity}" keyTimes="${signTimes}" dur="15s" repeatCount="indefinite" />
             <text x="-5" y="-10" font-size="20" font-weight="900" fill="#ef4444" font-family="sans-serif">?</text>
@@ -518,7 +518,7 @@ export function renderZoroWandererSvg(
         </g>
 
         <!-- Cartoon Dust Cloud when turning/running -->
-        <g transform="translate(42, 70)">
+        <g transform="translate(36, 70)">
           <g class="zoro-dust" opacity="0">
             <animate attributeName="opacity" values="${dustOpacity}" keyTimes="${dustTimes}" dur="15s" repeatCount="indefinite" />
             <circle cx="0" cy="4" r="5" fill="#e2e8f0" opacity="0.6" />
@@ -883,8 +883,13 @@ export function designProfileCard(
   const nickSize = hasExtra ? 15 : 18;
   const bioY = 74;
 
+  const isZoro = mascot?.id === 'zoro';
+  const mascotW = isZoro ? (width <= 460 ? 84 : 101) : 84;
+  const mascotH = isZoro ? (width <= 460 ? 70 : 84) : 84;
+  const mascotX = isZoro ? width - mascotW - 12 : width - 92;
+  const mascotY = 6;
   const mascotBadge = mascot
-    ? renderMascotSvg(mascot, width - 92, 6, 84, 84, 'p-mascot', width <= 460)
+    ? renderMascotSvg(mascot, mascotX, mascotY, mascotW, mascotH, 'p-mascot', width <= 460)
     : '';
 
   const floatingHat = !options?.isSubCard

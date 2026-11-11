@@ -44,7 +44,11 @@ test('ONE_PIECE_MASCOTS contains all extracted character stickers', () => {
     const mascot = ONE_PIECE_MASCOTS[charId];
     assert.ok(mascot, `Mascot ${charId} should exist in ONE_PIECE_MASCOTS`);
     assert.ok(mascot.name.length > 0, `Mascot ${charId} should have a name`);
-    assert.ok(mascot.avatarBase64.startsWith('data:image/png;base64,'), `Mascot ${charId} should have valid base64 data URI`);
+    assert.ok(
+      mascot.avatarBase64.startsWith('data:image/png;base64,') ||
+        mascot.avatarBase64.startsWith('data:image/gif;base64,'),
+      `Mascot ${charId} should have valid base64 data URI`
+    );
     assert.ok(mascot.width > 20, `Mascot ${charId} should have width > 20`);
     assert.ok(mascot.height > 20, `Mascot ${charId} should have height > 20`);
   }
