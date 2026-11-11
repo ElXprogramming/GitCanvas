@@ -18,6 +18,7 @@ import {
   designStreakBox,
   designFullCanvasCard,
   isFloatingSanjiTheme,
+  renderSanjiSkywalkCornerSvg,
 } from '../src/designs/card-designs';
 import { FullCanvasData } from '../src/types/stats';
 
@@ -617,8 +618,10 @@ test('onepiece_sanji theme renders floating spinning Sanji Sky Walk cyclone in b
 
   // 2. Standalone profile card in onepiece_sanji theme
   const profileSvg = designProfileCard(profile, 'onepiece_sanji');
+  assert.ok(profileSvg.includes('sanji-skywalk-corner'), 'Profile card should render Sky Walk corner mascot');
+  assert.ok(profileSvg.includes('sanji-corner-bob'), 'Profile card corner mascot should have vertical bobbing animation');
   assert.ok(profileSvg.includes('class="card-floating-sanji"'), 'Profile card should render floating Sanji cyclone');
-  assert.ok(profileSvg.includes('sanji-roam-profile'), 'Profile card floating Sanji should roam across space');
+  assert.ok(profileSvg.includes('sanji-float-up-profile'), 'Profile card floating Sanji should float from bottom to top');
   assert.ok(profileSvg.includes('class="sanji-spin-f0"'), 'Profile card should have discrete Sanji spin frame 0');
   assert.ok(profileSvg.includes('class="sanji-spin-f1"'), 'Profile card should have discrete Sanji spin frame 1');
   assert.ok(profileSvg.includes('class="sanji-spin-f2"'), 'Profile card should have discrete Sanji spin frame 2');
@@ -627,6 +630,8 @@ test('onepiece_sanji theme renders floating spinning Sanji Sky Walk cyclone in b
   assert.ok(profileSvg.includes('skywalk-gust'), 'Profile card should render Sky Walk wind gusts');
   assert.ok(profileSvg.includes('@keyframes sanjiSpin0'), 'Profile card should define CSS sanjiSpin0 keyframe');
   assert.ok(profileSvg.includes('@keyframes skywalkRingExpand'), 'Profile card should define CSS skywalkRingExpand keyframe');
+  assert.ok(profileSvg.includes('@keyframes sanjiCornerBob'), 'Profile card should define CSS sanjiCornerBob keyframe');
+  assert.ok(profileSvg.includes('@keyframes sanjiFloatUpProfile'), 'Profile card should define CSS sanjiFloatUpProfile keyframe');
 
   // 3. Full master canvas in onepiece_sanji theme
   const mockCanvasData: FullCanvasData = {
@@ -720,12 +725,31 @@ test('onepiece_sanji theme renders floating spinning Sanji Sky Walk cyclone in b
   });
 
   assert.ok(canvasSvg.includes('class="canvas-floating-sanji"'), 'Canvas should render master floating Sanji group');
-  assert.ok(canvasSvg.includes('class="sanji-roam-canvas-1"'), 'Canvas should have primary roaming Sanji cyclone');
-  assert.ok(canvasSvg.includes('class="sanji-roam-canvas-2"'), 'Canvas should have background depth roaming Sanji cyclone');
+  assert.ok(canvasSvg.includes('class="sanji-float-up-canvas-1"'), 'Canvas should have primary ascending Sanji cyclone');
+  assert.ok(canvasSvg.includes('class="sanji-float-up-canvas-2"'), 'Canvas should have secondary ascending Sanji cyclone');
+  assert.ok(canvasSvg.includes('class="sanji-float-up-canvas-3"'), 'Canvas should have tertiary ascending Sanji cyclone');
   assert.ok(canvasSvg.includes('class="skywalk-gust"'), 'Canvas should render Sky Walk air sweep gusts');
   assert.ok(canvasSvg.includes('class="skywalk-ring-1"'), 'Canvas should have expanding air compression rings');
-  assert.ok(canvasSvg.includes('@keyframes sanjiRoamCanvas1'), 'Canvas CSS should include sanjiRoamCanvas1');
-  assert.ok(canvasSvg.includes('@keyframes sanjiRoamCanvas2'), 'Canvas CSS should include sanjiRoamCanvas2');
+  assert.ok(canvasSvg.includes('@keyframes sanjiFloatUpCanvas1'), 'Canvas CSS should include sanjiFloatUpCanvas1');
+  assert.ok(canvasSvg.includes('@keyframes sanjiFloatUpCanvas2'), 'Canvas CSS should include sanjiFloatUpCanvas2');
+  assert.ok(canvasSvg.includes('@keyframes sanjiFloatUpCanvas3'), 'Canvas CSS should include sanjiFloatUpCanvas3');
+});
+
+test('renderSanjiSkywalkCornerSvg renders Sanji Sky Walk cyclone mascot with 4 spin frames, corner bobbing, and air rings', () => {
+  const mascot = ONE_PIECE_MASCOTS.sanji;
+  assert.ok(mascot);
+
+  const cornerSvg = renderSanjiSkywalkCornerSvg(mascot, 700, 10, 88, 71, 'p-mascot', false);
+  assert.ok(cornerSvg.includes('class="p-mascot sanji-skywalk-corner"'));
+  assert.ok(cornerSvg.includes('class="sanji-corner-bob"'));
+  assert.ok(cornerSvg.includes('class="sanji-spin-f0"'));
+  assert.ok(cornerSvg.includes('class="sanji-spin-f1"'));
+  assert.ok(cornerSvg.includes('class="sanji-spin-f2"'));
+  assert.ok(cornerSvg.includes('class="sanji-spin-f3"'));
+  assert.ok(cornerSvg.includes('class="skywalk-ring-1"'));
+  assert.ok(cornerSvg.includes('class="skywalk-ring-2"'));
+  assert.ok(cornerSvg.includes('animateTransform attributeName="transform" type="translate"'));
+  assert.ok(cornerSvg.includes('calcMode="discrete"'));
 });
 
 
