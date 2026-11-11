@@ -18,6 +18,7 @@ import {
   designProfileCard,
   designOverallBox,
   designStreakBox,
+  designContributionsBox,
   designFullCanvasCard,
   isFloatingSanjiTheme,
   renderSanjiSkywalkCornerSvg,
@@ -168,6 +169,9 @@ test('designOverallBox renders mascot in SVG when present', () => {
 
   const svgWithMascot = designOverallBox(overallData, 'straw_hat');
   assert.ok(svgWithMascot.includes('class="ov-mascot"'), 'Overall box should render mascot when present');
+
+  const svgSanji = designOverallBox(overallData, 'onepiece_sanji');
+  assert.ok(!svgSanji.includes('class="ov-mascot"'), 'Overall box should NOT render Sanji mascot');
 
   const svgDefault = designOverallBox(overallData, 'default');
   assert.ok(!svgDefault.includes('class="ov-mascot"'));
@@ -737,6 +741,15 @@ test('onepiece_sanji theme renders floating spinning Sanji Sky Walk cyclone in b
   assert.ok(canvasSvg.includes('@keyframes sanjiFloatUpCanvas1'), 'Canvas CSS should include sanjiFloatUpCanvas1');
   assert.ok(canvasSvg.includes('@keyframes sanjiFloatUpCanvas2'), 'Canvas CSS should include sanjiFloatUpCanvas2');
   assert.ok(canvasSvg.includes('@keyframes sanjiFloatUpCanvas3'), 'Canvas CSS should include sanjiFloatUpCanvas3');
+
+  // 4. Sanji must be excluded from overall and contributions cards
+  const overallSvg = designOverallBox(mockCanvasData.overall, 'onepiece_sanji');
+  assert.ok(!overallSvg.includes('class="ov-mascot"'), 'Overall box should not have Sanji mascot');
+  assert.ok(!overallSvg.includes('sanji-float-up-overall'), 'Overall box should not have floating Sanji');
+
+  const contribSvg = designContributionsBox(mockCanvasData.contributions, 'onepiece_sanji');
+  assert.ok(!contribSvg.includes('class="card-floating-sanji"'), 'Contributions box should not have floating Sanji');
+  assert.ok(!contribSvg.includes('sanji-float-up-contrib'), 'Contributions box should not have floating Sanji');
 });
 
 test('renderSanjiSkywalkCornerSvg renders Sanji Pinterest barrel roll animated GIF corner mascot with fallback', () => {
