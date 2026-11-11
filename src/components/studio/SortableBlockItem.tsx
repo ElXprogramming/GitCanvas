@@ -19,7 +19,6 @@ import {
   DESIGN_THEMES,
   NORMAL_THEMES,
   SHOWCASE_THEMES,
-  ON_HOLD_THEMES,
 } from '@/designs/themes';
 import {
   GripVertical,
@@ -564,7 +563,7 @@ function GitHubStatsEditor({
           onChange={(e) => onChange({ cardTheme: e.target.value })}
           className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-200"
         >
-          <optgroup label="Showcase Themes (Animated)">
+          <optgroup label="One Piece Theme">
             {SHOWCASE_THEMES.map((t) => (
               <option key={t.id} value={t.id}>
                 {t.label}
@@ -575,13 +574,6 @@ function GitHubStatsEditor({
             {NORMAL_THEMES.map((t) => (
               <option key={t.id} value={t.id}>
                 {t.label}
-              </option>
-            ))}
-          </optgroup>
-          <optgroup label="On Hold (Pending Animation)">
-            {ON_HOLD_THEMES.map((t) => (
-              <option key={t.id} value={t.id}>
-                {t.label} (On Hold)
               </option>
             ))}
           </optgroup>

@@ -198,7 +198,7 @@ export const DESIGN_THEMES: Record<string, DesignTheme> = {
   },
   wano_zoro: {
     id: 'wano_zoro',
-    label: 'Wano Zoro (Lost in Wano)',
+    label: 'Zoro',
     category: 'showcase',
     cardBg: '#071811',
     cardBgGradientEnd: '#030c08',
@@ -219,7 +219,7 @@ export const DESIGN_THEMES: Record<string, DesignTheme> = {
   },
   onepiece_gatling: {
     id: 'onepiece_gatling',
-    label: 'Luffy Gatling (Animated GIF)',
+    label: 'Luffy',
     category: 'showcase',
     cardBg: '#0b132b',
     cardBgGradientEnd: '#070c1d',
@@ -328,7 +328,7 @@ export const DESIGN_THEMES: Record<string, DesignTheme> = {
   },
   onepiece_sanji: {
     id: 'onepiece_sanji',
-    label: 'Black Leg Sanji (Pixel Art)',
+    label: 'Sanji',
     category: 'showcase',
     cardBg: '#091528',
     cardBgGradientEnd: '#040b17',
