@@ -54,19 +54,9 @@ export default function Navbar({
             <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-500 via-indigo-500 to-violet-600 flex items-center justify-center shadow-lg shadow-cyan-500/20 text-white">
               <Sparkles className="w-5 h-5 animate-pulse" />
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-extrabold text-lg tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
-                  GitCanvas
-                </span>
-                <span className="px-1.5 py-0.5 text-[10px] font-semibold tracking-wider uppercase rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
-                  Studio
-                </span>
-              </div>
-              <p className="text-[11px] text-slate-400 hidden sm:block">
-                GitHub Profile README Studio
-              </p>
-            </div>
+            <span className="font-extrabold text-lg tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
+              GitCanvas
+            </span>
           </div>
 
           {/* Quick Demo Chips */}

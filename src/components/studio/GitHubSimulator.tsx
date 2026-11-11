@@ -9,15 +9,12 @@ import {
   FileText,
   Eye,
   Code,
-  Copy,
-  Check,
-  Terminal,
 } from 'lucide-react';
 
 interface GitHubSimulatorProps {
   markdown: string;
   username: string;
-  onCopyMarkdown: () => void;
+  onCopyMarkdown?: () => void;
 }
 
 // GitHub permissive sanitize schema allowing align, width, height, target, etc.
@@ -79,16 +76,8 @@ const rehypePlugins: any = [rehypeRaw, [rehypeSanitize, githubSanitizeSchema]];
 function GitHubSimulatorComponent({
   markdown,
   username,
-  onCopyMarkdown,
 }: GitHubSimulatorProps) {
   const [viewMode, setViewMode] = useState<'preview' | 'code'>('preview');
-  const [copied, setCopied] = useState(false);
-
-  const handleCopy = () => {
-    onCopyMarkdown();
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
 
   const lineCount = markdown.split('\n').length;
 
@@ -110,7 +99,7 @@ function GitHubSimulatorComponent({
           </span>
         </div>
 
-        {/* View mode toggle & Action buttons */}
+        {/* View mode toggle */}
         <div className="flex items-center gap-1.5 self-end sm:self-auto">
           {/* Preview vs Code switch */}
           <div className="flex items-center rounded-lg bg-[#0d1117] p-0.5 border border-[#30363d]">
@@ -137,50 +126,7 @@ function GitHubSimulatorComponent({
               <span>Code</span>
             </button>
           </div>
-
-          {/* Copy Raw */}
-          <button
-            onClick={handleCopy}
-            className="flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-md bg-[#21262d] hover:bg-[#30363d] text-slate-200 border border-[#30363d] transition-colors"
-            title="Copy Raw Markdown"
-          >
-            {copied ? (
-              <Check className="w-3.5 h-3.5 text-emerald-400" />
-            ) : (
-              <Copy className="w-3.5 h-3.5 text-slate-400" />
-            )}
-            <span className="hidden md:inline">{copied ? 'Copied' : 'Raw'}</span>
-          </button>
         </div>
-      </div>
-
-      {/* One-Line API Call Quick Bar */}
-      <div className="flex items-center justify-between gap-2 px-4 py-2 bg-[#0d1117]/90 border-b border-[#30363d] text-xs">
-        <div className="flex items-center gap-2 min-w-0 flex-1">
-          <span className="shrink-0 inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 font-semibold text-[11px]">
-            <Terminal className="w-3 h-3" />
-            1-Line API
-          </span>
-          <code className="truncate font-mono text-[11px] text-slate-300 bg-[#161b22] px-2 py-1 rounded border border-[#30363d] flex-1">
-            {markdown.trim()}
-          </code>
-        </div>
-        <button
-          onClick={handleCopy}
-          className="shrink-0 flex items-center gap-1 px-2.5 py-1 text-[11px] font-medium rounded-md bg-cyan-500/15 hover:bg-cyan-500/25 text-cyan-300 border border-cyan-500/30 transition-colors"
-        >
-          {copied ? (
-            <>
-              <Check className="w-3 h-3 text-emerald-400" />
-              <span>Copied 1-Line MD</span>
-            </>
-          ) : (
-            <>
-              <Copy className="w-3 h-3" />
-              <span>Copy 1-Line API</span>
-            </>
-          )}
-        </button>
       </div>
 
       {/* Simulator Content Area */}
@@ -198,8 +144,7 @@ function GitHubSimulatorComponent({
           <div className="font-mono text-xs sm:text-sm text-slate-200 bg-[#0d1117] rounded-xl overflow-x-auto">
             <div className="flex text-slate-600 border-b border-[#30363d] pb-2 mb-3 text-[11px] justify-between">
               <span>
-                Markdown Source ({lineCount}{' '}
-                {lineCount === 1 ? 'line — Single API Call' : 'lines'})
+                Markdown Source ({lineCount} {lineCount === 1 ? 'line' : 'lines'})
               </span>
               <span>UTF-8</span>
             </div>
@@ -211,12 +156,8 @@ function GitHubSimulatorComponent({
       </div>
 
       {/* Simulator Footer Status */}
-      <div className="flex items-center justify-between px-4 py-2 bg-[#161b22] border-t border-[#30363d] text-[11px] text-slate-400">
-        <span className="flex items-center gap-1">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-          GitHub Desktop Profile Simulator
-        </span>
-        <span className="text-slate-500">
+      <div className="flex items-center justify-end px-4 py-2 bg-[#161b22] border-t border-[#30363d] text-[11px] text-slate-500">
+        <span>
           Target: github.com/{username || 'username'}/{username || 'username'}
         </span>
       </div>
