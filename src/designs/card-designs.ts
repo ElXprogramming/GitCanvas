@@ -552,13 +552,17 @@ export function getMascotAnimationStyles(
       .sanji-corner-bob { animation: sanjiCornerBob 2.4s ease-in-out infinite; transform-origin: center; }
       .skywalk-ring-1 { animation: skywalkRingExpand 1.2s ease-out infinite; transform-origin: center; }
       .skywalk-ring-2 { animation: skywalkRingExpand 1.2s ease-out infinite 0.6s; transform-origin: center; }
-      .skywalk-gust { animation: skywalkGustSweep 3.5s linear infinite; }`
+      .skywalk-gust { animation: skywalkGustSweep 3.5s linear infinite; }
+      .sanji-roll-gif { opacity: 1; }
+      .sanji-roll-static { opacity: 0; }`
     : '';
 
   return `${gatlingStyles}${strawHatStyles}${zoroStyles}${sanjiStyles}
       @media (prefers-reduced-motion: reduce) {
         .gatling-f0, .hat-f0, .sanji-spin-f0 { opacity: 1 !important; animation: none !important; }
         .gatling-f1, .gatling-f2, .gatling-f3, .hat-f1, .hat-f2, .hat-f3, .sanji-spin-f1, .sanji-spin-f2, .sanji-spin-f3 { opacity: 0 !important; animation: none !important; }
+        .sanji-roll-gif { opacity: 0 !important; }
+        .sanji-roll-static { opacity: 1 !important; }
         .wind-hat-roam-canvas-1, .wind-hat-roam-canvas-2, .wind-hat-roam-canvas-3,
         .wind-hat-roam-overall, .wind-hat-roam-profile-800, .wind-hat-roam-profile-420,
         .wind-hat-roam-contrib, .wind-hat-ambient, .wind-hat-drift, .wind-gust,
@@ -682,52 +686,14 @@ export function renderSanjiSkywalkCornerSvg(
   isSmall = false
 ): string {
   const safeName = escapeXml(mascot.name);
-  const frames = mascot.frames && mascot.frames.length > 0 ? mascot.frames : SANJI_SPIN_FRAMES;
-  const numFrames = frames.length; // 4
-  const dur = '0.44';
-  const keyTimes = '0.00;0.25;0.50;0.75;1.00';
-  const halfW = width / 2;
+  const gifHref = mascot.gifBase64 || mascot.avatarBase64;
+  const staticHref = mascot.avatarBase64;
 
-  const images = frames
-    .map((frameB64, idx) => {
-      const vals = Array.from({ length: numFrames + 1 }, (_, i) => {
-        const frameIndex = i === numFrames ? 0 : i;
-        return frameIndex === idx ? '1' : '0';
-      }).join(';');
-      const initOpacity = idx === 0 ? '1' : '0';
-      return `          <image href="${frameB64}" class="sanji-spin-f${idx}" x="0" y="0" width="${width}" height="${height}" opacity="${initOpacity}" preserveAspectRatio="xMidYMid meet" style="image-rendering: pixelated; image-rendering: crisp-edges;">
-            <animate attributeName="opacity" values="${vals}" keyTimes="${keyTimes}" dur="${dur}s" repeatCount="indefinite" calcMode="discrete" />
-          </image>`;
-    })
-    .join('\n');
-
-  const ringRx = isSmall ? 15 : 18;
-  const ringRy = isSmall ? 6 : 7;
-  const bobValues = '0,0; 0,-8; 0,-2; 0,-10; 0,-3; 0,0';
-
-  return `\n  <!-- Vinsmoke Sanji (Sky Walk Corner Mascot) -->
-  <g class="${groupClass} sanji-skywalk-corner" role="img" aria-label="${safeName} (Sky Walk Cyclone)">
+  return `\n  <!-- Vinsmoke Sanji (Pinterest Barrel Roll Corner Mascot) -->
+  <g class="${groupClass} sanji-skywalk-corner" role="img" aria-label="${safeName} (Barrel Roll)">
     <g transform="translate(${x}, ${y})">
-      <g class="sanji-corner-bob">
-        <animateTransform attributeName="transform" type="translate" values="${bobValues}" dur="2.4s" repeatCount="indefinite" />
-
-        <!-- Air Compression Shockwave Rings Beneath Feet -->
-        <g transform="translate(${halfW}, ${height + 2})">
-          <ellipse cx="0" cy="0" rx="${ringRx}" ry="${ringRy}" fill="none" stroke="rgba(56, 189, 248, 0.65)" stroke-width="1.8" class="skywalk-ring-1">
-            <animateTransform attributeName="transform" type="scale" values="0.3; 1.4" dur="1.2s" repeatCount="indefinite" />
-            <animate attributeName="opacity" values="0.85; 0.45; 0" keyTimes="0; 0.6; 1" dur="1.2s" repeatCount="indefinite" />
-          </ellipse>
-          <ellipse cx="0" cy="0" rx="${ringRx}" ry="${ringRy}" fill="none" stroke="rgba(251, 191, 36, 0.55)" stroke-width="1.4" class="skywalk-ring-2">
-            <animateTransform attributeName="transform" type="scale" values="0.3; 1.4" dur="1.2s" begin="0.6s" repeatCount="indefinite" />
-            <animate attributeName="opacity" values="0.85; 0.45; 0" keyTimes="0; 0.6; 1" dur="1.2s" begin="0.6s" repeatCount="indefinite" />
-          </ellipse>
-          <!-- Air blast arc -->
-          <path d="M -${ringRx * 0.8} 0 Q 0 ${ringRy * 1.5} ${ringRx * 0.8} 0" fill="none" stroke="rgba(255, 255, 255, 0.4)" stroke-width="1.2" stroke-linecap="round" />
-        </g>
-
-        <!-- 4-Frame Discrete Spinning Sanji Sprite -->
-${images}
-      </g>
+      <image href="${gifHref}" class="sanji-roll-gif" x="0" y="0" width="${width}" height="${height}" preserveAspectRatio="xMidYMid meet" style="image-rendering: pixelated; image-rendering: crisp-edges;" />
+      <image href="${staticHref}" class="sanji-roll-static" x="0" y="0" width="${width}" height="${height}" opacity="0" preserveAspectRatio="xMidYMid meet" style="image-rendering: pixelated; image-rendering: crisp-edges;" />
     </g>
   </g>`;
 }
@@ -1286,19 +1252,21 @@ export function designProfileCard(
   const mascotW = isZoro
     ? (width <= 460 ? 84 : 101)
     : isSanji
-    ? (width <= 460 ? 76 : 88)
+    ? (width <= 460 ? 108 : 150)
     : 84;
   const mascotH = isZoro
     ? (width <= 460 ? 70 : 84)
     : isSanji
-    ? (width <= 460 ? 61 : 71)
+    ? (width <= 460 ? 52 : 72)
     : 84;
   const mascotX = isZoro
     ? width - mascotW - 12
     : isSanji
-    ? width - mascotW - 14
+    ? width - mascotW - 12
     : width - 92;
-  const mascotY = isSanji ? 12 : 6;
+  const mascotY = isSanji
+    ? (width <= 460 ? 22 : 12)
+    : 6;
   const mascotBadge = mascot
     ? renderMascotSvg(mascot, mascotX, mascotY, mascotW, mascotH, 'p-mascot', width <= 460)
     : '';

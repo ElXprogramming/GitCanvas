@@ -4,6 +4,8 @@ import {
   ONE_PIECE_MASCOTS,
   getOnePieceMascot,
   SANJI_SPIN_FRAMES,
+  SANJI_BARREL_ROLL_GIF,
+  SANJI_BARREL_ROLL_PNG,
 } from '../src/designs/onepiece-stickers';
 import {
   getDesignTheme,
@@ -586,9 +588,11 @@ test('Sanji mascot has 4 discrete spin frames and animated metadata', () => {
   assert.ok(sanji, 'Sanji mascot should exist');
   assert.equal(sanji.isAnimated, true);
   assert.equal(sanji.frames?.length, 4);
-  assert.equal(sanji.frameDuration, 0.11);
+  assert.equal(sanji.frameDuration, 0.04);
   assert.ok(sanji.gifBase64?.startsWith('data:image/gif;base64,'));
   assert.equal(SANJI_SPIN_FRAMES.length, 4);
+  assert.ok(SANJI_BARREL_ROLL_GIF.startsWith('data:image/gif;base64,'));
+  assert.ok(SANJI_BARREL_ROLL_PNG.startsWith('data:image/png;base64,'));
 
   // Check aliases
   assert.equal(getOnePieceMascot('sanji')?.id, 'sanji');
@@ -619,7 +623,8 @@ test('onepiece_sanji theme renders floating spinning Sanji Sky Walk cyclone in b
   // 2. Standalone profile card in onepiece_sanji theme
   const profileSvg = designProfileCard(profile, 'onepiece_sanji');
   assert.ok(profileSvg.includes('sanji-skywalk-corner'), 'Profile card should render Sky Walk corner mascot');
-  assert.ok(profileSvg.includes('sanji-corner-bob'), 'Profile card corner mascot should have vertical bobbing animation');
+  assert.ok(profileSvg.includes('sanji-roll-gif'), 'Profile card should render barrel roll animated GIF');
+  assert.ok(profileSvg.includes('sanji-roll-static'), 'Profile card should render barrel roll static PNG fallback');
   assert.ok(profileSvg.includes('class="card-floating-sanji"'), 'Profile card should render floating Sanji cyclone');
   assert.ok(profileSvg.includes('sanji-float-up-profile'), 'Profile card floating Sanji should float from bottom to top');
   assert.ok(profileSvg.includes('class="sanji-spin-f0"'), 'Profile card should have discrete Sanji spin frame 0');
@@ -630,7 +635,6 @@ test('onepiece_sanji theme renders floating spinning Sanji Sky Walk cyclone in b
   assert.ok(profileSvg.includes('skywalk-gust'), 'Profile card should render Sky Walk wind gusts');
   assert.ok(profileSvg.includes('@keyframes sanjiSpin0'), 'Profile card should define CSS sanjiSpin0 keyframe');
   assert.ok(profileSvg.includes('@keyframes skywalkRingExpand'), 'Profile card should define CSS skywalkRingExpand keyframe');
-  assert.ok(profileSvg.includes('@keyframes sanjiCornerBob'), 'Profile card should define CSS sanjiCornerBob keyframe');
   assert.ok(profileSvg.includes('@keyframes sanjiFloatUpProfile'), 'Profile card should define CSS sanjiFloatUpProfile keyframe');
 
   // 3. Full master canvas in onepiece_sanji theme
@@ -735,21 +739,18 @@ test('onepiece_sanji theme renders floating spinning Sanji Sky Walk cyclone in b
   assert.ok(canvasSvg.includes('@keyframes sanjiFloatUpCanvas3'), 'Canvas CSS should include sanjiFloatUpCanvas3');
 });
 
-test('renderSanjiSkywalkCornerSvg renders Sanji Sky Walk cyclone mascot with 4 spin frames, corner bobbing, and air rings', () => {
+test('renderSanjiSkywalkCornerSvg renders Sanji Pinterest barrel roll animated GIF corner mascot with fallback', () => {
   const mascot = ONE_PIECE_MASCOTS.sanji;
   assert.ok(mascot);
 
-  const cornerSvg = renderSanjiSkywalkCornerSvg(mascot, 700, 10, 88, 71, 'p-mascot', false);
+  const cornerSvg = renderSanjiSkywalkCornerSvg(mascot, 638, 12, 150, 72, 'p-mascot', false);
   assert.ok(cornerSvg.includes('class="p-mascot sanji-skywalk-corner"'));
-  assert.ok(cornerSvg.includes('class="sanji-corner-bob"'));
-  assert.ok(cornerSvg.includes('class="sanji-spin-f0"'));
-  assert.ok(cornerSvg.includes('class="sanji-spin-f1"'));
-  assert.ok(cornerSvg.includes('class="sanji-spin-f2"'));
-  assert.ok(cornerSvg.includes('class="sanji-spin-f3"'));
-  assert.ok(cornerSvg.includes('class="skywalk-ring-1"'));
-  assert.ok(cornerSvg.includes('class="skywalk-ring-2"'));
-  assert.ok(cornerSvg.includes('animateTransform attributeName="transform" type="translate"'));
-  assert.ok(cornerSvg.includes('calcMode="discrete"'));
+  assert.ok(cornerSvg.includes('class="sanji-roll-gif"'));
+  assert.ok(cornerSvg.includes('class="sanji-roll-static"'));
+  assert.ok(cornerSvg.includes('role="img"'));
+  assert.ok(cornerSvg.includes('aria-label="Sanji (Barrel Roll)"'));
+  assert.ok(cornerSvg.includes('width="150"'));
+  assert.ok(cornerSvg.includes('height="72"'));
 });
 
 
