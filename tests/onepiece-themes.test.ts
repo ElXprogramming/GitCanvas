@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {
   ONE_PIECE_MASCOTS,
   getOnePieceMascot,
+  SANJI_SPIN_FRAMES,
 } from '../src/designs/onepiece-stickers';
 import {
   getDesignTheme,
@@ -16,6 +17,7 @@ import {
   designOverallBox,
   designStreakBox,
   designFullCanvasCard,
+  isFloatingSanjiTheme,
 } from '../src/designs/card-designs';
 import { FullCanvasData } from '../src/types/stats';
 
@@ -576,4 +578,153 @@ test('wano_zoro theme renders falling Wano Sakura petals, bamboo leaves, and gre
   assert.ok(canvasSvg.includes('@keyframes windSlashGust'), 'Canvas CSS should include windSlashGust');
   assert.ok(canvasSvg.includes('zoro-wanderer'), 'Canvas should embed Zoro wanderer mascot');
 });
+
+test('Sanji mascot has 4 discrete spin frames and animated metadata', () => {
+  const sanji = ONE_PIECE_MASCOTS.sanji;
+  assert.ok(sanji, 'Sanji mascot should exist');
+  assert.equal(sanji.isAnimated, true);
+  assert.equal(sanji.frames?.length, 4);
+  assert.equal(sanji.frameDuration, 0.11);
+  assert.ok(sanji.gifBase64?.startsWith('data:image/gif;base64,'));
+  assert.equal(SANJI_SPIN_FRAMES.length, 4);
+
+  // Check aliases
+  assert.equal(getOnePieceMascot('sanji')?.id, 'sanji');
+  assert.equal(getOnePieceMascot('black_leg')?.id, 'sanji');
+  assert.equal(getOnePieceMascot('sky_walk')?.id, 'sanji');
+  assert.equal(getOnePieceMascot('skywalk')?.id, 'sanji');
+  assert.equal(getOnePieceMascot('blue_walk')?.id, 'sanji');
+  assert.equal(getOnePieceMascot('diable_jambe')?.id, 'sanji');
+});
+
+test('onepiece_sanji theme renders floating spinning Sanji Sky Walk cyclone in background with air shockwave rings', () => {
+  const profile = {
+    username: 'sanji',
+    name: 'Vinsmoke Sanji',
+    avatarUrl: 'https://avatars.githubusercontent.com/u/1?v=4',
+  };
+
+  // 1. isFloatingSanjiTheme helper verification
+  assert.equal(isFloatingSanjiTheme('onepiece_sanji'), true);
+  assert.equal(isFloatingSanjiTheme('sanji'), true);
+  assert.equal(isFloatingSanjiTheme('black_leg'), true);
+  assert.equal(isFloatingSanjiTheme('sky_walk'), true);
+  assert.equal(isFloatingSanjiTheme('skywalk'), true);
+  assert.equal(isFloatingSanjiTheme('blue_walk'), true);
+  assert.equal(isFloatingSanjiTheme('diable_jambe'), true);
+  assert.equal(isFloatingSanjiTheme('default'), false);
+
+  // 2. Standalone profile card in onepiece_sanji theme
+  const profileSvg = designProfileCard(profile, 'onepiece_sanji');
+  assert.ok(profileSvg.includes('class="card-floating-sanji"'), 'Profile card should render floating Sanji cyclone');
+  assert.ok(profileSvg.includes('sanji-roam-profile'), 'Profile card floating Sanji should roam across space');
+  assert.ok(profileSvg.includes('class="sanji-spin-f0"'), 'Profile card should have discrete Sanji spin frame 0');
+  assert.ok(profileSvg.includes('class="sanji-spin-f1"'), 'Profile card should have discrete Sanji spin frame 1');
+  assert.ok(profileSvg.includes('class="sanji-spin-f2"'), 'Profile card should have discrete Sanji spin frame 2');
+  assert.ok(profileSvg.includes('class="sanji-spin-f3"'), 'Profile card should have discrete Sanji spin frame 3');
+  assert.ok(profileSvg.includes('skywalk-ring-1'), 'Profile card should render concentric expanding air shockwave rings');
+  assert.ok(profileSvg.includes('skywalk-gust'), 'Profile card should render Sky Walk wind gusts');
+  assert.ok(profileSvg.includes('@keyframes sanjiSpin0'), 'Profile card should define CSS sanjiSpin0 keyframe');
+  assert.ok(profileSvg.includes('@keyframes skywalkRingExpand'), 'Profile card should define CSS skywalkRingExpand keyframe');
+
+  // 3. Full master canvas in onepiece_sanji theme
+  const mockCanvasData: FullCanvasData = {
+    profile: {
+      username: 'sanji',
+      name: 'Vinsmoke Sanji',
+      avatarUrl: 'https://avatars.githubusercontent.com/u/1?v=4',
+      bio: 'Chef of the Straw Hat Pirates',
+      company: 'Baratie / Straw Hat Pirates',
+      location: 'All Blue',
+      email: null,
+      blog: null,
+      twitterUsername: null,
+      followers: 320,
+      following: 10,
+      createdAt: '2020-01-01',
+      htmlUrl: 'https://github.com/sanji',
+    },
+    projects: [
+      {
+        name: 'all-blue-recipe-book',
+        description: 'Legendary recipes from the sea of dreams',
+        url: 'https://github.com/sanji/all-blue-recipe-book',
+        homepageUrl: null,
+        stars: 777,
+        forks: 120,
+        language: 'TypeScript',
+        languageColor: '#3178c6',
+      },
+    ],
+    languages: {
+      item: 'languages',
+      username: 'sanji',
+      languages: [
+        { name: 'TypeScript', bytes: 7000, percentage: 70, color: '#3178c6' },
+        { name: 'Rust', bytes: 3000, percentage: 30, color: '#dea584' },
+      ],
+      totalBytes: 10000,
+      totalLanguagesCount: 2,
+    },
+    commits: { item: 'commits', username: 'sanji', label: 'commits', value: 450, grade: 'S' },
+    prs: { item: 'prs', username: 'sanji', label: 'PR', value: 45, grade: 'S' },
+    issues: { item: 'issues', username: 'sanji', label: 'issues', value: 20, grade: 'A' },
+    stars: { item: 'stars', username: 'sanji', label: 'stars earned', value: 350, grade: 'S' },
+    repos: { item: 'repos', username: 'sanji', label: 'Repos', value: 16, grade: 'A' },
+    polyglot: { item: 'polyglot', username: 'sanji', label: 'Polyglot', value: 6, grade: 'B' },
+    overall: {
+      item: 'overall',
+      username: 'sanji',
+      label: 'overall',
+      grade: 'S',
+      score: 98,
+      breakdown: { commits: 'S', prs: 'S', issues: 'A', stars: 'S', repos: 'A', polyglot: 'B' },
+    },
+    streak: {
+      item: 'streak',
+      username: 'sanji',
+      label: 'current streak',
+      value: 65,
+      unit: 'days',
+      formatted: '65 days',
+    },
+    longestStreak: {
+      item: 'longest-streak',
+      username: 'sanji',
+      label: 'longest streak',
+      value: 120,
+      unit: 'days',
+      formatted: '120 days',
+    },
+    activeDays: {
+      item: 'active-days',
+      username: 'sanji',
+      label: 'active days',
+      value: 300,
+      unit: 'days',
+      formatted: '300 days',
+    },
+    contributions: {
+      item: 'contributions',
+      username: 'sanji',
+      label: 'contributions last year',
+      totalCommits: 1250,
+      rightLabel: '1,250 contributions',
+      weeks: [],
+    },
+  };
+
+  const canvasSvg = designFullCanvasCard(mockCanvasData, {
+    theme: 'onepiece_sanji',
+  });
+
+  assert.ok(canvasSvg.includes('class="canvas-floating-sanji"'), 'Canvas should render master floating Sanji group');
+  assert.ok(canvasSvg.includes('class="sanji-roam-canvas-1"'), 'Canvas should have primary roaming Sanji cyclone');
+  assert.ok(canvasSvg.includes('class="sanji-roam-canvas-2"'), 'Canvas should have background depth roaming Sanji cyclone');
+  assert.ok(canvasSvg.includes('class="skywalk-gust"'), 'Canvas should render Sky Walk air sweep gusts');
+  assert.ok(canvasSvg.includes('class="skywalk-ring-1"'), 'Canvas should have expanding air compression rings');
+  assert.ok(canvasSvg.includes('@keyframes sanjiRoamCanvas1'), 'Canvas CSS should include sanjiRoamCanvas1');
+  assert.ok(canvasSvg.includes('@keyframes sanjiRoamCanvas2'), 'Canvas CSS should include sanjiRoamCanvas2');
+});
+
 

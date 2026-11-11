@@ -500,7 +500,15 @@ export function getDesignTheme(
     baseTheme = DESIGN_THEMES.onepiece_ace;
   } else if (key === 'law' || key === 'heart_pirates' || key === 'trafalgar') {
     baseTheme = DESIGN_THEMES.onepiece_law;
-  } else if (key === 'sanji' || key === 'all_blue' || key === 'black_leg') {
+  } else if (
+    key === 'sanji' ||
+    key === 'all_blue' ||
+    key === 'black_leg' ||
+    key === 'sky_walk' ||
+    key === 'skywalk' ||
+    key === 'blue_walk' ||
+    key === 'diable_jambe'
+  ) {
     baseTheme = DESIGN_THEMES.onepiece_sanji;
   } else if (key === 'brook' || key === 'soul_king') {
     baseTheme = DESIGN_THEMES.onepiece_brook;

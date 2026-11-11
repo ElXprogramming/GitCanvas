@@ -11,7 +11,7 @@ import {
 } from '@/types/stats';
 import { getDesignTheme } from './themes';
 import { getDesignFont, getSvgFontImport } from './fonts';
-import { OnePieceMascot, STRAW_HAT_FRAMES } from './onepiece-stickers';
+import { OnePieceMascot, STRAW_HAT_FRAMES, SANJI_SPIN_FRAMES } from './onepiece-stickers';
 
 const XML_ESCAPE_MAP: Record<string, string> = {
   '&': '&amp;',
@@ -116,6 +116,29 @@ export function isFloatingSakuraTheme(
   );
 }
 
+export function isFloatingSanjiTheme(
+  themeId?: string | null,
+  mascotId?: string | null
+): boolean {
+  const t = (themeId || '').toLowerCase().trim();
+  const m = (mascotId || '').toLowerCase().trim();
+  return (
+    t === 'onepiece_sanji' ||
+    t === 'sanji' ||
+    t === 'black_leg' ||
+    t === 'all_blue' ||
+    t === 'sky_walk' ||
+    t === 'skywalk' ||
+    t === 'blue_walk' ||
+    t === 'diable_jambe' ||
+    m === 'sanji' ||
+    m === 'black_leg' ||
+    m === 'sky_walk' ||
+    m === 'skywalk' ||
+    m === 'blue_walk'
+  );
+}
+
 export function getMascotAnimationStyles(
   mascot?: OnePieceMascot | null,
   themeId?: string | null
@@ -124,15 +147,16 @@ export function getMascotAnimationStyles(
     mascot?.id === 'luffy_gatling' ||
     themeId === 'onepiece_gatling' ||
     themeId === 'gatling' ||
-    (mascot?.frames && mascot.frames.length > 1 && mascot.id !== 'straw_hat');
+    (mascot?.frames && mascot.frames.length > 1 && mascot.id !== 'straw_hat' && mascot.id !== 'sanji');
 
   const hasStrawHat =
     mascot?.id === 'straw_hat' ||
     isFloatingHatTheme(themeId, mascot?.id);
 
   const hasZoro = isFloatingSakuraTheme(themeId, mascot?.id);
+  const hasSanji = isFloatingSanjiTheme(themeId, mascot?.id);
 
-  if (!hasGatling && !hasStrawHat && !hasZoro && (!mascot?.frames || mascot.frames.length <= 1)) {
+  if (!hasGatling && !hasStrawHat && !hasZoro && !hasSanji && (!mascot?.frames || mascot.frames.length <= 1)) {
     return '';
   }
 
@@ -427,13 +451,92 @@ export function getMascotAnimationStyles(
       .sakura-fall-overall-2 { animation: sakuraFallOverall2 11s ease-in-out infinite; transform-origin: 0 0; }`
     : '';
 
-  return `${gatlingStyles}${strawHatStyles}${zoroStyles}
+  const sanjiStyles = hasSanji
+    ? `
+      /* ==================== SANJI SKY WALK CYCLONE ==================== */
+      @keyframes sanjiSpin0 { 0%, 25% { opacity: 1; } 25.01%, 100% { opacity: 0; } }
+      @keyframes sanjiSpin1 { 0%, 24.99% { opacity: 0; } 25%, 50% { opacity: 1; } 50.01%, 100% { opacity: 0; } }
+      @keyframes sanjiSpin2 { 0%, 49.99% { opacity: 0; } 50%, 75% { opacity: 1; } 75.01%, 100% { opacity: 0; } }
+      @keyframes sanjiSpin3 { 0%, 74.99% { opacity: 0; } 75%, 100% { opacity: 1; } }
+      .sanji-spin-f0 { animation: sanjiSpin0 0.44s steps(1) infinite; }
+      .sanji-spin-f1 { animation: sanjiSpin1 0.44s steps(1) infinite; }
+      .sanji-spin-f2 { animation: sanjiSpin2 0.44s steps(1) infinite; }
+      .sanji-spin-f3 { animation: sanjiSpin3 0.44s steps(1) infinite; }
+      @keyframes sanjiRoamCanvas1 {
+        0%   { transform: translate(60px, 60px) rotate(-5deg); }
+        22%  { transform: translate(400px, 180px) rotate(8deg); }
+        45%  { transform: translate(720px, 90px) rotate(-6deg); }
+        68%  { transform: translate(520px, 380px) rotate(10deg); }
+        85%  { transform: translate(150px, 280px) rotate(-8deg); }
+        100% { transform: translate(60px, 60px) rotate(-5deg); }
+      }
+      @keyframes sanjiRoamCanvas2 {
+        0%   { transform: translate(680px, 460px) rotate(6deg); }
+        25%  { transform: translate(340px, 620px) rotate(-8deg); }
+        50%  { transform: translate(90px, 480px) rotate(10deg); }
+        75%  { transform: translate(460px, 720px) rotate(-6deg); }
+        100% { transform: translate(680px, 460px) rotate(6deg); }
+      }
+      @keyframes sanjiRoamProfile800 {
+        0%   { transform: translate(110px, 14px) rotate(-4deg); }
+        25%  { transform: translate(350px, 58px) rotate(8deg); }
+        50%  { transform: translate(680px, 16px) rotate(-6deg); }
+        75%  { transform: translate(480px, 56px) rotate(6deg); }
+        100% { transform: translate(110px, 14px) rotate(-4deg); }
+      }
+      @keyframes sanjiRoamProfile420 {
+        0%   { transform: translate(105px, 14px) rotate(-4deg); }
+        25%  { transform: translate(195px, 58px) rotate(8deg); }
+        50%  { transform: translate(310px, 16px) rotate(-6deg); }
+        75%  { transform: translate(215px, 56px) rotate(6deg); }
+        100% { transform: translate(105px, 14px) rotate(-4deg); }
+      }
+      @keyframes sanjiRoamContrib {
+        0%   { transform: translate(40px, 20px) rotate(-5deg); }
+        25%  { transform: translate(260px, 110px) rotate(8deg); }
+        50%  { transform: translate(500px, 24px) rotate(-6deg); }
+        75%  { transform: translate(710px, 105px) rotate(7deg); }
+        100% { transform: translate(40px, 20px) rotate(-5deg); }
+      }
+      @keyframes sanjiRoamOverall {
+        0%   { transform: translate(16px, 18px) rotate(-4deg); }
+        25%  { transform: translate(100px, 62px) rotate(6deg); }
+        50%  { transform: translate(190px, 20px) rotate(-6deg); }
+        75%  { transform: translate(125px, 46px) rotate(5deg); }
+        100% { transform: translate(16px, 18px) rotate(-4deg); }
+      }
+      @keyframes skywalkRingExpand {
+        0%   { transform: scale(0.3); opacity: 0.85; }
+        60%  { opacity: 0.45; }
+        100% { transform: scale(1.4); opacity: 0; }
+      }
+      @keyframes skywalkGustSweep {
+        0%   { opacity: 0.15; stroke-dashoffset: 40; }
+        50%  { opacity: 0.45; }
+        100% { opacity: 0.15; stroke-dashoffset: -40; }
+      }
+      .sanji-roam-canvas-1 { animation: sanjiRoamCanvas1 20s ease-in-out infinite; transform-origin: 24px 19px; }
+      .sanji-roam-canvas-2 { animation: sanjiRoamCanvas2 24s ease-in-out infinite; transform-origin: 19px 15px; }
+      .sanji-roam-profile-800 { animation: sanjiRoamProfile800 15s ease-in-out infinite; transform-origin: 21px 17px; }
+      .sanji-roam-profile-420 { animation: sanjiRoamProfile420 12s ease-in-out infinite; transform-origin: 21px 17px; }
+      .sanji-roam-contrib { animation: sanjiRoamContrib 16s ease-in-out infinite; transform-origin: 22px 18px; }
+      .sanji-roam-overall { animation: sanjiRoamOverall 11s ease-in-out infinite; transform-origin: 18px 15px; }
+      .skywalk-ring-1 { animation: skywalkRingExpand 1.2s ease-out infinite; transform-origin: center; }
+      .skywalk-ring-2 { animation: skywalkRingExpand 1.2s ease-out infinite 0.6s; transform-origin: center; }
+      .skywalk-gust { animation: skywalkGustSweep 3.5s linear infinite; }`
+    : '';
+
+  return `${gatlingStyles}${strawHatStyles}${zoroStyles}${sanjiStyles}
       @media (prefers-reduced-motion: reduce) {
-        .gatling-f0, .hat-f0 { opacity: 1 !important; animation: none !important; }
-        .gatling-f1, .gatling-f2, .gatling-f3, .hat-f1, .hat-f2, .hat-f3 { opacity: 0 !important; animation: none !important; }
+        .gatling-f0, .hat-f0, .sanji-spin-f0 { opacity: 1 !important; animation: none !important; }
+        .gatling-f1, .gatling-f2, .gatling-f3, .hat-f1, .hat-f2, .hat-f3, .sanji-spin-f1, .sanji-spin-f2, .sanji-spin-f3 { opacity: 0 !important; animation: none !important; }
         .wind-hat-roam-canvas-1, .wind-hat-roam-canvas-2, .wind-hat-roam-canvas-3,
         .wind-hat-roam-overall, .wind-hat-roam-profile-800, .wind-hat-roam-profile-420,
-        .wind-hat-roam-contrib, .wind-hat-ambient, .wind-hat-drift, .wind-gust {
+        .wind-hat-roam-contrib, .wind-hat-ambient, .wind-hat-drift, .wind-gust,
+        .sanji-roam-canvas-1, .sanji-roam-canvas-2,
+        .sanji-roam-profile-800, .sanji-roam-profile-420,
+        .sanji-roam-contrib, .sanji-roam-overall,
+        .skywalk-ring-1, .skywalk-ring-2, .skywalk-gust {
           animation: none !important;
         }
         .zoro-wander-track-800, .zoro-wander-track-420 {
@@ -561,7 +664,7 @@ export function renderMascotSvg(
     const keyTimes = Array.from({ length: numFrames + 1 }, (_, i) =>
       (i / numFrames).toFixed(2)
     ).join(';');
-    const frameClassPrefix = mascot.id === 'straw_hat' ? 'hat-f' : 'gatling-f';
+    const frameClassPrefix = mascot.id === 'straw_hat' ? 'hat-f' : mascot.id === 'sanji' ? 'sanji-spin-f' : 'gatling-f';
 
     const images = mascot.frames
       .map((frameB64, idx) => {
@@ -738,6 +841,150 @@ export function renderFloatingSakura(
   </g>`;
 }
 
+export function renderFloatingSanji(
+  themeId?: string | null,
+  width = 800,
+  height = 104,
+  isMasterCanvas = false,
+  mascotId?: string | null
+): string {
+  const numFrames = SANJI_SPIN_FRAMES.length; // 4
+  const frameDur = '0.44';
+  const keyTimes = '0.00;0.25;0.50;0.75;1.00';
+
+  const renderSanjiFrames = (w: number, h: number) => {
+    return SANJI_SPIN_FRAMES.map((frameB64, idx) => {
+      const vals = Array.from({ length: numFrames + 1 }, (_, i) => {
+        const frameIndex = i === numFrames ? 0 : i;
+        return frameIndex === idx ? '1' : '0';
+      }).join(';');
+      const initOpacity = idx === 0 ? '1' : '0';
+      return `<image href="${frameB64}" class="sanji-spin-f${idx}" x="0" y="0" width="${w}" height="${h}" opacity="${initOpacity}" preserveAspectRatio="xMidYMid meet" style="image-rendering: pixelated; image-rendering: crisp-edges;">
+        <animate attributeName="opacity" values="${vals}" keyTimes="${keyTimes}" dur="${frameDur}s" repeatCount="indefinite" calcMode="discrete" />
+      </image>`;
+    }).join('\n      ');
+  };
+
+  const renderShockwaveRings = (cx: number, cy: number, rx = 14, ry = 6) => {
+    return `<!-- Sky Walk Air Compression Shockwave Rings -->
+      <g transform="translate(${cx}, ${cy})">
+        <ellipse cx="0" cy="0" rx="${rx}" ry="${ry}" fill="none" stroke="rgba(56, 189, 248, 0.45)" stroke-width="1.5" class="skywalk-ring-1">
+          <animateTransform attributeName="transform" type="scale" values="0.3; 1.4" dur="1.2s" repeatCount="indefinite" />
+          <animate attributeName="opacity" values="0.85; 0.45; 0" keyTimes="0; 0.6; 1" dur="1.2s" repeatCount="indefinite" />
+        </ellipse>
+        <ellipse cx="0" cy="0" rx="${rx}" ry="${ry}" fill="none" stroke="rgba(251, 191, 36, 0.4)" stroke-width="1.2" class="skywalk-ring-2">
+          <animateTransform attributeName="transform" type="scale" values="0.3; 1.4" dur="1.2s" begin="0.6s" repeatCount="indefinite" />
+          <animate attributeName="opacity" values="0.85; 0.45; 0" keyTimes="0; 0.6; 1" dur="1.2s" begin="0.6s" repeatCount="indefinite" />
+        </ellipse>
+      </g>`;
+  };
+
+  if (isMasterCanvas) {
+    const s1W = 48;
+    const s1H = 38;
+    const s1Y_mid = Math.floor(height * 0.42);
+    const s1Y_low = Math.floor(height * 0.32);
+
+    const s2W = 38;
+    const s2H = 30;
+    const s2Y_0 = Math.floor(height * 0.52);
+    const s2Y_1 = Math.floor(height * 0.70);
+    const s2Y_2 = Math.floor(height * 0.56);
+    const s2Y_3 = Math.floor(height * 0.82);
+
+    const windTrail1 = `<path d="M 20 70 Q 260 160 480 60 T 820 120" stroke="rgba(56, 189, 248, 0.35)" stroke-width="1.8" stroke-linecap="round" fill="none" stroke-dasharray="14 10" class="skywalk-gust" />`;
+    const windTrail2 = `<path d="M 40 ${Math.floor(height * 0.42)} Q 300 ${Math.floor(height * 0.32)} 540 ${Math.floor(height * 0.46)} T 800 ${Math.floor(height * 0.38)}" stroke="rgba(251, 191, 36, 0.3)" stroke-width="1.8" stroke-linecap="round" fill="none" stroke-dasharray="14 10" class="skywalk-gust" />`;
+    const windTrail3 = `<path d="M 50 ${Math.floor(height * 0.78)} Q 320 ${Math.floor(height * 0.86)} 560 ${Math.floor(height * 0.72)} T 810 ${Math.floor(height * 0.80)}" stroke="rgba(6, 182, 212, 0.32)" stroke-width="1.6" stroke-linecap="round" fill="none" stroke-dasharray="12 8" class="skywalk-gust" />`;
+
+    return `\n  <!-- Master Profile Canvas Floating Sanji Sky Walk Cyclone (Roaming Full Space) -->
+  <g class="canvas-floating-sanji" role="img" aria-label="Sanji Sky Walk Cyclone Floating in Background">
+    ${windTrail1}
+    ${windTrail2}
+    ${windTrail3}
+    <g class="sanji-roam-canvas-1" transform="translate(60, 60)" opacity="0.95">
+      <animateTransform attributeName="transform" type="translate" values="60,60; 400,180; 720,90; 520,${s1Y_mid}; 150,${s1Y_low}; 60,60" dur="20s" repeatCount="indefinite" />
+      <g transform="rotate(-5 ${s1W / 2} ${s1H / 2})">
+        <animateTransform attributeName="transform" type="rotate" values="-5 ${s1W / 2} ${s1H / 2}; 8 ${s1W / 2} ${s1H / 2}; -6 ${s1W / 2} ${s1H / 2}; 10 ${s1W / 2} ${s1H / 2}; -8 ${s1W / 2} ${s1H / 2}; -5 ${s1W / 2} ${s1H / 2}" dur="20s" repeatCount="indefinite" additive="sum" />
+        ${renderShockwaveRings(s1W / 2, s1H + 4, 16, 6)}
+        ${renderSanjiFrames(s1W, s1H)}
+      </g>
+    </g>
+    <g class="sanji-roam-canvas-2" transform="translate(680, ${s2Y_0})" opacity="0.85">
+      <animateTransform attributeName="transform" type="translate" values="680,${s2Y_0}; 340,${s2Y_1}; 90,${s2Y_2}; 460,${s2Y_3}; 680,${s2Y_0}" dur="24s" repeatCount="indefinite" />
+      <g transform="rotate(6 ${s2W / 2} ${s2H / 2})">
+        <animateTransform attributeName="transform" type="rotate" values="6 ${s2W / 2} ${s2H / 2}; -8 ${s2W / 2} ${s2H / 2}; 10 ${s2W / 2} ${s2H / 2}; -6 ${s2W / 2} ${s2H / 2}; 6 ${s2W / 2} ${s2H / 2}" dur="24s" repeatCount="indefinite" additive="sum" />
+        ${renderShockwaveRings(s2W / 2, s2H + 3, 13, 5)}
+        ${renderSanjiFrames(s2W, s2H)}
+      </g>
+    </g>
+  </g>`;
+  }
+
+  // Single card floating Sanji roaming all over the card space
+  if (width <= 260) {
+    // Overall / Streak box (258 x 104)
+    const sW = 36;
+    const sH = 29;
+    const trail = `<path d="M 12 30 Q 82 78 152 24 T 244 48" stroke="rgba(56, 189, 248, 0.32)" stroke-width="1.6" stroke-linecap="round" fill="none" stroke-dasharray="8 6" class="skywalk-gust" />`;
+    return `\n  <!-- Card Background Floating Sanji Sky Walk Cyclone -->
+  <g class="card-floating-sanji" role="img" aria-label="Sanji Sky Walk Cyclone Floating in Background">
+    ${trail}
+    <g class="sanji-roam-overall" transform="translate(16, 18)" opacity="0.88">
+      <animateTransform attributeName="transform" type="translate" values="16,18; 100,62; 190,20; 125,46; 16,18" dur="11s" repeatCount="indefinite" />
+      <g transform="rotate(-4 ${sW / 2} ${sH / 2})">
+        <animateTransform attributeName="transform" type="rotate" values="-4 ${sW / 2} ${sH / 2}; 6 ${sW / 2} ${sH / 2}; -6 ${sW / 2} ${sH / 2}; 5 ${sW / 2} ${sH / 2}; -4 ${sW / 2} ${sH / 2}" dur="11s" repeatCount="indefinite" additive="sum" />
+        ${renderShockwaveRings(sW / 2, sH + 2, 12, 5)}
+        ${renderSanjiFrames(sW, sH)}
+      </g>
+    </g>
+  </g>`;
+  }
+
+  if (height <= 100) {
+    // Profile card (800x96 or 420x96)
+    const sW = 42;
+    const sH = 34;
+    const isSmall = width <= 460;
+    const p1X = isSmall ? 195 : 350;
+    const p2X = isSmall ? 310 : 680;
+    const p3X = isSmall ? 215 : 480;
+    const cls = isSmall ? 'sanji-roam-profile-420' : 'sanji-roam-profile-800';
+    const dur = isSmall ? '12s' : '15s';
+    const trail = `<path d="M 80 32 Q ${Math.floor(width * 0.4)} 78 ${Math.floor(width * 0.7)} 22 T ${width - 40} 52" stroke="rgba(56, 189, 248, 0.32)" stroke-width="1.6" stroke-linecap="round" fill="none" stroke-dasharray="10 8" class="skywalk-gust" />`;
+
+    return `\n  <!-- Profile Card Background Floating Sanji Sky Walk Cyclone -->
+  <g class="card-floating-sanji" role="img" aria-label="Sanji Sky Walk Cyclone Floating in Background">
+    ${trail}
+    <g class="${cls}" transform="translate(110, 14)" opacity="0.88">
+      <animateTransform attributeName="transform" type="translate" values="110,14; ${p1X},58; ${p2X},16; ${p3X},56; 110,14" dur="${dur}" repeatCount="indefinite" />
+      <g transform="rotate(-4 ${sW / 2} ${sH / 2})">
+        <animateTransform attributeName="transform" type="rotate" values="-4 ${sW / 2} ${sH / 2}; 8 ${sW / 2} ${sH / 2}; -6 ${sW / 2} ${sH / 2}; 6 ${sW / 2} ${sH / 2}; -4 ${sW / 2} ${sH / 2}" dur="${dur}" repeatCount="indefinite" additive="sum" />
+        ${renderShockwaveRings(sW / 2, sH + 3, 14, 5)}
+        ${renderSanjiFrames(sW, sH)}
+      </g>
+    </g>
+  </g>`;
+  }
+
+  // Contributions card (800 x 166) or general wide cards
+  const sW = 44;
+  const sH = 35;
+  const trail = `<path d="M 25 34 Q 240 120 460 28 T 780 82" stroke="rgba(56, 189, 248, 0.32)" stroke-width="1.6" stroke-linecap="round" fill="none" stroke-dasharray="12 8" class="skywalk-gust" />`;
+
+  return `\n  <!-- Contributions Card Background Floating Sanji Sky Walk Cyclone -->
+  <g class="card-floating-sanji" role="img" aria-label="Sanji Sky Walk Cyclone Floating in Background">
+    ${trail}
+    <g class="sanji-roam-contrib" transform="translate(40, 20)" opacity="0.88">
+      <animateTransform attributeName="transform" type="translate" values="40,20; 260,110; 500,24; 710,105; 40,20" dur="16s" repeatCount="indefinite" />
+      <g transform="rotate(-5 ${sW / 2} ${sH / 2})">
+        <animateTransform attributeName="transform" type="rotate" values="-5 ${sW / 2} ${sH / 2}; 8 ${sW / 2} ${sH / 2}; -6 ${sW / 2} ${sH / 2}; 7 ${sW / 2} ${sH / 2}; -5 ${sW / 2} ${sH / 2}" dur="16s" repeatCount="indefinite" additive="sum" />
+        ${renderShockwaveRings(sW / 2, sH + 3, 15, 6)}
+        ${renderSanjiFrames(sW, sH)}
+      </g>
+    </g>
+  </g>`;
+}
+
 export function renderFloatingBackgroundHats(
   themeId?: string | null,
   width = 800,
@@ -747,6 +994,9 @@ export function renderFloatingBackgroundHats(
 ): string {
   if (isFloatingSakuraTheme(themeId, mascotId)) {
     return renderFloatingSakura(themeId, width, height, isMasterCanvas, mascotId);
+  }
+  if (isFloatingSanjiTheme(themeId, mascotId)) {
+    return renderFloatingSanji(themeId, width, height, isMasterCanvas, mascotId);
   }
   if (!isFloatingHatTheme(themeId, mascotId)) return '';
 
