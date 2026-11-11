@@ -440,18 +440,19 @@ test('NORMAL_THEMES, SHOWCASE_THEMES, and ON_HOLD_THEMES are correctly categoriz
     assert.equal(t.mascot, undefined);
   }
 
-  // Showcase: Luffy Gatling and Wano Zoro are showcased
-  assert.equal(SHOWCASE_THEMES.length, 2);
+  // Showcase: Luffy Gatling, Wano Zoro, and Black Leg Sanji are showcased
+  assert.equal(SHOWCASE_THEMES.length, 3);
   const showcaseIds = SHOWCASE_THEMES.map((t) => t.id);
   assert.ok(showcaseIds.includes('onepiece_gatling'));
   assert.ok(showcaseIds.includes('wano_zoro'));
+  assert.ok(showcaseIds.includes('onepiece_sanji'));
   for (const t of SHOWCASE_THEMES) {
     assert.equal(t.category, 'showcase');
     assert.equal(t.mascot?.isAnimated, true);
   }
 
-  // On hold themes: 10 static pixel art themes put on hold
-  assert.equal(ON_HOLD_THEMES.length, 10);
+  // On hold themes: 9 static pixel art themes put on hold
+  assert.equal(ON_HOLD_THEMES.length, 9);
   for (const t of ON_HOLD_THEMES) {
     assert.equal(t.category, 'on_hold');
     assert.equal(t.onHold, true);

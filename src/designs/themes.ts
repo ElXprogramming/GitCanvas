@@ -329,8 +329,7 @@ export const DESIGN_THEMES: Record<string, DesignTheme> = {
   onepiece_sanji: {
     id: 'onepiece_sanji',
     label: 'Black Leg Sanji (Pixel Art)',
-    category: 'on_hold',
-    onHold: true,
+    category: 'showcase',
     cardBg: '#091528',
     cardBgGradientEnd: '#040b17',
     border: '#0284c7',
@@ -430,6 +429,7 @@ export const NORMAL_THEMES: DesignTheme[] = [
 export const SHOWCASE_THEMES: DesignTheme[] = [
   DESIGN_THEMES.onepiece_gatling,
   DESIGN_THEMES.wano_zoro,
+  DESIGN_THEMES.onepiece_sanji,
 ];
 
 export const ON_HOLD_THEMES: DesignTheme[] = [
@@ -439,7 +439,6 @@ export const ON_HOLD_THEMES: DesignTheme[] = [
   DESIGN_THEMES.onepiece_chopper,
   DESIGN_THEMES.onepiece_ace,
   DESIGN_THEMES.onepiece_law,
-  DESIGN_THEMES.onepiece_sanji,
   DESIGN_THEMES.onepiece_brook,
   DESIGN_THEMES.onepiece_nami,
   DESIGN_THEMES.bounty_poster,
