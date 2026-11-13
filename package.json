@@ -2,6 +2,22 @@
   "name": "githubstatreadme",
   "version": "0.1.0",
   "private": true,
+  "description": "Dynamic SVG GitHub profile card generator and interactive Bento-grid README Studio built with Next.js 14, TypeScript, Tailwind CSS, and GitHub GraphQL API.",
+  "homepage": "https://githubstatreadme.vercel.app",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ElXprogramming/GitCanvas.git"
+  },
+  "keywords": [
+    "github-profile-readme",
+    "github-readme-stats",
+    "svg-generator",
+    "nextjs",
+    "typescript",
+    "tailwindcss",
+    "github-graphql",
+    "readme-studio"
+  ],
   "scripts": {
     "dev": "next dev",
     "build": "next build",

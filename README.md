@@ -2,12 +2,15 @@
 
 ![GitCanvas Studio](https://capsule-render.vercel.app/api?type=wave&color=0:06b6d4,50:3b82f6,100:6366f1&height=190&section=header&text=GitCanvas%20Studio&fontSize=46&fontColor=ffffff&fontAlignY=38&desc=Dynamic%20SVG%20Profile%20Cards%20%26%20Interactive%20README%20Studio&descAlignY=63&descSize=17)
 
+[![Latest Release](https://img.shields.io/github/v/release/ElXprogramming/GitCanvas?style=for-the-badge&color=06b6d4)](https://github.com/ElXprogramming/GitCanvas/releases)
+[![CI](https://github.com/ElXprogramming/GitCanvas/actions/workflows/ci.yml/badge.svg)](https://github.com/ElXprogramming/GitCanvas/actions/workflows/ci.yml)
 [![Next.js](https://img.shields.io/badge/Next.js-14.2-black?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
 [![Live Studio](https://img.shields.io/badge/Live_Studio-githubstatreadme.vercel.app-06b6d4?style=for-the-badge&logo=vercel&logoColor=white)](https://githubstatreadme.vercel.app)
 [![Tests](https://img.shields.io/badge/Tests-48%20Passing-10b981?style=for-the-badge&logo=node.js&logoColor=white)](https://github.com/ElXprogramming/GitCanvas)
 [![License](https://img.shields.io/badge/License-MIT-8b5cf6?style=for-the-badge)](LICENSE)
+[![GitHub Stars](https://img.shields.io/github/stars/ElXprogramming/GitCanvas?style=social)](https://github.com/ElXprogramming/GitCanvas/stargazers)
 
 <br />
 
@@ -345,6 +348,12 @@ npm run lint
 # Run production build
 npm run build
 ```
+
+---
+
+## 🤝 Contributing & Security
+
+Contributions, themes, and bug reports are welcome! Please review [CONTRIBUTING.md](CONTRIBUTING.md), our [Code of Conduct](CODE_OF_CONDUCT.md), and [SECURITY.md](SECURITY.md).
 
 ---
 
